@@ -1,0 +1,1074 @@
+lazarus under the hoodexecutive summary
+the lazarus group s activity spans multiple years, going back as far as 2009. its malware has
+been found in many serious cyberattacks, such as the massive data leak and file wiper attack
+on sony pictures entertainment in 2014; the cyberespionage campaign in south korea, dubbed
+operation troy, in 2013; and operation darkseoul, which attacked south korean media and
+financial companies in 2013.
+there have been several attempts to attribute one of the biggest cyberheists, in bangladesh in
+2016, to lazarus group. researchers discovered a similarity between the backdoor used in
+bangladesh and code in one of the lazarus wiper tools. this was the first attempt to link the
+attack back to lazarus. however, as new facts emerged in the media, claiming that there were
+at least three independent attackers in bangladesh, any certainty about who exactly attacked
+the banks systems, and was behind one of the biggest ever bank heists in history, vanished.
+the only thing that was certain was that lazarus malware was used in bangladesh. however,
+considering that we had previously found lazarus in dozens of different countries, including
+multiple infections in bangladesh, this was not very convincing evidence and many security
+researchers expressed skepticism abound this attribution link.
+this paper is the result of forensic investigations by kaspersky lab at banks in two countries far
+apart. it reveals new modules used by lazarus group and strongly links the tools used to attack
+systems supporting swift to the lazarus group s arsenal of lateral movement tools.
+considering that lazarus group is still active in various cyberespionage and cybersabotage
+activities, we have segregated its subdivision focusing on attacks on banks and financial
+manipulations into a separate group which we call bluenoroff (after one of the tools they used).
+introduction
+since the beginning of 2016, the cyberattack against the bangladesh central bank, which
+attempted to steal almost 1 billion usd, has been in the spotlight of all major news outlets.
+new, scattered facts popped up as the investigation developed and new incidents were made
+public, such as claims by the vietnamese tien phong bank about the prevention of the theft of 1
+million usd in december 2015.
+security companies quickly picked up some patterns in the tools used in those attacks and
+linked them to lazarus group.
+the lazarus group s activity spans multiple years, going back as far as 2009. however, its
+activity spiked from 2011. the group has deployed multiple malware families across the years,
+including malware associated with operation troy and darkseoul, the hangman malware(2014-2015) and wild positron/duuzer (2015). the group is known for spearphishing attacks,
+which include cve-2015-6585, a zero-day vulnerability at the time of its discovery.
+the last major set of publications on the lazarus actor was made possible due to a security
+industry alliance lead by novetta. the respective research announcement was dubbed
+operation blockbuster.
+the following quote from novetta's report, about the purpose of the research, caught our eye:
+"while no effort can completely halt malicious operations, novetta believes that these efforts
+can help cause significant disruption and raise operating costs for adversaries, in addition to
+profiling groups that have relied on secrecy for much of their success."
+bluenoroff: a child of lazarus
+clearly, even before the operation blockbuster announcement, lazarus had an enormous
+budget for its operations and would need a lot of money to run its campaigns. ironically,
+novetta's initiative could have further increased the already rising operating costs of lazarus
+attacks, which in turn demanded better financing to continue its espionage and sabotage
+operations. so, one of the new objectives of lazarus group could be to become self-sustaining
+and to go after money. this is where bluenoroff, a lazarus unit, enters the story. based on our
+analysis, we believe this unit works within the larger lazarus group, reusing its backdoors and
+leveraging the access it created, while penetrating targets that have large financial streams. of
+course it implies a main focus on banks, but banks are not the only companies that are
+appearing on the radar of bluenoroff: financial companies, traders and casinos also fall within
+bluenoroff s area of interest.
+novetta's report doesn't provide strict attribution, linking only to the fbi's investigation of the
+sony pictures entertainment hack and a strong similarity in the malware tools. sometime later,
+the media carried additional facts about how strong the fbi's claims were, supporting this with
+some data allegedly from the nsa. the deputy director of the nsa, richard ledgett recently
+commented on lazarus and its link to north korea, however no new evidence of this link has
+been provided.
+since the incident in bangladesh, kaspersky lab has been tracking the actor going after
+systems supporting swift messaging, collecting information about its new attacks and
+operations. the recently discovered massive attack against banks in europe in february 2017
+was also a result of this tracking. highly important malicious activity was detected by kaspersky
+lab products in multiple european financial institutions in january 2017 and this news
+eventually ended up being published by the polish media. the journalists investigations jumped
+slightly ahead of technical investigations and disclosed some facts before the analysis was
+finished. when it comes to lazarus, the investigation and discovery of new facts is a long chain
+of events which consist of forensic and reverse engineering stages following one another.
+hence, results cannot be made available immediately.previous link to lazarus group
+since the bangladesh incident there have been just a few articles explaining the connection
+between lazarus group and this particular heist. one was published by bae systems in may
+2016, however, it only included an analysis of the wiper code. this was followed by another
+blogpost by anomali labs confirming the same wiping code similarity. this similarity was found
+to be satisfying to many readers, but we wanted to look for a stronger connection.
+other claims that the attacker targeting the financial sector in poland was lazarus group came
+from symantec in 2017, which noticed string reuse in malware used at one of their polish
+customers. symantec also confirmed seeing the lazarus wiper tool in poland at one of their
+customers, however from this it's only clear that lazarus might have attacked polish banks.
+while all these facts look fascinating, the connection between lazarus attacks on banks and its
+role in attacks their back office operations was still a loose one. the only case where malware
+targeting the infrastructure used to connect to swift was discovered is the bangladesh central
+bank incident. however, while almost everybody in the security industry has heard about the
+attack, few technical details based on the investigation that took place on site at the attacked
+company have been revealed to the public. considering that the post-hack stories in the media
+mentioned that the investigation stumbled upon three different attackers, it was not obvious
+whether lazarus was the one responsible for the fraudulent swift transactions, or if lazarus
+had in fact developed its own malware to attack the banks' systems.
+in addition, relying solely on a single similarity based on file wiping code makes the connection
+not as strong, because the secure file wiping procedure is a utility function that can be used in
+many non-malware related projects. such code could be circulating within certain software
+developer communities in asia. one such example is an open-source project called sderase
+available with sourcecode at sourceforge, submitted by a developer with an asian looking
+nickname - zhaoliang86. we assumed that it's possible that there are many other projects like
+sderase available on asian developer forums, and code like this could be borrowed from them.
+we would like to add a few strong facts that link some attacks on banks to lazarus, to share
+some of our own findings and to shed light on the recent ttps (tactics, techniques and
+procedures) used by the attacker, including some as yet unpublished details from the attack in
+europe in 2017.
+incident #1
+the incident happened in a south east asian country in august 2016, when kaspersky lab
+products detected new malicious activity from the trojan-banker.win32.alreay malware family.
+this malware was linked to the arsenal of tools used by the attackers in bangladesh. as the
+attacked organization was a bank, we decided to investigate this case in depth. during the
+months of cooperation with the bank that followed, we revealed more and more tools hiddendeep inside its infrastructure. we also discovered that the attackers had learned about our
+upcoming investigation and wiped all the evidence they could, including tools, configuration files
+and log records. in their rush to disappear they managed to forget some of the tools and
+components, which remained in the system.
+malware similarity
+just like other banks that have their own dedicated server to connect to swift, the bank in
+incident #1 had its own. the server was running swift alliance software.
+since the notorious bangladesh cyberattack, the swift alliance software has been updated to
+include some additional checks which verify software and database integrity. this was an
+essential and logical measure as attackers had shown attempts to tamper with swift software
+alliance on disk and in memory, disabling direct database manipulations, as previously reported
+in the analysis by bae systems. this was discovered by the attackers, who tracked the
+changes in swift alliance software. the malware tools found in incident #1 suggested that the
+attackers had carefully analyzed the patches and implemented a better way to patch new
+changes. more details on the patcher tool are provided in the appendix.
+the malware discovered on the server connected to swift strongly linked incident #1 to the
+incident in bangladesh. while certain tools were new and different in the malware code, the
+similarities left no doubt that the attacker in incident #1 used the same code base. below are
+some of the identical code and encryption key patterns that we found.
+sample submitted from bangladesh and
+mentioned in the bae systems blog.
+md5: sample discovered in incident #1 to copy
+swift message files to separate storage.
+md5:f5e0f57684e9da7ef96dd459b554fdedthe screenshot above shows the disassembly of the logging function implemented in the
+malware. the code is almost identical. it was improved a little by adding current process id to
+the log record.
+never stopping code modification by the developer seems to be one of lazarus group s longterm strategies: it keeps changing the code even if it doesn't introduce much new functionality.
+changing the code breaks yara recognition and other signature-based detections. another
+example of changing code, while preserving the core idea, originates from novetta's sample set.
+one of the lazarus malware modules that novetta discovered used a binary configuration file
+that was encrypted with rc4 and a hardcoded key.
+a fragment of the code that loads, decrypts and verifies config file magic is shown below.
+note that the first dword of the decrypted data has to be 0xaabbccdd. the new variants of
+lazarus malware used since novetta s publication included a different code, with a new magic
+number and rc4 key, but following the same idea.
+sample submitted from bangladesh. uses
+magic value 0xa0b0c0d0
+md5: sample discovered in incident #1. uses magic
+value 0xa0b0c0d0
+md5: f5e0f57684e9da7ef96dd459b554fdedthe code above is used to read, decrypt and check the external config file. you can see how it
+was modified over time. the sample from incident #1 has certain differences which would break
+regular binary pattern detection with yara. however, it's clearly the same but improved code.
+instead of reading the file once, malware attempts to read it up to five times with a delay of
+100ms. then it decrypts the file with a hardcoded rc4 key, which is an identical 16 bytes in
+both samples (4e 38 1f a7 7f 08 cc aa 0d 56 ed ef f9 ed 08 ef), and verifies the magic
+value which must be 0xa0b0c0d0.
+according to forensic analysis, this malware was used by an actor who had remote access to
+the system via its own custom set of backdoors. most of the analyzed hosts were not directly
+controlled via a c2 server. instead they connected to another internal host that relayed tcp
+connection to the c2 using a tool that we dubbed the tcp tunnel tool. this tool can be used to
+chain internal hosts within the organization and relay connection to the real c2 server. this
+makes it harder for administrators to identify compromised hosts, because local connections
+usually seem less suspicious. one very similar tool was also described by novetta, which it
+dubbed proxy papaalfa. this tool is one of the most popular during an attack. some hosts were
+used only as a relay, with no additional malware installed on them. that's why we believe that
+the lazarus actor has many variants of this tool and changes it often to scrutinize network or
+file-based detection. for full the technical details of the tool discovered in incident #1 see
+appendix (md5: ).
+one of the central hosts in the bank, which was running swift alliance software, contained a
+fully-fledged backdoor (md5: ) which has the same strong
+code and protocol design as a family of backdoors dubbed romeo by novetta. the same, but
+packed, backdoor was uploaded to a multiscanner service from poland and south korea in
+november 2016 (md5: ). we believe that this was a
+precursor of upcoming attacks on poland and other european countries, however this was not
+reported publicly in 2016. the same malware was delivered to the european banks via an
+exploit attack in january 2017.
+there are many other visible similarities between the lazarus malware reported by novetta and
+malware discovered in incident #1, such as an api import procedure and a complicated custom
+pe loader. the pe loader was used by many malware components: dll loaders, injectors, and
+backdoors.limaalfa sample from novetta's lazarus
+malware set (loader of other malicious files).
+md5: sample discovered in incident #1 (backdoor
+which contains pe loader code).
+md5: note that the modules presented differ in file type and purpose: novetta's sample is an exe file
+which is used to load other malicious pe files, while the sample discovered in incident #1 is a
+dll backdoor. still, they are based on an identical code base.
+the discussion about similarities can be continued. however, it's now very clear that the attack
+in bangladesh and incident #1 are linked through the use of the lazarus malware arsenal.
+forensic findings on the server connected to swift
+in the case of the south east asian attack we have seen infections both on the server
+connecting to swift and several systems that belong to the it department of the company. we
+managed to recover most of the modules, while some others were securely wiped and became
+inaccessible for analysis. nevertheless, in many cases we see references to unique filenames
+that were also seen on other infected systems and were most likely malicious tools. as we
+learned from the analysis of this incident, there are cross-victim event correlations, which
+suggest that attackers worked in multiple compromised banks at the same time.
+here are our key takeaways from the forensic analysis: the attackers had a foothold in the company for over seven months. the south east
+asian bank was breached at the time when the bangladesh heist happened. most of the malware was placed into a c:\windows directory or c:\mso10 directory.
+these two paths were hardcoded into several modules. the malware was compiled days or sometimes hours before it was deployed, which
+suggests a very targeted and surgical operation. the attackers used an innocent looking decryptor with a custom pe loader designed to
+bypass detections by security products on start. most of the modules are designed to run as a service or have administrative/system
+rights. the backdoors found in this attack on the server connecting to swift matched the
+design described by novetta as a romeo family of backdoors (rats) in their paper,
+which directly links the south east asian case to lazarus. not everything ran smoothly for the attacker. we found multiple events of process
+crashes and system restarts during the time of the alleged attacker s presence. attackers operated out of office hours according to the victim's schedule and timezone to
+avoid detection. they attempted to debug some problems by enabling the sysmon driver for several
+hours. later, they forgot to wipe the sysmon event log file, which contained information
+on running processes, their respective commandlines and file hashes. there was specific malware targetting swift alliance software that disabled internal
+integrity checks and intercepted processed transaction files. we called this swift
+targeted malware and directly attribute authorship to the bluenoroff unit of lazarus. the swift malware is different from other lazarus tools, because it lacks obfuscation,
+disguise and packing. persistence was implemented as windows service dll, registered inside the group of
+network services (netsvcs). they used a keylogger, which was stored in an encrypted container. this was decrypted
+and loaded by a loader that fetched the encrypted information from a different machine
+(disguised as one of the files in c:\windows\web\wallpaper\windows\). the attackers patched swift alliance software modules on disk permanently, but later
+rolled back the changes. another operational failure was forgetting to restore the
+patched module in the backup folder. the patch applied to the module is very
+similar to the one described by bae systems in its article about the bangladesh attacks. attackers used both passive and active backdoors. the passive backdoors listened on
+the tcp port which was opened in firewall via a standard command. that left
+additional records in system event log files. the port was set in the config, or passed as
+a command-line argument. they prefer ports ending with 443, i.e. 6443, 8443, 443. internal swift alliance software logs contained several alerts about database failures
+from june to august 2016, which links to attackers attempts to tamper with the database
+of transactions. the attackers didn't have visual control of the desktop through their backdoors which is
+why they relied on their own tcp tunnel tools that forwarded rdp ports to the operator.
+as a result we identified the anomalous activity of terminal services: they worked late
+and sometimes during weekends. one of the earliest terminal services sessions was initiated from the webserver hosting
+the company's public website. the webserver was in the same network segment as the
+server connected to swift and was most likely the patient zero in this attack.timeline of attacks
+due to long-term cooperation with the bank we had the chance to inspect several compromised
+hosts in the bank. starting with analysis of the central host, which was the server connecting to
+swift; we could see connections to other hosts in the network. we suspected them to be
+infected and this was confirmed during a closer look.
+once the contact between that bank and kaspersky lab was established, the attackers
+somehow realized that the behavior of system administrators was not normal and soon after
+that they started wiping all traces of their activity. revealing traces of their presence took us a
+couple of months, but we managed to collect and build a rough timeline of some of their
+operations, which again provided us with activity time information.
+we have collected all timestamps that indicate the activity of the attackers and put them in one
+table, which has helped us to build a timeline of events based on the remaining artefacts.
+fig. timeline of events in related to incident #1.
+synchronicity of events in different incidents
+during the analysis of event log files we found one coming from sysinternals sysmon.
+surprisingly, the event log file contained records of malware activity from months before the
+forensic analysis, logging some of the intruders active work.when we discovered that strange sysmon log we were confused, as it seemed like the attacker
+enabled it, or someone who wanted to monitor the attacker did. later on, a security researcher
+familiar with the bangladesh investigation results confirmed that similar sysmon activity was
+also registered on 29 january 2016. this means that it happened to at least two different victims
+within minutes.
+another event was related to tampering with swift database modules.
+during the analysis of systems in incident #1, we found a directory
+this was the date of the widely publicized bangladesh cyber heist.
+this finding corresponds to already known incident at bangladesh central bank in february
+2016. according to bae, in bcb the module was also patched with the same nop
+nop technique.
+fig. patched module in bangladesh case (courtesy of bae systems).
+so far, this means that the attackers' activity and the file modification occurred on the same day
+in two banks in two different countries on 29 january, 2016 and 4 february, 2016.
+to conclude, bangladesh central bank was probably one of many banks compromised for the
+massive operation involving hundreds of millions of dollars. a bank in south east asia linked to
+incident #1 is live confirmation of this fact.
+anti-forensics techniques
+some of the techniques used by the attackers were quite new and interesting. we assume that
+the attackers knew about the constraints implied by the responsibility of swift and the bank
+when it comes to investigating a cyberattack. so far, all infected assets were chosen to be
+distributed between swift connected systems and the bank s own systems. by splitting the
+malicious payload into two pieces and placing them in two different zones of responsibility, the
+attackers attempted to achieve zero visibility from any of the parties that would investigate oranalyze suspicious files on its side. we believe that involving a third-party like kaspersky lab
+makes a big change to the whole investigation.
+technically it was implemented through a simple separation of files, which had to be put
+together to form a fully functioning malicious process. we have seen this approach at least
+twice in current forensic analysis and we strongly believe that it is not a coincidence.
+malware component 1 malware component 2 description
+trojan dropper, was found
+on hostc
+dropped backdoor, was
+found on hostd
+the backdoor was dropped on the
+disk by the dropper, if the operator
+started it with valid secret password,
+provided via commandline.
+dll injector, was found on hostd
+keylogger, loaded by dll
+injector was found on
+hosta
+the keylogger was stored in
+encrypted container and could only be
+loaded with the dll injector from
+another host.
+it's common for forensic procedures to be applied to a system as a whole. with standard
+forensic procedures, which include the analysis of a memory dump and disk image of a
+compromised system, it is uncommon to look at a given computer as a half-compromised
+system, meaning that the other ingredient which makes it compromised lives elsewhere.
+however, in reality the system remains breached. it implies that a forensic analyst focusing on
+the analysis of an isolated single system may not see the full picture. that is why we believe
+that this technique was used as an attempt to prevent successful forensic analysis. with this in
+mind, we'd like to encourage all forensics analysts to literally look outside of the box when
+conducting breach analysis, especially when you have to deal with lazarus.
+password protected malware
+another interesting technique is in the use of password-protected malware. while this technique
+isn't exactly new, it is usually a signature of advanced attackers. one such malware that comes
+to mind is the mysterious gauss malware, which requires a secret ingredient to decrypt its
+protected payload. we published our research about gauss malware in 2012 and since then
+many attempts have been made to crack the gauss encryption passphrase, without any
+success.
+the idea is quite a simple yet very effective anti-forensics measure: the malware dropper
+(installer) uses a secret passphrase passed via command line argument. the argument is
+hashed with md5 and is used as the key to decrypt the payload. in the context of the incident
+#1 attack, the payload was, in turn, a loader of the next stage payload, which was encrypted
+and embedded into the loader. the loader didn't have the key to decrypt its own embedded
+payload, but it looked for the decryption key in the registry value. that registry value should
+have to be set by the installer, otherwise the malware doesn't work. so, clearly, unless you havethe secret passphrase, you cannot reconstruct the full chain of events. in the case of incident #1
+we managed to get the passphrase and it was a carefully selected string consisting of 24
+random alpha-numeric upper and lowercase characters.
+about the infection vector
+due to the age of the breach inside the bank, little has been preserved and it's not very clear
+how the attackers initially breached the bank. however, what becomes apparent is that they
+used a web server located in the bank to connect via terminal services to the one linking to
+swift connected systems. in some cases they would switch from the web server to another
+internal infected host that would work as a relay. however, all the hosts that we analyzed had
+no interaction with the external world except for the web server mentioned, which hosted the
+company's website and was exposed to the world.
+the web server installation was quite fresh: it had hosted the company's new website, which
+was migrated from a previous server, for just a few months before it was compromised. the
+bank contracted a pentesting company to do a security assessment of the new website which
+was ongoing when lazarus breached the server. the infection on the web server appeared in
+the middle of pentesting probes. some of these probes were successful and the pentester
+uploaded a c99-like webshell to the server as a proof of breach. then the pentester continued
+probing other vulnerable scripts on the server, which is why we believe that the intention was
+benign. in the end, all scripts discovered by the pentester were reported and patched.
+considering that there were known breaches on the webserver, which were identified and
+patched with the help of an external security audit, there is a high probability that the server was
+found and breached by the lazarus actor before the audit. another possibility is that the c99-
+shell uploaded by the pentester was backdoored and beaconed back to the lazarus group,
+which immediately took over the server. unfortunately, the c99-shell was identified only by the
+query string, the body of the webshell was not recovered.
+one way or another, the breach of the web server seems to be the most probable infection
+vector used by lazarus to enter the bank s network.
+incident #2
+our investigation in europe started with very similar symptoms to those which we have
+previously seen in south east asia in incident #1. in january 2017 we received information
+about new detections of the bluenoroff malware we have been tracking. one of the alarming
+triggers was the sudden deployment of freshly built samples, which indicated that a new serious
+operation had begun.after establishing a secure communication with some of the targets, we passed some indicators
+of compromise and quickly got some feedback confirming the hits.
+thanks to the support and cooperation of a number of partners, we managed to analyse
+multiple harddrive disk images that were made soon after taking the identified compromised
+systems offline.
+analysis of the disk images revealed the presence of multiple malware tools associated with the
+bluenoroff unit of the lazarus group. analysis of the event logs indicate that several hosts were
+infected and other hosts had been targeted by the attackers for lateral movement operations.
+attackers attempted to access the domain controller and mail server inside the companies,
+which is why we recommend that future investigators should avoid using corporate email for
+communicating with victims of lazarus group.
+in one case, the initial attack leveraged an old vulnerability in adobe flash player, which was
+patched by adobe in april 2016. although an updater was installed on this machine, it failed to
+update adobe flash player, probably due to network connectivity issues.
+initial infection.
+in one of the incidents, we discovered that patient zero visited a compromised government
+website using microsoft internet explorer on 10 january, 2017.
+infected webpage url: https://www.knf.gov[.]pl/opracowania/sektor_bankowy/index.html
+the time of the visit is confirmed by an internet explorer cache file, which contains an html page
+body from this host.
+the webpage loaded a javascript resource from the same webserver referenced from the page:
+<script type="text/javascript" src=" ?ver=11"></script>
+the information provided below appeared in the public domain.
+preliminary investigation suggests that the starting point for the infection could have been located on
+the webserver of a polish financial sector regulatory body, polish financial supervision authority
+(www.knf.gov[.]pl). due to a slight modification of one of the local js files, an external js file was loaded,
+which could have executed malicious payloads on selected targets.note: image is a courtesy of the unauthorised code was located in the following file:
+after successful exploitation, malware was downloaded to the workstation, where, once executed, it
+connected to some foreign servers and could be used to perform network reconnaissance, lateral
+movement and data exfiltration.
+visiting the exploit page resulted in microsoft internet explorer crashing, which was recorded
+with a process dump file. the dumped process included the following indicators:
+backdoor module.
+based on our own telemetry, kaspersky lab confirms that sap.misapor[.]ch was compromised
+as well, and was spreading exploits for adobe flash player and microsoft silverlight. some of
+the known vulnerability cves observed in attacks originate from that website:
+the flash exploit used in the attacks was very similar to known exploits from the magnitude
+exploit kit. these vulnerabilities have been patched by adobe and microsoft since april 2016
+and january 2016 respectively.
+fig. part of the exploit code
+inside the exploits, one can see a lot of russian word strings, like chainik , babalena , vyzov_chainika , podgotovkaskotiny , etc. the shellcode downloads the final payload from:
+https://sap[.]misapor.ch/vishop/view.jsp?uid=[redacted]&pagenum=3&eid=00000002&s=2
+&data=it's worth mentioning here that lazarus used other false flags in conjunction with this russian
+exploit code. they also used some russian words in one of the backdoors and packed the
+malware with a commercial protector (enigma) developed by a russian author. however, the
+russian words in the backdoor looked like a very cheap imitation, because every native
+russian speaking software developer quickly noticed how odd these commands were.
+fig. russian words in the backdoor code.
+at the time of research this url was dead but we were able to find an identical one which leads
+to a malicious file download (md5: , detected as trojanbanker.win32.alreay.gen) from http://www.eye-watch[.]in/design/img/perfmon.dat.
+interestingly, this sample was uploaded to virustotal from poland and korea in november
+2016. it is a packed version of a previously known backdoor used by lazarus attackers in
+incident #1 s bank.
+what made the breach possible
+since the attackers didn t use any zero-days, the infiltration was successful because of nonupdated software. in one case, we observed a victim running the following software:
+the exploit breached the system running adobe flash player, version . this version
+was officially released on 8 december, 2015.
+adobe implemented a self-update mechanism for flash player some years ago and the
+analyzed system indeed had a scheduled job, which attempted to periodically update adobe
+flash updater. we checked the event logs of the task scheduler and this task was regularly
+running.
+the task was started as system user and attempted to connect to the internet to fetch flash
+player updates from . however, this attempt failed, either
+because it couldn't find the proxy server to connect to the update server, or because of missing
+credentials for the proxy. the last failed attempt to update adobe flash was dated in december
+2016, a month before the breach happened. if only that updater could have accessed theinternet the attack would have failed. this is an important issue that may be widely present in
+many corporate networks.
+lateral movement. backup server.
+after the initial breach the attackers pivoted from infected hosts and emerged to migrate to a
+safer place for persistence. a backup server was chosen as the next target.
+based on traffic logs provided for our analysis, we confirmed that there were connections to
+known bluenoroff c2 servers originating from infected hosts. the following information was
+found in the network logs:
+destination:port type bytes transfered
+by checking other non-whitelisted hosts and ip ranges we were able to identify an additional c2
+server belonging to the same attackers:
+destination:port type bytes transfered
+while this additional c2 hasn't been reported previously, there were no additional hosts found
+that connected to that server.
+lateral movement. host1.
+during the attack, the threat actor deployed a number of other malware to a second machine we
+call host1. the malware files include:
+the decrypts and loads the payload from msv2_0.chm, which, in turn, decrypts and
+loads a configuration file from msv2_0.hlp. msv2_0.hlp, which is encrypted with spritz
+the decrypted configuration file contains references to two previously known1 bluenoroff c2
+servers:
+another file created around the same time was found in:
+it included a short text file which contained the following text message:
+[sc] startservice failed 1053:
+the service did not respond to the start or control request in a timely fashion.
+additional searches by events which occurred around the same time brought some evidence of
+other command line executable modules and windows system tools being run on that day and
+later. the following prefetch files indicate the execution of other modules:
+executable run counter
+this confirms the active reconnaissance stage of the attack.
+according to prefetch files for , this executable was used to load and msv2_0.chm. references to these files were found in the prefetch data of this process.
+1 bluenoroff is a kaspersky lab codename for a threat actor involved in financial targeted attacks. the
+most well-known attack launched by the bluenoroff group is the bangladesh bank heist.
+2 same executable was run with different command linenote: and are among the commonly used filenames of these
+attackers in the past. while these filenames may look legitimate, their location was different
+from the standard system equivalents.
+standard windows binary is usually located in
+%systemroot%\system32\ , while the attacker placed in
+%systemroot%\ for disguise. the path was confirmed from parsed prefetch files.
+unfortunately the attackers have already securely wiped the file in the windows
+directory. we were unable to recover this file.
+the same applies to %systemroot% which existed on the dates of the attack but was
+securely wiped by the attackers later.
+based on the timestamps we found so far, it seems that the initial infection of host1 occurred
+through access from a privileged account. we looked carefully at the events preceding the
+infection time and found something suspicious in the windows security event log:
+description special privileges assigned to new logon.
+then, we checked if the user [admin account redacted]' had logged into the same
+system in the past. according to the event logs this had never happened before the attackers
+used it. apparently, this user logon had very high privileges (sebackupprivilege,
+seloaddriverprivilege, sedebugprivilege, seimpersonateprivilege), allowing the remote
+user to fully control the host, install system services, drivers, start processes as other users, and
+have full control over other processes running in the system (i.e. inject code into their memory).
+next, we searched for other event log records related to the activity of the same account, and
+found several records suggesting that this account was used from host1 to access other hosts
+in the same domain.description a logon was attempted using explicit credentials.
+this event is generated when a process attempts to log on an account by
+explicitly specifying that account s credentials. this most commonly
+occurs in batch-type configurations such as scheduled tasks, or when
+using the runas command.
+this indicates that the account was used to create new scheduled tasks on the remote hosts.
+this is one of the popular ways to remotely run new processes and propagate infections during
+cyber attacks.
+then we searched for other similar attempts to start remotely on other hosts and
+collected several of them.
+lateral movement. host2.
+this host contained several unique and very large malware modules.
+the following files were found on the system:
+of this malware were general purpose backdoors and their respective droppers, loaders and
+configuration files. details about this malware is available in the appendix.
+lateral movement. host3.
+the following malicious files were found on the system: contains an encrypted payload for an unidentified loader. it's possible that the loader
+was placed on a different host following the anti-forensic technique that we have observed
+previously or is the loader but we are missing the secret passphrase passed via
+commandline. the decrypted files are described in the appendix to this report.
+cease of activity
+in several cases we investigated, once the attackers were confident they had been discovered,
+because they lost some of the compromised assets, they started wiping the remaining malware
+payloads. this indicates a skilled attacker, who cares about being discovered.
+other known operations
+the attack on european financial institutions was implemented via a watering hole, a
+compromised government website that had many regular visitors from local banks. however,
+the same approach has been used in multiple other places around the world. the polish
+waterhole incident got much more public attention than the others due to the escalation of the
+alert to a higher level and the compromise of a government website.
+we have seen a few other websites being compromised with the same symptoms and turned
+into a watering hole through script injection or by placing exploit delivery code. we have found
+them in the following countries: russian federation australia uruguay mexico india nigeria peruwhat connected most of the compromised websites was the jboss application server platform.
+this suggests that attackers may have an exploit for the jboss server. unfortunately we haven t
+managed to find the exploit code yet. nevertheless, we would like to recommend to all jboss
+application server administrators that they limit unnecessary access to their servers and check
+the access logs for attack attempts.
+banks were not the only lazarus group targets. this suggests that it has multiple objectives.
+we have seen some unusual victims, probably overlapping with the wider lazarus group
+operations, i.e. a cryptocurrency business. when it comes to bluenoroff, its typical list of targets
+includes banks, financial and trading companies, casinos and cryptocurrency businesses.
+detections of lazarus/bluenoroff malware are also distributed across the world. here are some:conclusions
+lazarus is not just another apt actor. the scale of lazarus operations is shocking. it has been
+on a growth spike since 2011 and activities didn't disappear after novetta published the results
+of its operation blockbuster research. all those hundreds of samples that were collected give
+the impression that lazarus is operating a factory of malware, which produces new samples via
+multiple independent conveyors.
+we have seen it using various code obfuscation techniques, rewriting its own algorithms,
+applying commercial software protectors, and using its own and underground packers. lazarus
+knows the value of quality code, which is why we normally see rudimentary backdoors being
+pushed during the first stage of infection. burning those doesn't cause too much impact on the
+group. however, if the first stage backdoor reports an interesting infection it starts deploying
+more advanced code, carefully protecting it from accidental detection on disk. the code is
+wrapped into a dll loader or stored in an encrypted container, or maybe hidden in a binary
+encrypted registry value. it usually comes with an installer that only the attackers can use,
+because they password protect it. it guarantees that automated systems - be it public sandbox
+or a researcher's environment - will never see the real payload.
+most of the tools are designed to be disposable material that will be replaced with a new
+generation as soon as they are burnt. and then there will be newer, and newer, and newer
+versions. lazarus avoids reusing the same tools, the same code, and the same algorithms.
+"keep morphing!" seems to be its internal motto. those rare cases when it is caught with the
+same tools are operational mistakes, because the group seems to be so large that one part
+doesn't know what the other is doing.
+all this level of sophistication is something that is not generally found in the cybercriminal world.
+it's something that requires strict organization and control at all stages of the operation. that's
+why we think that lazarus is not just another apt actor.
+of course such a process requires a lot of money to keep running the business, which is why
+the appearance of the bluenoroff subgroup within lazarus was logical.
+bluenoroff, as a subgroup of lazarus, is focused only on financial attacks. it has reverse
+engineering skills and spends time tearing apart legitimate software, implementing patches for
+swift alliance software, and finding ways and schemes to steal big money. its malware is
+different and the attackers aren't exactly soldiers that hit and run. instead they prefer to make an
+execution trace to be able to reconstruct and quickly debug the problem. they are field
+engineers that come when the ground is already cleared after the conquest of new lands.
+one of bluenoroff's favorite strategies is to silently integrate into running processes without
+breaking them. from the perspective of the code we've seen it looks as if it is not exactly looking
+for hit and run solutions when it comes to money theft. its solutions are aimed at invisible theft
+without leaving a trace. of course, attempts to move around millions of usd can hardly remainunnoticed but we believe that its malware might now be secretly deployed in many other
+places - and it doesn't trigger any serious alarms because it's much more quiet.
+we would like to note, that in all the observed attacks against banks that we have analyzed,
+servers used to connect to swift didn't demonstrate or expose any specific vulnerability. the
+attacks were focused on the banks infrastructure and staff, exploiting vulnerabilities in
+commonly used software or websites, bruteforcing passwords, using keyloggers and elevating
+privileges. however, the design of inter-banking transactions using a bank's own server running
+swift connected software suggests that there are personnel responsible for the administration
+and operation of the swift connected server. sooner or later the attackers find these users,
+gain their necessary privileges and access the server connected to the swift messaging
+platform. with administrative access to the platform, they can manipulate the software running
+on the system as they wish. there is not much that can stop them, because from a technical
+perspective it may not differ from what authorized and qualified engineers do: starting and
+stopping services, patching software, or modifying databases.
+therefore, in the breaches we analyzed, swift as an organization hasn t been directly at fault.
+more than that, we have witnessed swift trying to protect its customers by implementing the
+detection of database and software integrity issues. we believe that this is the right direction
+and has to be extended with full support. complicating patches of integrity checks further may
+create a serious threat to the success of further operations run by lazarus/bluenoroff against
+banks worldwide.
+to date, the lazarus/bluenoroff group has been one of the most successful in large scale
+operations against financial industry. we believe that it will remain one of the biggest threats to
+the banking sector, finance and trading companies as well as casinos, for years to come.
+as usual, defense against attacks such as those from lazarus/bluenoroff should include a multilayered approach. kaspersky lab products include special mitigation strategies against this
+group, as well as many other apt groups we track. if you are interested in reading more about
+effective mitigation strategies in general, we recommend the following articles: strategies for mitigating apts how to mitigate 85% of threats with four strategies
+we will continue tracking the lazarus/bluenoroff actor and will share new findings with our intel
+report subscribers as well as with the general public. if you would like to be among the first to
+hear our news, we suggest you subscribe to our intel reports.
+for more information, contact: intelreports@ .appendix: malware analysis
+the compilation timestamp indicates the malware was compiled exactly one day before being
+used in the bank.
+the module starts from creating a "mso10" directory on the logical drive where the windows
+system is installed, i.e. c:\mso10. also, it crafts several local filepaths, the purpose of which
+isn't clear. not all have reference in the code and they could be copy-pasted code or part of a
+common file in the framework. the paths are represented with the following strings:
+upon starting it makes five attempts to read file c:\mso10\latin.shp with an interval of
+100ms. if the latin.shp container is not found or has an invalid signature, the log record will
+contain the following message: "nr-pr", which we assume indicates a problem loading
+module codenamed "nr". the name "nr" is probably a reference to the printer helper program
+called "nroff" used by swift alliance software. the origins of the nroff name go back to a unix
+text-formatting program according to wikipedia.the file is read successfully if its size is larger than or equal to a hardcoded value of 35,260
+bytes. after that the module decrypts the file with an rc4 algorithm using a hardcoded
+this hardcoded key is quite unique and has been discovered in few other places, including in
+other tools from the set of malware used to attack swift alliance software and within the wiper
+tool discovered in bangladesh in early 2016 (md5: ). it was
+also used in another tool to encrypt configuration files as reported by bae systems.
+the decrypted data from the file is validated by checking the magic header of the data, which
+should be 0xa0b0c0d0 value. the file contains a configuration of 35,260 bytes which is copied
+to a reserved memory and a sequence of data blocks of 1096 bytes each. the number of blocks
+may vary, the module reads them all and stores them in a linked list structure.
+there is an internal logging feature implemented in the current module, which keeps a text log
+in c:\mso10\engdic.lng. the text records are stored in lines of the following format:
+this executable is designed to be called with three parameters:
+the first parameter is a number 1 or 2. if any other value is passed to the executable it simply
+saves it to the log in the format of "nr-pr-p %mode%". we assume that "nr-pr-p" is
+interpreted by the attackers as "nroff problem parameter".
+mode 1 means that the module shall select the output path automatically, which contains the
+following string template: "#%04d%04d.prt", otherwise the output path is copied from the third
+command line argument.
+for recognized modes 1 and 2 the module saves a backup for every "print file" passed to it via
+where is a sequential integer number.the malware is an information harvester. it processes files passed to it, parses them and
+searches for specific swift transaction codes, such as:
+its main purpose is to accumulate information about transactions passed through it, saving
+sender and receiver, account and statement numbers as well as some other data included in
+parsed files. the files passed to it are allegedly in the swift transaction format, which
+suggests that the attackers were closely accustomed to internal swift documentation or
+carefully reverse engineered the format. it recognizes the following format tags:
+when such files are found, it logs them into the log folder drive:\mso10 and saves a copy.
+the rc4-encrypted file we found (latin.shp) contained the following strings after decryption:
+in the older case from bangladesh the config contained swift business identifier codes (bic)
+to hide in swift transaction statements.
+the compilation timestamp indicates the malware was compiled in the days preceding the
+attack on the bank.this malware tool is used to patch some swift alliance software modules in the memory to
+disable certain protection mechanisms that were implemented to detect direct database
+manipulation attempts. the code was most likely created by the same developer that created
+swift transactions information harvester like
+the information harvester it creates a "mso10" directory on the logical drive where the windows
+system is installed, i.e. c:\mso10.
+it also crafts several local filepaths, the purpose of which isn't clear. not all have reference in
+the code and could be a copy-pasted code or part of common file in the framework:
+upon starting it makes five attempts to read file c:\mso10\latin.shp with an interval of
+100ms. if the latin.shp container is not found or is invalid, the log will contain the following
+message: "pm-pr". the file is read successfully if its size is larger or equal to a hardcoded
+value of 35,260. after that the module decrypts the file with an rc4 algorithm using a
+hardcoded encryption key: 4e 38 1f a7 7f 08 cc aa 0d 56 ed ef f9 ed 08 ef.
+the decrypted data from the file is validated by checking the magic header of the data, which
+should be 0xa0b0c0d0 value.
+the file contains a configuration block of 35,260 bytes which is copied to a reserved memory
+and a sequence of data blocks of 1096 bytes long. the number of blocks may vary, the module
+reads them all and stores them in a linked list structure.
+if the latin.shp file is found then the module simply counts the number of records in it and
+proceeds with patching the target file, which is described further. if it is not found or the file
+magic bytes differ from expected after decryption, then the patching does not happen and the
+code simply drops execution.
+there is an internal logging feature implemented in the current module, which keeps text log in
+. the following log messages may appear in this file in plaintext:
+log message format description of values
+patchmemory - current executable filename
+unpatch operation, 1 - patch
+operation)
+the module has seven embedded blocks of 0x130 bytes long that contain patch target
+information.
+each block seems to have four slots of 0x4c bytes with patch information. however, only the
+first slot per module is used at this point. each slot contains information for just two code
+modifications.
+the patch slots include the size of the patch, and the relative path to the module to be patched
+on disk, offset to the patched bytes (containing the relative virtual address) and original bytes.
+the patcher verifies that the original bytes are in place before modifying the code. the patch
+procedure can also do unpatching by design, however this feature is currently unused.
+the first slot is a patch for the library which seems to be essential and is applied in
+all cases. other patches are designed for specific executables that the current swift alliance
+software patcher dll module is loaded in. it searches for a corresponding patch that matches
+the current process executable filename and applies only that patch.the following table contains an interpretation of the patch-blocks embedded into the binary. the
+table omits empty slots and shows only valid patch instructions:
+block module patch
+rva
+original
+code
+replacement description
+swift alliance software binary tools are linked with file " ", which provides basic
+security checks and validates the integrity of the database. the patches are applied to the
+modules to disable these checks and prevent the detection of database inconsistency. the file
+selection is not random, as far as the swift connected servers server environment is a
+complex of executable files with complicated relations, the attackers identified all executables
+that implemented new security features and patched them off. we have checked all other
+binaries on the analyzed servers and none of other applications were linked with , except those in the patchlist.
+the patcher dll has to be loaded into the address space of the target process to work. it is not
+designed to patch other processes.malware 3: swift alliance software files hook
+internal bluenoroff module tag: hd (alternative: hf)
+used in: incident #1
+the compilation timestamp indicates the malware was compiled during the days of the attack on
+the bank.
+it is very similar to swift transactions information harvester and swift alliance software
+protection mangler. like the information harvester it creates a "mso10" directory on the logical
+drive where the windows system is installed, i.e.
+similarly, it crafts several local filepaths:
+upon starting it makes five attempts to read file c:\mso10\latin.shp with an interval of
+100ms. if the latin.shp container is not found or is invalid, the log will contain the following
+message: "hd-pr". the file is read successfully if its size is larger than or equal to a hardcoded
+value of 35,260. after that the module decrypts the file with an rc4 algorithm using the
+hardcoded encryption key: 4e 38 1f a7 7f 08 cc aa 0d 56 ed ef f9 ed 08 ef.
+the decrypted data from the file is validated by checking the magic header of the data, which
+should be 0xa0b0c0d0 value.
+the file contains a configuration of 35,260 bytes which is copied to a reserved memory and a
+sequence of data blocks 1096 bytes long. the number of blocks may vary, the module reads
+them all and stores them in a linked list structure.
+if the latin.shp file is found then the module simply counts the number of records in it and
+proceeds. if it is not found or the magic file bytes differ from expected after decryption, then the
+patching will not happen and the code simply drops execution.
+there is an internal logging feature implemented in the current module, which keeps a text log
+. the following log messages may appear in a file in plaintext:log message format description of values
+file and flag value for "overwrite if exists".
+the purpose of this module is in patching the current process, so that copyfilea function in fact
+calls a custom hook function, which calls createprocessa and passes some arguments to it.
+the command line for the new process is as follows:
+the path to the process is taken from the decrypted configuration file
+another api function, createprocessa is similarly hooked. any call to create a new process,
+which starts one of two recognized executables "nroff" or "printhelper", is modified. before the
+original executables are called, a custom application will be spawned with the following
+commandline:
+if the execution fails the module logs a failure message with a win32 api error code.
+we assume that this module is injected in the middle of running swift alliance software, to
+divert some of the interesting files for alteration or to make a reserve copy.
+used in: incident #1this file is a command line tool to start a new process as another user currently logged on to the
+same system. to find the user token, one of the following case-insensitive command line
+options is used:
+option description
+the last command line option defines the command line of the new process to start.
+the example tool usage was recovered from an infected system during forensic analysis. it was
+used to start a swift alliance software tool via a custom application starter that most probably
+tampered with the new process. the module was not recovered from the system.
+this application is a tool that works as a simple tcp relay that encrypts communication with c2
+and contains remote reconfiguration capability. it has to be started with at least two parameters
+containing host ip and port. two additional optional parameters may define the destination
+server ip and port to relay network connections to. the destination server ip and port can be
+retrieved and reconfigured live from c2. let's refer to these pairs of ip/ports as hosta/porta and
+hostb/portb respectively.when the tool starts it attempts to connect to the c2 server, which starts from the generation of
+a handshake key. the handshake key is generated via a simple algorithm such as the following:
+next, it generates a message body, a string of bytes from 64 to 192 bytes long. the fifth
+dword in the message is replaced with special code 0x00000065 ("e" character). then it
+encrypts the message with a handshake key and sends it to the c2 server with the data block
+length prepended to that buffer.
+this is what such a packet looks like (blue rows are encrypted with rc4 and handshake key):
+offset (bytes) size (bytes) description
+it expects similar behaviour from the server. the server responds with similar packet, where the
+first dword is the size of the rest of the packet and the only meaningful value is at offset 0x14,
+which must contain 0x00000066 ("f") or the handshake is not successful.
+if the handshake is successful, the tool spawns a dedicated thread to deal with the c2
+connection.
+it uses rc4 encryption to communicate with the c2 over tcp with a hardcoded 4-bytes key
+value: e2 a4 85 92.the analyzed sample uses binary protocol for communication, exchanging messages in fixed
+length blocks of 40 bytes, which are encrypted with rc4 as mentioned above. each such block
+contains a dword at offset 0x4 describing a control code used in the protocol. other fields in
+the block may contain additional information or be set to a randomly generated number for
+distraction.
+client server
+control code meaning control code meaning
+for the control code 0x10003, additional information including ip and port numbers are
+transferred in the same message block at offsets 0x10 for ip and 0x14 for port.
+the tool will not start connecting to hostb until it receives a 0x10002 command to start the
+tunnelling process. when this happens it will open an additional, independent tcp session with
+hosta, will do a handshake, and then pass all data back and forth without modification.
+other variants of the tool were found in different places:
+uploaded to a multiscanner from bangladesh.
+discovered in costa rica.
+discovered in ethiopia.
+all these tools use the same hardcoded rc4 key value of e2 a4 85 92.
+used in: incident #1, incident #2this module is linked with opensource ssl/tls suite mbedtls (aka polarssl) as well as zlib
+-s start the main backdoor mode
+starting the executable with no option is equivalent to starting with "-i", which initiates a
+sequence of restarts eventually leading to self-installation into the autorun key and user's
+depending on the available command line arguments the module may use a c2 address from
+the following locations:
+3. [unfinished backdoor code] use a c2 address and port passed via command line. note,
+this code is currently unfinished: it contains a command line argument parsing and
+setting in the memory of the backdoor: up to six pairs of c2 hosts and ports can be
+passed to it, but this information seems not to be reaching the main backdoor code yet.
+if the registry value with config is not set upon the backdoor start, it creates this value,
+populating the config with hardcoded values.
+when the module is passed to a domain and port pair via the command line, config from the
+registry or hardcoded value, it resolves the ip address of the domain (if the domain is passed)
+and produces a different ip by decrypting the dns request with a 4-byte xor operation. the
+xor constant is hardcoded: .hardcoded c2s:
+ip xor key
+(real c2)
+the application establishes a https connection, introducing itself as "testcom 18467"
+(hostname) during a tls handshake.
+the backdoor protocol supports the following commands sent as dword constants:
+command id description
+get system information: hostname, os version, locale, list of network
+interface cards with properties.
+sleep command. disconnect from c2. save current time and show no
+network activity for a specified time.
+hibernate command. disconnect from c2 and show no network
+activity. seems like this sleep is persistent over program restarts.
+show all available drives and used/available space on them.
+list files in specified directory.
+change current directory.
+run specified command.
+run specified command as another terminal session user.
+delete file(s) based on file path pattern.
+wipe specified file two times with random dword value.0x91b9348b compress and upload specified file path recursively.
+read data from the specified file.
+write data to the specified file.
+get detailed process information: pid, session id, cpu performance
+status, memory used, full path.
+kill process by name or pid.
+execute a command and read the output. this is done via the
+redirection of command output to a text file in temp directory, reading
+and sending the contents of the file after the process is complete.
+connect 1024 times to localhost:135 for disguise, cleanup and
+shutdown.
+get current backdoor configuration.
+set new backdoor configuration.
+test remote host and port by opening tcp connection.
+inject an executable module into address space of .
+get current working directory.
+delete specified file.
+the same file, but compressed with an unknown packer, was discovered uploaded on vt from
+poland and korea in november 2016. this suggests backdoor reuse in those countries. it has
+the following properties:
+this file is similar to the other backdoors from the arsenal. however, it contains some
+differences and improvements. it uses an external file to store configuration, located at
+. the config has a fixed size of 182 bytes and has the following
+structure:
+xored with 0xde
+random 4 bytes magic value: 0x12458fae other data
+similar to other backdoors, it uses xor operation on the dns response. the xor dword
+constant is different here: 0xcbf9a345. the sample contains the following default hardcoded
+c2 address: tradeboard.mefound[.]com:443
+to complicate analysis, the developer has implemented a protocol with dynamically changing
+constants depending on the variant of the malware. so far, the backdoor "speaks the same
+language" but with a different "dialect". this is implemented through a different base for all
+messages. this sample supports similar commands but its command ids are shuffled and start
+with a different number.
+command id description
+0x23fae29c get system information: hostname, os version, locale, list of network
+interface cards with properties.
+0x23fae2a4 sleep command. disconnect from c2. save current time and show
+no network activity for specified time.
+0x23fae2a6 hibernate command. disconnect from c2 and show no network
+activity. this is persistent over program restarts, because it the
+module saves time when to come back online in the config file.
+list all available drives.
+recursively list contents of the specified directory.
+list contents of the specified directory.0x23fae29f change current directory.
+run specified command.
+delete file(s) based on file path.
+wipe specified file two times with random dword value.
+compress and upload specifed file path recursively.
+read data from the specified file.
+write data to the specified file.
+get detailed process information: pid, session id, cpu performance
+status, memory used, full path.
+kill process by name or pid.
+execute a command and read the output. this is done via redirection
+of command output to a text file in temp directory, reading and
+sending the contents of the file after the process is complete.
+clone file timestamps from the given path.
+set new c2 port, save configuration file.
+set new c2 address, save configuration file.
+command to self-destruct. it drops into %temp% directory
+and runs it to self-delete.
+in addition it wipes the config file with zeroes and deletes the file as
+well.
+terminate session and quit immediately.
+this matches the description of backdoors from the romeo set as per novetta.
+this executable was written using the microsoft mfc framework. the application is designed to
+run as a service, however it can also start and work as a standalone non-service process. it
+registers with the name of "helpsvcs". the code is organized in classes, one of which, the main
+application class, has a static text variable set to "pvs", which seems to be unused in the code.
+this service relies on command line arguments passed as an integer defining the port number
+that it will listen to in the future. this is a reduced minimalistic way of configuring and using the
+backdoor in listening mode, however there is a class that is responsible for loading or saving full
+configuration block from/to the registry.
+the registry value used to store the configuration depends on the parameter value
+(%parameter%) passed to the function. the registry configuration is located at
+hkcr\nr%parameter%\content setting.
+the main service procedure generates a unique instance id which is set to pseudo-randomly
+selected 8 bytes. some previous versions of the code relied on some pseudo-random values
+derived from the current time and mac addresses of available network cards, but then was
+changed to a hardware independent value.
+this backdoor takes care of enabling ports in the windows firewall by creating a new firewall
+rule named "windows firewall remote management" using tool on windows, which
+enables an incoming connection to any executable on the tcp port that is currently used by the
+backdoor. in case this rule has different name in other samples, it's quite easy to find it,
+because it doesn't specify which group of rules it belongs to, unlike all other default windows
+firewall rules. sorting firewall rules by group name may quickly reveal such an odd rule:
+the backdoor provides process and file management, as well as the creation of tcp connection
+relays.another backdoor based on the same code was found in the same bank, however it was made
+as a standalone executable instead of a dll. short description and file properties are provided
+below:
+this file is a backdoor that listens to a port specified in the %windir% file as
+an integer number. it supports about 20 commands, which enable the operator to: collect general system information search files/directories by name start new process as current user start process as another logged in user start process and collect output from stdout get file from specified path drop new executables into system directory compress and download files list processes and their respective loaded modules kill processes by name fake file timestamp by copying it from start a new backdoor session on another port list active terminals sessions with details relay tcp connections to a remote host
+the executable contains a custom pe loader code that is identical to a custom pe loader from
+lazarus loader modules dubbed by novetta as limaalfa.
+this module contains a small embedded executable in the data section, encrypted with a trivial
+(xor 0xb1, add 0x4f) method. the mz header is wiped from that embedded file and is restored
+during decryption routine. some other properties of the small embedded file are listed below
+unloading a dll from memory.
+this is a dropper of an embedded malware. it uses rc4 to decrypt resources and drop and start
+a new process from disk. the rc4 is an md5 of a command line argument (secret passphrase)
+following "-x" parameter. the second command line argument "-e" defines the name for the new
+service to be registered. the md5 hash of the passphrase is stored in the registry and is used
+by the dll loader in the later stage.
+the binary picks one of the names to drop the payload to, and chooses a corresponding service
+description when registering.
+filename description
+wanmgr wifi connection management service
+vrddrv windows virtual disk service
+trufont font cache service
+wmvdec media center network sharing
+biomgs biometric service
+gpcpolicy group policy server service
+diagmgs diagnostic policy client
+waindex windows indexing service
+trabcon network traffic balancing service
+authen remote logon authentication
+the dropped file is saved into %systemroot%\system32\%filename%.dll on windows 32-
+bit and %systemroot%\syswow64\%filename%.dll on windows 64-bit.
+original name: ext-ms-win-ntuser-dialogbox-l1-1- used in: incident #1
+this file is dropped by the trojan dropper described above. it is a malware loader service,
+which gets the decryption key from the registry, uses rc4 to decrypt an embedded resource
+and start the payload. the rc4 decryption key is obtained from
+hkcr\nr%parameter%\contexthandler value, which is set by the trojan dropper during
+malware installation.
+the embedded resource contains one of the passive backdoors described in this paper.
+another variant of the dll loader heavily uses system registry to fetch the decryption key, and
+the encrypted payload.
+this module is similar to other 64-bit variants. however, it is registered as a service and gets an
+rc4 key and the payload from the registry values of its own service. the name of the service is
+not fixed and is probably set during installation stage.
+here is the registry value path for the rc4 key and encrypted payload respectively:
+77 ac 1e) and encrypted payload, decrypts the payload with that key and then decrypts it one
+the final decrypted payload is loaded and started as a dll in memory. at the time of analysis
+the attackers managed to wipe the payload in the registry with a benign system file data, so only
+the rc4 key remained untouched and was found in the registry.
+this module is a user-mode keylogger. it contains an export function with an empty name,
+which has the main functionality of the module.
+upon starting it creates a new thread, which suggests that it has to be loaded by a custom pe
+loader (probably by the dll injector described in this paper, md5: ). the main thread registers a new class named "shell
+traycls%random%", where %random% value is an integer returned by the system rand
+function seeded with the current system time. next, it creates a window called "shell
+tray%random%". the new window registers a system-wide keyboard hook and starts
+recording keypresses and unicode text in context of the clipboard. the data is saved into a
+current user profile directory in a file that is named after the username via the following template
+string:
+ntuser{%username%}.txs.blf. for example, the full path that we discovered was
+" {[redacted operator]}.txs.blf". the data written in the file is
+encrypted with rc4 with the following hardcoded 64-bytes key:
+to some database contents or queries:
+we assume this is done to complicate the recognition of a password-like string by eye, or use a
+value that would cause some false-positives when scanning for such a pattern.
+the keylogger data file is a binary log that contains sequences of records organized in blocks
+which have the following events inside:
+1. session start (logon):
+contains username, type of session (rdp, console, etc), session id.
+2. session activity:
+contains active windows name and sequence of typed keys.
+3. session end (logoff):
+contains username, session id.
+every event record contains a dword timestamp.
+the module also starts a watchdog thread that keeps monitoring the creation of a trigger-file
+called odbcrep.hlp in the directory of the current dll. if such file is found, the keylogger
+removes the keyboard hook and unloads from the process immediately.
+used in: polish bank
+this module is a command line malware dropper/installer, which contains two data containers in
+the resource section.
+the dropper command line takes the following:
+service name and %param3% as the path to dll file of service binary. if the %param3%
+doesn't contain "\" character, the code uses it as the filename in %systemroot%\system32\.
+3hklm\software\microsoft\windows nt\currentversion\svchost\netsvcswhen -e option is used, the files stored in the containers are extracted, decrypted where
+encryption is used, and dropped to a disk in two locations: one goes to the current directory as
+%name%, another is saved into %systemroot%\help\%name%.chm. the value of the
+%name% parameter is passed via command line argument.
+the container starts with a 40 bytes header describing the start of the payload, container and
+the payload data inside. the data may or may not be encrypted and there is no specific flag
+identifying that in container itself. the code processing the container will know whether the
+container's payload requires decryption.
+upon successful extraction of the files, the dropper will show the following message on the
+command line:
+fig. report of successful payload deployment.
+the first extracted file is decrypted using the following key and spritz algorithm, a variant of the
+the second file is extracted as-is, however, brief analysis of its header suggested that it is
+encrypted with the same crypto and key.
+the dropped files after decryption have the following md5 hashes:
+this module is packed with a commercial product known as the enigma protector, which was
+developed by a russian software developer vladimir sukhov in 2004. this module is
+implemented as a service binary with servicemain procedure. on starting it imports allnecessary system api functions, and searches for the .chm file inside
+module. then it decrypts the payload using the spritz algorithm with the hardcoded key: 95 b4
+e5
+next, it searches the target process and attempts to inject the decrypted payload module from
+the chm file into the address space of the target process. the target process can be one of
+two:
+according to the code the current module injects payload into itself.
+some more similar dll injector samples were found in europe and in the middle east. the
+this module is dropped to the disk in .chm file and stored in encrypted form. it can be
+decrypted and started with the dll injector module (i.e. ). like the other file in the same package, it is wrapped
+with enigma protector.the module has no business logic starting from the entry point. core logics are called from one
+of two exported functions:
+the initdll function sets up basic requirements and prepares paths to other essential
+the module contains an embedded default config which is saved to .hlp file in encrypted form if
+the file is missing. it contains the following c2 information:
+it doesn't use resolved ip of the c2 directly, but xors the dns query result with hardcoded key
+the backdoor protocol supports the following commands sent as a dword, however this
+dword is convertible to a meaningful ascii representation of the command as shown below:
+command id description
+none no actions.
+ginf get system information: hostname, os version, cpu type, system locale,
+ram, disk free space, bios version and manufacturer, list of network
+interface cards with properties.
+slep disconnect from c2. save current time and show no network activity for
+specified time. it seems like this sleep is persistent over program restarts.
+hibn disconnect from c2 and show no network activity.
+driv show all available drives and used/available space on them.
+dir list files in specified directory.
+dirp list files and directories recursively starting from specified path.
+chdr change current directory.
+4 a very similar implementation of the sprtiz algorithm in c is available at run specified command.
+runx run specified command as another terminal session user.
+del delete file(s) based on file path pattern.
+wipe wipe file(s) based on file path pattern. a hardcoded pattern (not defined in
+current sample) or randomly generated bytestream is used. wiping with
+random data is done three times. a dword constant is present from some
+older wiper's code pattern: 0xe77e00ff.
+move move file.
+ftim set time for file(s) specified by file path pattern. use
+found, a hardcoded value is used:
+newf create a directory.
+zdwn compress and download specified file path recursively.
+down compress and download a single file.
+upld upload and uncompress file to the specified directory. the directory is created
+if it doesn't exist.
+pvew get detailed process information: pid, session id, cpu performance status,
+memory used, full path.
+pkil kill process by name or pid.
+cmdl execute a command and read the output. this is done via redirection of
+command output to a text file in temp directory, reading and sending the
+contents of the file after the process is complete.
+die set a flag to terminate immediately. cleanup and shutdown.
+gcfg get current backdoor configuration.
+scfg set new backdoor configuration.
+tcon test connection with remote hosts. open tcp connection to the specified host
+and port. send 2 random bytes to test connection.
+peex inject an executable module into address space of .
+pein inject an executable module into address space of process defined by pid.
+an identical file was found in incident #2:
+the purpose of this file is to execute one or more commands on the command line and redirect
+the output to a file on disk. the list of commands to run is located in the following file path (let's
+call it source file): . once the commands are executed, it sleepsfor one second and starts the process again until the source file contains a line with just one
+word in it: "die".
+this batch file opens and runs every command mentioned in the .tmp file and saves the output
+to .ret. once it finds the word "die" in the source, it deletes the
+source and the output file and quits. however, this batch file is either broken or implemented
+with a bug. note the line "goto end" and no label called ":end" in the batch file.
+we can only speculate how this file was used in the real attack, but one theory looks to be the
+most probable: it was used as an awkward way to execute commands with system user
+privileges. while it is possible to run commands as a system user when you have
+administrative privileges on a target machine, getting an interactive shell requires more work. a
+batch file like this could run in the background, quietly spawning in a loop and nonresource exhausting mode. passing commands to the source file would allow attackers to
+conveniently execute them the next second and get the output via another text file. this infinite
+loop could be easily broken with the "die" keyword. so far, we believe that this file could serve
+as a privilege escalation trampoline for other unprivileged processes (such as usermode
+backdoor).
+this module is a commandline tool that helps to install a new service. in addition it is capable of
+doing code injection and works as a service itself. the binary is protected with enigma
+protector.
+if the module is started without commandline arguments, it quits immediately.
+depending on commandline options passed the tool may work in different modes.
+this mode is selected with commandline option -v. in this case the module get a list of
+services from hardcoded registry value hklm\software\microsoft\windows
+nt\currentversion\svchost\netsvcs. this value is a present on clean windows installation
+and usually contains a list of standard service names that may generate some network activity.the code iterates through available services and prints to standard output every service
+it managed to open with read privileges (used just to confirm that the service is running). after
+this the tool exits.
+in this mode the module registers and starts a new service if it doesn't exist. the service
+name is based on the current executable filename. the following commandline is stored in the
+registry to start the service:
+where %self_path% is full path to current executable and %param1%, %param2% are
+passed as-is from current commandline.
+in this mode the module extracts and stores additional executable on the filesystem
+(filepath is inside installation cryptocontainer). it uses %param2% to open the file as a
+cryptocontainer. cryptocontainer is encrypted with two rc4 keys:
+this mode is very similar to "file payload deployment" described above, but in this case
+the module is instructed to install the payload into the registry value.
+5. service test
+commandline: -o %param1%
+this mode is used to ensure that the service is running correctly by checking that a
+special event object named %param1% exists.
+6. service termination
+commandline: -t %param1%
+this mode is used signal the running service via special event object named %param1%
+to terminate execution.
+7. payload injection mode
+commandline: -k %param1% %param2%
+in this mode the module assumes that it can be a service binary, so it tries to behave as
+service. if it fails it falls back to regular standalone executable mode. main purpose of this code
+is to find payload in the registry, decrypt it and inject into target process memory. the payload is
+stored in the following registry value:
+the cryptocontainer used by this module contains a magic value after it's decrypted with md5 of
+the secret passed via commandline and hardcoded rc4 key. at offset 4 it has to contain the
+following dword: 0xbc0f1dad (ad 1d 0f bc).

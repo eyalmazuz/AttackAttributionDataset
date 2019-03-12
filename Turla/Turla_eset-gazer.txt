@@ -1,0 +1,300 @@
+introduction
+herein we release our analysis of a previously undocumented backdoor that has been targeted
+against embassies and consulates around the world leads us to attribute it, with high confdence,
+to the turla group. turla is a notorious group that has been targeting governments, government
+ofcials and diplomats for years. they are known to run watering hole and spearphishing campaigns
+to better pinpoint their targets. although this backdoor has been actively deployed since at least
+2016, it has not been documented anywhere. based on strings found in the samples we analyzed,
+we have named this backdoor gazer .
+recently, the turla apt group has seen extensive news coverage surrounding its campaigns,
+something we haven t seen for a long time. the intercept reported that there exists a 2011 presentation
+by canada s communication security establishment (cse) outlining the errors made by the turla
+operators during their operations even though the tools they use are quite advanced. the codename
+for turla apt group in this presentation is makersmark. gazer is, similar to its siblings in the turla
+family, using advanced methods to spy and persist on its targets. this whitepaper highlights
+the campaigns in which gazer was used and also contains a technical analysis of its functionalities.
+summary
+based on our research and telemetry on the di erent campaigns where gazer was used,we believe
+that southeastern europe as well as countries in the former soviet union republichas recently
+been the main target. the witnessed techniques, tactics and procedures (ttps) are in-line with
+what we usuallysee in turla s operation: a frst stage backdoor, such as skipper, likely delivered
+through spearphishingfollowed by the appearance on the compromised system of a second
+stage backdoor, gazerin this case.
+although we could not fnd irrefutable evidence that this backdoor is truly another tool in turla s
+arsenal, several clues lead us to believe that this is indeed the case. first, their targets are in line
+with turla s traditional targets: ministries of foreign a airs (mfas) and embassies. second, the modus
+operandi of spearphishing, followed by a frst stage backdoor and a second stage, stealthier backdoor
+is what has been seen over and over again. skipper, which has been linked to turla in the past, was
+found alongside gazer in most cases we investigated. finally, there are many similarities between
+gazer and other second stage backdoors used by the turla group such as carbon and kazuar.
+as usual, the turla apt group makes an extra e ort to avoid detection by wiping fles securely,
+changing the strings and randomizing what could be simple markers through the di erent backdoor
+versions. in the most recent version we have found, gazer authors modifed most of the strings
+and inserted video-game-related sentences throughout the code. an example of such
+a string is depicted in figure 1.
+figure 1. turla author s sense of humor
+similarities with other turla tools
+gazer is written in c++ and shares several similarities with other malware from the turla apt family.
+indeed, gazer, carbon and kazuar can receive encrypted tasks from a c&c server, which can be executed
+either by the infected machine or by another machine on the network. they all use an encrypted
+container to store the malware s components and confguration and they also log their actions
+in a fle.
+the list of c&c servers is encrypted and embedded in gazer s pe resources. they are all compromised,
+legitimate websites (that mostly use the wordpress cms) that act as a frst layer proxy. this is also
+a common tactic for the turla apt group.
+another interesting linkage is that one of the c&c servers embedded in a gazer sample was known
+to be used in a jscript backdoor documented by kaspersky as kopiluak.
+last but not least, these three malware families (gazer, carbon and kazuar) have a similar list
+of processes that may be employed as a target to inject the module used to communicate with the
+c&c server embedded in the binary. the resource containing this list can change from one sample
+to another, it is likely tailored to what is installed on the system (for example, on some samples,
+the process name can appear on the list).
+custom encryption
+gazer s authors make extensive use of encryption. they don t use the windows crypto api
+and don t seem to use any public library. it looks as if they are using their own library
+for 3des and rsa.
+the rsa keys embedded in the resources contains the attacker s public key which is used to encrypt
+the data sent to the c&c server, and a private key to decrypt resources embedded in its binaries.
+these keys are unique in each sample.
+these resources are structured in the same way as rsa from openssl, but these values (p, q, etc.)
+are computed by the custom implementation of gazer s authors.
+for 3des, the iv and a static key are hardcoded and are the same in all samples. this 3des key
+is randomly generated and xored with the static key. the random data used to xor the static
+key is prepended to the logfle header. this key is then used in the regular 3des algorithm.
+global architecture
+in this section, we will describe in detail each component of gazer.
+c&c server
+may forward task
+gazer loader
+rsrc 101 rsrc 102
+orchestrator
+gazer orchestrator
+rsrc 101
+[...]
+running within rsrc 102
+comm module
+gazer orchestrator
+running within (for example)
+injected into process
+indicated in rsrc 101
+send
+task s result
+injected into a process that
+legitimately communicate
+over the internet.
+(process list from rsrc 106)
+forward task
+machines on the same
+network (p2p)
+send tasks results
+get new
+tasks
+figure 2. gazer architecture
+loader
+the loader is the frst component of the malware to be executed on the system. two resources
+are stored unencrypted in the binary: 101: the process name to inject the orchestrator into1 102: the orchestrator
+the following mutex is created to ensure that only a single instance of the malware is running:
+{531511fa-190d-5d85-8a4a-279f2f592cc7}
+named pipe generation
+to establish a communication channel between gazer components, a named pipe is initiated.
+catalogchangelistener-fffe-d will be used by default.
+code injection through thread hijacking
+a not-so-common trick is used in order to inject the orchestrator into a remote process. indeed,
+a running thread from the remote process is hijacked in order to run shellcode that will execute
+the communication module entry point. the whole module and shellcode are copied into the remote process; the function zwquerysysteminformation is used to retrieve the total number
+of the running threads in the targeted process; the following operations are attempted on each of those threads: the thread is suspended with the openthread/suspendthread functions; the thread context is retrieved using getthreadcontext; the context s instruction pointer is saved and modifed to point to the shellcode
+(through setthreadcontext); the thread is resumed using resumethread. if one of the previous operations fails, the thread is resumed and the same actions
+are attempted on another thread.
+the shellcode is just a loader that will execute the module entry point in a new thread.
+persistence
+the loader sends binary data through the named pipe to the orchestrator. this blob contains: a command id (2): cmc_take_loader_body the loader path fle the loader pe
+once this message is received by the orchestrator, the loader is securely deleted by overwriting
+the fle content and deleted through the deletefile function.
+afterwards, the persistency is set up. the persistency information is retrieved from the resource 105 and stored in the gazer storage. among these data, there is a dword value that is used to choose
+which persistency mode will be applied.
+the resource 105 is structured in the following way: a dword value representing the persistence mode a dword value representing the size of the data the persistence information
+there are 6 di erent persistence modes.
+0: shellautorun
+persistence is achieved through the windows registry by setting the value shell with explorer.
+exe, %malware_pathfle% under the following key:
+hkcu\software\microsoft\windows nt\currentversion\winlogon
+1: hiddentaskautorun
+it is very similar to the taskscheduler autorun (4) method described below. the main di erence
+is that the task is hidden from the user by using the task_flag_hidden ag (set up via
+the setflags method from the itask interface).
+2: screensaverautorun
+in this mode, gazer achieves persistency by setting up in the windows registry the executable
+fle used for the screensaver.
+many values are created under the hkcu\control panel\desktop registry key: with the malware executable path screensaveactive is set to 1 : enable the screensaver screensaverissecure is set to 0 : specifes that the screensaver is not password-protected screensavetimeout is set to a value given in the resource. it specifes how long the system
+remains idle before the screensaver (in this case: the malware) starts.
+3: startupautorun
+if the resource 105 begins with the dword value 3 , a lnk fle will be created in the start menu.
+the resource will also provide a description for the shortcut fle, the path for the target
+and the flename for the lnk.
+the ishelllink interface is used to create the shell link.
+4: taskschedulerautorun
+this method is used to achieve persistence by creating a scheduled task.
+the task is created and set up through com interfaces related to tasks (itaskservice,
+itasksettings, ).
+some information such as the task name and its description is retrieved from the resource.
+for example, in one of the sample s resources, the persistency mode is set to 04 (taskschedulerautorun)
+with the persistency data:
+%appdata% adobe acrobat reader updater. this task was
+generated by adobe systems, inc to keep your adobe software up-to-data.
+\adobe\acrobatreader.adobe
+in this example, a scheduled task will be created and set up thus: task name: adobe acrobat reader updater executable: %appdata% the orchestrator will copy the loader received through the named pipe to this location task description: this task was generated by adobe systems, inc to keep your
+adobe software up-to-data task folder: \adobe\acrobatreader.adobe last but not least, the task is confgured to be started by the task scheduler at any time after
+its scheduled time has passed. the task will be triggered when the current user logs on.
+5: linkautorun
+this persistence method modifes existing lnk fles to execute the malware through .
+for each lnk fle in the folder given in the resource, the icon and arguments are removed
+and the path is set to with the argument set to:
+/q /c start %s && start %s in most of the samples we analyzed, the confguration fle specifed that the taskschedulerautorun
+persistence method should be used.
+logs
+all three gazer components log their actions into logfles. they are encrypted with the same
+algorithm: 3des.
+in some versions of gazer, it is easy to retrieve these logfles because their flenames are hardcoded
+into the binaries: %temp% .cvr: the logs from the loader %temp% .cvr: the logs from the orchestrator %temp% .cvr: the logs from the communication module
+each logfle is structured in the following way: [logsize][decryption_key][encrypted_log] logsize: when this value (2 bytes) is subtracted from the magic value 0xf18b, it gives
+the encrypted log size decryption_key: when this 12 bytes blob is xored with another hardcoded key of 12 bytes,
+it gives the 3des key that can be used to decrypt the log encrypted_log: log encrypted with the 3des algorithm in cbc mode
+once decrypted, each log entry is formatted in the following way:
+note that in older gazer versions, the log id was replaced by the name of the current function.
+we believe that this log id is an id for the function where the log occurs.
+working directory
+using the windows registry
+all the fles related to gazer (except the logs) are stored encrypted within the registry. the orchestrator s
+resource 109 contains the root storage path (it will be designated %rootstoragepath% in the rest
+of this paper). in every sample we examined, this resource pointed to the same storage path:
+hkcu\software\microsoft\windows\currentversion\explorer\screensaver
+if this resource is empty, the registry key above is used by default. except for rsa keys, all the data
+in the storage is encrypted2.
+using alternate data streams
+if it is not possible to access the registry, these confguration items are stored using alternate
+data streams.
+the function getvolumeinformation is called to ensure that the volume c:\ supports named
+streams in order to use ads.
+the same guids as above are used to hide the di erent data in an ads for the fle (hardcoded
+in the binary): %temp% for example, here is the full path to access the object id:
+%temp% :{1dc12691-2b24-2265-435d-735d3b118a70}
+orchestrator
+gazer resources
+the gazer-related fles are stored in the orchestrator s resources.
+file format
+encryption
+except for resources 101 and 102 which are rsa keys, every resource is compressed with bzip
+and encrypted with 3des.
+[rsaencryptedblob][signatureblob][3desblob] rsaencryptedblob: the frst 1024 bits of the data is a blob that contains a 3des key. this blob
+is encrypted using rsa and can be decrypted using resource 101. signatureblob: the second part of the data is a blob of 1024 bits containing the signature
+of the last part of the data once decrypted. 3desblob: the last part is the e ective data, which is encrypted with the 3des key from
+the frst blob.
+each resource is decrypted on the y; the signature is compared with the decrypted data to check
+the integrity. decrypted resources that pass this integrity check are encrypted with a new rsa key
+generated randomly by the orchestrator code. the private key and the encrypted resource are then
+stored in the registry under a specifc guid subkey.
+resources listing 101: rsa private key. it is used to decrypt the other resources. 102: an rsa public key. 103: empty 104: unknown 105: store the persistency information 106: the list of processes to use to try to inject the communications module 107: c&c communication dll 108: c&c server list 109: gazer working directory path 110: plugins list 111: local transport information
+task execution
+when a task is retrieved from the c&c, it is either executed by the infected machine or by another
+computer on the same network through a p2p mechanism (in the same way this was done
+in carbon and snake).
+the task can be: fle upload fle download confguration update command execution
+the result of the task is stored in a queue and forwarded to the module that communicates
+with the c&c server when access to the internet is available.
+classes hierarchy
+the malware is written in c++ and the rtti that contains information about the objects used
+in the code is not overwritten.
+there are 5 abstract classes that have several implementations.
+communication module
+the communication module is used to retrieve tasks from the c&c server and to dispatch them
+to the orchestrator.
+this library is injected into a process which can legitimately communicate over the internet.
+the injection library is the same as the one found in the loader to inject the orchestrator
+into .
+communication initialization
+if a proxy server exists, it is retrieved and used by gazer to make the http requests. there are two
+di erent methods used to retrieve this value, either by requesting the following registry key:
+hkcu\software\microsoft\windows\currentversion\internet settings
+or through the function internetqueryoption with the ag internet_option_proxy if the proxy
+server cannot be retrieved through the registry.
+the system user agent is then set up: the default value of the hkcu\software\microsoft\windows\current version\
+internet settings\user agent key is retrieved; the value keys under hklm\software\microsoft\windows\current version\internet
+settings\5.0\user agent\post platform are enumerated and those that contain
+the sub-string ieak are concatenated with the user agent string from the previous step; in the case that no user agent was found in the registry, the hardcoded ua mozilla/4.0
+(compatible; msie 6.0) is used
+before attempting any contact with the c&c server, the internet connection is checked by trying
+to reach the following servers one by one until one returns a http status code 200:
+c&c server communication
+the malware communicates with its c&c server to retrieve tasks (through http get requests)
+and to send the tasks results (through http post requests).
+before sending a request to the c&c, the command cmc_give_settings is sent to the orchestrator
+through its communication channel (a named pipe, more on this in the next section). the message
+(msg) contained in the packet in this case is a single byte set by the orchestrator for the command
+result status.
+the orchestrator replies on the same channel with the settings retrieved from the working directory
+with the object id, the list of the c&c servers and the last connection date.
+a get request is performed to retrieve a task from the c&c.
+the parameters of the get request are chosen from amongst a hardcoded list of keywords that does
+not look suspicious. their values are generated randomly in the charset [a-z0-9] with a random size
+from a range given for each parameter: id [6-12] (as with all other parameters, if this parameter is used in the request, it will have a random
+value (of letters and digits) with a random size between 6 and 12 characters.)
+a timeout of 10 minutes is set for each request (send/receive/connect) through internetsetoption.
+once the request is sent, the response is handled only if the returned http status code is 404.
+the content of the response is encrypted and can be decrypted with the private rsa key generated
+by the orchestrator. the response body contains a blob of data and an md5 hash of the data. the blob
+is hashed and compared to the md5 to ensure the integrity of the server s response.
+if the response size is 20 bytes (a blob of 4 bytes + the hash), there are no tasks to retrieve.
+a command cmc_take_task is sent to the orchestrator with the encrypted task received from
+the c&c server and its size. the orchestrator will be in charge of executing the task and will send
+the results to the communication module. once the blob of the tasks results (encrypted by the
+orchestrator) is received, it is sent to the c&c server through a post request in the same way
+that it was done for the get request (using parameters with random values).
+messages between components
+a global named pipe is used for the communication between the di erent components. the data
+sent through this named pipe is formatted in the following way:
+0 31 48
+datatype id_cmd msg
+figure 3. message format datatype: the same constants are used for the resources (check the file format entry
+in the resources section ) id_cmd: the command name (check below for a complete list) msg: the data to be sent
+here is a listing of the di erent commands: cmc_take_task (id_cmd: 1) when a task is retrieved by the c&c server module, it is sent to the orchestrator,
+which stores the task in the task queue. cmc_take_loader_body (id_cmd: 2) wipe gazer s original loader fle, clean persistency and set up a copy of the loader
+and its persistency according to one of the resources (check persistency part for details). cmc_give_result (id_cmd: 4) when this message is received, the orchestrator will retrieve the task s result from
+the result queue, compress and encrypt it using the server s public rsa key (the one
+from the resource 102) and send the blob to the communication module which will send
+the whole result to the server through a post request. cmc_give_settings (id_cmd: 5) the communication module sends this message to the orchestrator to request
+the information needed to contact the server (list of the servers to contact, the last
+connection time and the victim id). cmc_take_confirm_result (id_cmd: 6) when the communication module sends a task s result to the server, a message is sent
+to the orchestrator that will remove the task s result from the queue. cmc_take_can_not_work (id_cmd: 7) when an operation has failed (for example, if the communication module cannot correctly
+parse the data received from the orchestrator), this message is sent to the orchestrator
+with the last error code. the error code will be added to the logfle. cmc_take_uninstall (id_cmd: 8) used to wipe a fle from the disk. cmc_take_nop (id_cmd: 9) no operation cmc_no_connect_to_gazer (id_cmd: 0xa) this command is sent to the orchestrator when the communication module cannot
+contact any of the servers. in this case, if a pending task s results are in the queue,
+they are stored encrypted in gazer s storage. cmc_take_last_connection (id_cmd: 0xb) this command is sent from the communication module to the orchestrator each time
+a connection is established to the c&c server. it contains a structure systemtime (flled
+with the current system time). once the message is received by the orchestrator,
+the last connection date is stored compressed and encrypted in the gazer storage
+(either the registry or ads). cmc_give_cache / cmc_take_cache (id_cmd: 0xc / 0xd) not implemented
+gazer versions
+four di erent versions have been identifed.
+in the frst version, the function used to write logs has as its parameter the real function name
+where the log occurs. there were also di erent methods used to inject code (the one documented
+in this whitepaper and one based on window injection).
+in a second version, the function names used as parameters are replaced by an id and only one method
+is used for code injection. also, the string no old methods appears in this part of the code.
+some samples from the frst versions were signed with a valid certifcate issued by comodo for solid
+loop ltd . the compilation date appears to be 2002 but is likely to be faked because the certifcate
+was issued in 2015.
+the latest versions are signed with a di erent certifcate: ultimate computer support ltd .
+figure 4. certifcates used to sign the malware variants
+some e orts have been made to obfuscate strings that can be used as iocs. the mutex name and
+the named pipe do not appear in cleartext anymore; they are now encoded with a xor key. on the
+previous versions, the logfle names were hardcoded in the binary. the function gettempfilenamea
+is now used to generate a random flename. the c&c server returns a 404 or 502 status code page,
+whereas it was only a 404 in the previous versions.
+in the latest versions compiled in 2017, the log messages are di erent (although they have the same
+meaning). for example: pe storage is replaced by exe shelter , pe crypto by exe
+cipher etc last but not least, the compilation timestamp seems not to be faked anymore.
+in conclusion, gazer is a very sophisticated piece of malware that has been used against di erent
+targets in several countries around the world. through the di erent versions we found and analyzed,
+we can see that this malicious backdoor is still being actively developed and used by its creators.
+indicators of compromise can also be found on github. for any inquiries, or to make sample submissions related
+to the subject, contact us at: threatintel@ .

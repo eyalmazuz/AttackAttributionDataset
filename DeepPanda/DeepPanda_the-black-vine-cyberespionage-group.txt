@@ -1,0 +1,328 @@
+security response black vine has been actively conducting cyberespionage
+campaigns since 2012 and has been targeting several
+industries, including aerospace, energy, and healthcare. overview
+in early 2014, anthem was a victim of an attack that exposed 80 million patient records.
+the breach, which came to light in february 2015, is believed to be the work of a wellresourced cyberespionage group which symantec calls black vine.
+anthem wasn t black vine s only target. black vine has been actively conducting its
+campaigns since 2012 and has been targeting several industries, including aerospace,
+energy, and healthcare. the group has access to zero-day exploits distributed through the
+elderwood framework and has used these exploits as the same time that other advanced
+attack groups have, such as hidden lynx.
+black vine typically conducts watering-hole attacks against websites that are relevant to
+its targets interests and uses zero-day exploits to compromise computers. if the exploits
+succeed, then they drop variants of black vine s custom-developed malware: hurix and
+sakurel (both detected as trojan.sakurel), and mivast (detected as backdoor.mivast). these
+threats open a back door on the compromised computers and allow the attackers to steal
+valuable information.
+based on our own analysis of the campaigns, along with support from open-source data,
+symantec believes that some actors of black vine may be associated with an it security
+organization based in beijing called topsec. introduction the discovery
+of the database
+queries soon
+led anthem to
+realize that it
+was under attack
+from an advanced
+cyberespionage
+group. introduction
+on january 26, 2014, a systems administrator for the major healthcare provider anthem discovered that their
+account had been compromised to access sensitive data from an internal database. multiple queries had been
+run from the account, but the system administrator realized that someone else had executed the queries.
+the discovery of the database queries soon led anthem to realize that it was under attack from an advanced
+cyberespionage group. this attack is believed to be the largest healthcare data breach to date, resulting in the
+theft of over 80 million records. symantec refers to the group behind the attack as black vine.
+details of the breach emerged in early february 2015, when the public learned of the magnitude of the attack
+against the us second largest healthcare provider. the breach, conducted by black vine, has been one of the
+most highly publicized and reported attacks so far in 2015. however, this was only one of several of black vine s
+targeted campaigns, which spread across multiple industries.
+since 2012, black vine has been conducting targeted attacks against multiple industries, including the energy,
+aerospace, and healthcare sectors. the group uses advanced custom-developed malware, zero-day exploits, and
+other tactics, techniques and procedures (ttps) typically associated with highly capable, organized attackers.
+the purpose of this study is to document all of black vine s known attacks, beginning in 2012 and continuing
+to present day. connecting multiple black vine campaigns over time not only shows the group s previous
+operations, but also demonstrates how the adversary has evolved. the intent of this report is to help
+organizations better understand black vine, including its ttps, motivations, and its use of unique malware, and
+defend themselves against this threat. key findings
+after researching black vine s attacks over time, symantec identified the following key findings: black vine is responsible for carrying out cyberespionage campaigns against multiple industries, including
+energy, aerospace, and healthcare. black vine conducts watering-hole attacks targeting legitimate energy- and aerospace-related websites to
+compromise the sites visitors with custom malware. black vine appears to have access to the elderwood framework, which is used to distribute zero-day exploits
+among threat groups that specialize in cyberespionage. black vine uses custom-developed malware and has resources to frequently update and modify its malware to
+avoid detection.
+the findings documented in this report lead symantec to believe that black vine is an attack group with working
+relationships with multiple cyberespionage actors. the group is well funded, organized, and comprises of at
+least a few members, some of which may have a past or present association with a china-based it security
+organization called topsec. targets black vine frequently
+conducts
+watering-hole attacks,
+which is when a
+legitimate website is
+compromised by an
+attacker and forced
+to serve malware to
+visitors of the website. targets
+over the course of the black vine investigation, symantec identified a number of targeted companies across
+several verticals. analysis of attack data alone is misleading, due to black vine s attack vectors. black vine
+frequently conducts watering-hole attacks, which is when a legitimate website is compromised by an attacker
+and forced to serve malware to visitors of the website. as a result, an analysis of compromised computers alone
+does not portray an accurate picture of black vine s targeting objectives. instead, this shows us the industries
+with the highest infection rates of black vine s malware.
+based on an analysis of
+symantec s telemetry
+data, the following
+industries have been
+affected by black vine s
+activity: aerospace healthcare energy (specifically,
+gas and electric
+turbine manufacturers) military and defense finance agriculture technology
+to further determine
+black vine s intended
+target industries,
+symantec assessed
+the companies who
+own the affected
+websites. symantec also
+investigated attacks
+believed to have been
+figure 1. black vine victims by region
+conducted by black vine
+which didn t involve
+watering-hole attacks. after assessing multiple attack verticals, symantec believes that black vine s primary
+targeted industries have been aerospace and healthcare. it is likely that other industries that were affected by
+these attacks may have been secondary targets.
+black vine s targets are spread across several regions, based on the ip address locations of the compromised
+computers. the vast majority of infections affected companies in the us, followed by china, canada, italy,
+denmark, and india. attackers resources
+black vine appears to have access to a wide variety of resources to let it conduct multiple simultaneous attacks
+over a sustained period of time. these resources include the development of custom malware, access to
+zero-day exploits, and attacker-owned infrastructure. funding and resourcing for sustained cyberespionage
+campaigns against such a breadth targets can only be obtained through large public entities or privately owned
+organizations.
+our analysis showed three major variants of black vine s custom malware used in activity that we attribute
+to the attack group. the three variants of custom-developed malware are known as hurix and sakurel (both
+detected as trojan.sakurel), and mivast (backdoor.mivast). these variants are believed to have been created by
+the same malware author(s) and use some of the same code and resources. for example, hurix and sakurel have
+the following similarities: both hurix and sakurel gather the computer name of the target and encrypt data using the same algorithm. this algorithm uses division and addition with static variables 1ah and 61h. the location of the algorithm in each threat is as follows: similar data and parameters exist in the network communication parameters: both variants use the parameter type which is initialized with zero value. both variants use a parameter that contains the same data, as seen below:
+equivalent of the hard disk serial number)
+all three variants of black vine s malware have the following capabilities: open a pipe back door execute files and commands delete, modify, and create registry keys gather and transmit information about the infected computer
+the following unique traits were identified in the url patterns seen in network communication requests
+between the malware and command-and-control (c&c) infrastructure from each variant: in most cases, the malware is made to look like a technology-related application. some of the themes used to
+disguise the malware include media center, vpn, and citrix applications. the c&c server or malware-hosting
+domain is also themed similarly to the malware s disguise. for example, in one instance, a sakurel sample was
+named (md5:1240fbbabd76110a8fc&c9803e0c3ccfb). the c&c domain that the malware
+communicated with used a citrix theme: additionally, most of the analyzed malware samples have been digitally signed by korean software company
+dtoptoolz co or embedded software product developer micro digital inc. symantec has observed that the
+dtoptoolz co certificate has been used to sign a malicious binary in adware and malvertising campaigns which
+are unrelated to black vine activity. both of the digital certificates previously used to sign black vine s malware
+have either expired or been revoked. the details on both of the certificates are as shown in figures 2 and 3. campaigns in all of the
+investigated black
+vine campaigns,
+the primary
+objective has been
+to gain access
+to their targets infrastructure and
+steal information. campaigns
+the earliest known attack that symantec attributes to black vine began in 2012. since then, symantec has
+observed black vine conducting multiple targeted campaigns. in all of the investigated black vine campaigns,
+the primary objective has been to gain access to their targets infrastructure and steal information. energy
+in late december 2012, security researcher eric romang published a blog, reporting that gas turbine
+manufacturer capstone turbine became a victim of a watering-hole attack. symantec s investigation confirmed
+romang s findings that during the attack, capstone turbine s legitimate domain, , was
+serving an exploit for a zero-day bug known as the microsoft internet explorer cdwnbindinfo use-after-free
+remote code execution vulnerability (cve-2012-4792). users who browsed capstone s website using vulnerable
+versions of internet explorer at the time were ultimately compromised with the sakurel payload. sakurel
+provided black vine with access to the compromised computers and their information. as previously mentioned,
+the sakurel sample seen in this attack was digitally signed by micro digital inc.
+details about the sakurel malware samples associated with the attack are as follows: additionally, the c&c domain used in the attack, , may be a typo-squat domain designed to
+pose as the legitimate domain . the legitimate website belongs to vipecloud, which provides
+sales and marketing automation as a service. this could be a coincidence or re-used infrastructure from other
+unknown attacks. however, the domain was registered on december 10, 2012, just two days after the sakurel
+samples that were used in energy-related attacks were compiled. regardless, the c&c server theme is not
+constant with themes we would expect to see with energy-related targets. capstone turbine is a us-based gas turbine manufacturer which specializes in micro turbine power along
+with heating and cooling cogeneration systems. capstone turbine s intellectual property in the research and
+development of energy and power technologies is likely what made it a target for cyberespionage.
+on december 24, 2012, black vine targeted a second turbine power and technology manufacturer. while the
+details of this attack cannot be publicly disclosed, sakurel was also used in this attack. considering how back
+vine conducted multiple waves of zero-day attacks and targeted turbine manufacturers, it s likely that the attack
+group s primary targeted industries at the time were involved in energy-related technologies. aerospace
+in mid-2013, a third-party blog documented how a citrix-themed lure was used in targeted attacks against a
+global airline to deliver the hurix malware. according to the blog, the malware was delivered through spearphishing emails sent to specific employees at the airline. the emails included a url that directed the user to
+download hurix to their computer. unfortunately, symantec did not have access to the data needed to validate
+the claims made in the blog. we are including a high-level summarization of the attack for documentation
+purposes.
+in february 2014, black vine compromised the website of a european aerospace company. the attackers gained
+access to the organization s domain and leveraged its home page to compromise the website s visitors. the
+watering-hole attack was likely conducted to target more people in the aerospace industry. similar to the attacks
+against energy-related targets in 2012, the attackers exploited a new zero-day bug known as the microsoft
+internet explorer use-after-free remote code execution vulnerability (cve-2014-0322). the payload of the
+attack was an updated version of sakurel. details on the sakurel sample identified in the attack are as follows:
+once the victim was infected, sakurel made the following network call to the c&c domain : black vine likely created the domain to disguise it as the legitimate or , owned by aerospace and defense contractor ametek.
+during our investigation of black vine s aerospace-related attacks, symantec discovered that the group used an
+unusual tactic. after the sakurel payload was initially run on the victim s computer, the malware made changes
+to the victim s host file. the host file is normally used by the windows operating system as a mechanism to
+statically map a domain to an ip address, rather than using a network-based domain name system (dns) lookup.
+oddly, black vine s modifications to the host file added static entries resolving the legitimate domains to their
+legitimate ip addresses.
+altering a host file to map a domain to its legitimate ip address is unusual, because the default dns requests
+would provide the same mapping. this type of tactic would usually be seen in instances where an attacker
+wanted to redirect a legitimate domain to their own malicious infrastructure in order to steal credentials or
+infect the target with additional malware. however, altering the host file on the infected computer could allow
+the victim to discover that their computer had been compromised. table 1. domains and ip addresses added to modified host files
+domain
+ip address the sakurel samples seen in black vine s
+attack against one aerospace industry victim
+modified the victim s host file to redirect the
+legitimate urls and ip addresses in table 1.
+while investigating this attack, multiple
+aerospace-themed domains were discovered
+which could be traced back to black vine.
+the domains and gifas. were used sometime between late
+january and mid-february 2014. additionally,
+symantec and multiple third-party sources
+previously reported that these domains were
+used in targeted attacks against the aerospace
+industry.
+the malicious domain was
+secure.[ victim domain]
+217.108.[removed]
+likely created to disguise it as the legitimate
+european aerospace industry association
+website . during the time of this investigation, the gifas. domain was being used to deliver
+malware and the referring page was www.savmpet .com.
+the numbers of concurrent attacks conducted by black vine against organizations within the aerospace industry
+are unknown. however, symantec assesses with moderate confidencebelieves that multiple targeted campaigns
+took place in early to mid-2014. targeted cyberespionage operations against aerospace-related organizations
+with custom malware and the use of zero-day exploits fit the ttps typically associated with a well-funded public
+or private organization attacker. healthcare
+in february 2015, a major cyberespionage campaign targeting the healthcare industry was publicly disclosed.
+the breach involved healthcare company anthem, which was affected by an attack that led to the exposure of
+over 80 million patient records. initial reports claimed that anthem identified the breach on january 26, 2015,
+when a system administrator discovered that a database query had been run with their own credentials without
+their knowledge. shortly after this discovery, anthem realized the magnitude of the breach, which likely began in
+may 2014. based on the samples analyzed in our investigation, symantec identified that the black vine malware
+variant known as mivast was used in the
+anthem breach. other third-part vendors table 2. domains disguises as healthcare and technology companies
+also cited mivast as the malware used in
+domain
+registrant address
+date created
+the anthem attack.
+similar to other black vine attacks,
+the dtoptoolz co digital signature
+was used to sign the mivast binary.
+additionally, the attackers used multiple
+domains designed to pose as healthcareand technology-related organizations
+in this breach. these domains were
+identified on black vine s infrastructure,
+as detailed in table 2.
+black vine does not usually register domains with the same email address. the registrant address li2384826402@ appears to belong to a domain reseller and is likely not directly associated with
+black vine. it is unclear what
+mechanisms were used to
+deliver the malware. it is likely that the threat was delivered through spear-phishing emails, since a wateringhole attack was never seen or reported in the breach. the malware itself was disguised using citrix and juniper
+vpn lures, indicating that the initial attack may have been aimed at anthem s technical staff. who is behind black vine?
+we analyzed the group s infrastructure, resources, and attack patterns in order to find out who the black vine
+attackers could be and what their motivations are. we also researched open source data, which suggests that
+some actors of black vine may be associated with a beijing-based company known as topsec. topsec association
+a blog from threat connect noted that the registration information for infrastructure used in the anthem
+breach leads back to a chinese origin. infrastructure associated with the mivast malware sample (md5:230d8
+seen in the anthem attacks resolved to ip address . the
+domain was one of only a few
+domains hosted on this
+ip address close to the
+same time frame that
+mivast accessed c&c
+infrastructure hosted on
+the same ip address.
+the topsec2014.
+com domain can be
+traced back to the
+registrant address
+topsec2014@ ,
+which is believed to
+be associated with the
+similar email address
+topsec_2014@ .
+the topsec2014 domain
+and the previously
+mentioned email
+addresses are associated
+with an organization
+called topsec.
+figure 4. details on the topsec network security & technology company
+topsec is a company
+that began as a research
+institute in beijing and
+has since expanded to nearly every province of china. the organization focuses on security research, training,
+auditing, and products. its customers include private businesses as well as public agencies. it also hosts an
+annual hacking competition known as the topsec cup and has reportedly hired known hackers to provide
+security services and training. zero-day access and distribution
+multiple black vine campaigns have exploited previously unknown zero-day vulnerabilities to deliver the group s
+custom payload. zero-day exploits typically require attackers to have an advanced skillset to identify and then
+determine how to exploit the unheard-of vulnerability. generally, these exploits can be purchased through
+underground networks or may be created by specialized exploit developers. both approaches require access to
+extensive financial resources.
+in the case of black vine, symantec has identified a pattern between this attack group s activity and other
+cyberespionage-related campaigns. these campaigns were seen using the same zero-day exploits but delivering
+a different payload. there appears to be shared access to zero-day exploits, which are distributed and used
+within days of one another among different attack groups, as the diagram in figure 5 shows. concurrent cve-2012-4792 zero-day exploits
+in late december 2012, the council on foreign relations (cfr) website was compromised. the domain was
+reported as serving an exploit against an unknown vulnerability found in internet explorer 6, which was
+eventually labelled cve-2012-4792. at the time of exploitation, there was no patch or remediation in place for
+the vulnerability, leaving victims using the vulnerable version of internet explorer helpless. once the unpatched
+vulnerability was exploited, the attackers delivered a variant of backdoor.bifrose to the victim s computer. based
+on symantec s previous findings, bifrose has been associated with another cyberespionage campaign. symantec
+does not believe that either this adversary or the cfr compromise is associated with black vine. figure 5. zero-day distribution and framework
+as mentioned previously in this report, in december 2012, the capstone turbine website was compromised by
+black vine. based on the first known instances where malicious code was spotted on both the cfr and capstone
+websites, the attacks began on or around the same week as one another.
+in both website compromises, the domains were serving exploits against the same internet explorer zero-day vulnerability (cve-2012-4792). the primary difference between the attacks was that the sakurel payload was
+delivered in the capstone attack while bifrose was distributed in the cfr attack. concurrent cve-2014-0322 zero-day exploits
+in february 2014, there was another instance of two attack groups sharing the use of a zero-day exploit to
+deliver different payloads. between february 11 and february 15, 2014, the websites of the us veterans of
+foreign wars ( ) and the home page of a large european aerospace manufacturer both became victims of
+watering-hole attacks. similar to the 2012 attacks, the sites were forced to redirect to an exploit for a previously
+unknown zero-day vulnerability in internet explorer (cve-2014-0322) in order to deliver a malicious payload.
+in the attack, the delivered payload was a variant of backdoor.moudoor. moudoor has been used in
+targeted attacks by a group previously reported by symantec, referred as hidden lynx. the attack against
+the aerospace manufacturer took place simultaneously with the vfw attack and exploited the same zero-day
+vulnerability. the payload in the aerospace watering-hole attack was black vine s sakurel malware. elderwood link
+the simultaneous attacks between different attack groups seen in 2012 and 2014 exploited the same zero-day
+vulnerabilities at the same time, but delivered different malware. the malware used in these campaigns are
+believed to be unique and customized to each group. however, the concurrent use of exploits suggests a shared
+access to zero-day exploits between all of these groups. symantec has previously identified the platform that
+has been used to deliver zero-day exploits to multiple attack groups as the elderwood framework.
+previous attacks exploiting zero-day vulnerabilities sourced from the elderwood framework are believed to have
+originated from attackers based in china. attribution
+black vine appears to have access to resources to develop and update its own custom malware, and obtain
+zero-day exploits for its targeted attacks. this access and capability suggest that black vine is well funded and
+resourced. black vine s continuous campaigns against targeted industries, beginning in late 2012, fit the ttps
+associated with organized cyberespionage actors.
+certain black vine infrastructure seems to be associated with the beijing-based security organization topsec.
+the relationship with black vine and topsec provides evidence of the past or present geography of at least some
+actors involved in this group s activity.
+access to the elderwood framework is another indicator that black vine is in working relationships with actors
+associated with widely reported cyberespionage attacks over the past several years. along with this, black vine
+has been observed using elderwood-distributed zero-day exploits simultaneously with other threat actors. conclusion many of the
+campaigns analyzed
+by symantec have
+been targeted
+attacks against the
+energy, aerospace,
+healthcare, and
+other industries. conclusion
+black vine has been conducting its attacks since at least 2012. many of the campaigns analyzed by symantec
+have been targeted attacks against the energy, aerospace, healthcare, and other industries. black vine
+used three variants of malware throughout the years known as hurix, sakurel, and mivast. all three variants
+originated from one malware family that was likely created and updated by the same author or developer. each
+variant has been updated to add features and is re-hashed to avoid detection.
+in a number of attacks, the malware has been delivered onto the victim s computer after black vine has
+exploited a zero-day vulnerability primarily through watering-hole attacks. the zero-day exploits used in these
+attacks are believed to have been distributed through the elderwood distribution framework. additionally, the
+goal of all analyzed black vine campaigns has been cyberespionage.
+the anthem attack is one the most publicized and damaging attacks against the us health industry. however,
+the healthcare industry is only one of several large cyberespionage-based campaigns conducted by black
+vine. as outlined in the findings of our investigation, black vine has also attacked the aerospace and energy
+industries. by investigating and documenting the ttps, malware, targets, and exploits used in these attacks over
+time, symantec hopes to shed light on the history of the black vine attack group.
+symantec s goal in creating this report is to provide an assessment of this attack group to help organizations
+better understand the attackers and their motivations. knowing the signs to identify black vine s activity will
+help analysts build better defenses and allow decision-makers to react to black vine attacks more effectively.

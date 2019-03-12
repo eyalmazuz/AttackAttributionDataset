@@ -1,0 +1,675 @@
+
+poison ivy: assessing damage and
+extracting intelligence security
+reimagined executive summary
+remote access tools (rats) may be the hacker s equivalent of training wheels, as they are
+often regarded in it security circles. but dismissing this common breed of malware could
+be a costly mistake. despite their reputation as a software toy for novice script kiddies, rats remain a linchpin of many sophisticated cyber attacks.
+requiring little technical savvy to use, rats offer unfettered access to compromised
+machines. they are deceptively simple attackers can point and click their way through
+the target s network to steal data and intellectual property. but they are often delivered
+as key component of coordinated attacks that use previously unknown (zero-day)
+software flaws and clever social engineering. even as security professionals shrug off the
+threat, the presence of a rat may in itself indicate
+a targeted attack known as an advanced
+persistent threat (apt). unlike malware focused
+on opportunistic cybercrime (typically conducted
+by botnets of comprised machines), rats require
+a live person on the other side of the attack.
+this report spotlights poison ivy (pivy), a rat
+that remains popular and effective a full eight
+years after its release, despite its age and
+familiarity in it security circles. in conjunction
+with the study, fireeye is releasing calamine, a
+set of free tools to help organizations detect and
+examine poison ivy infections on their systems.
+poison ivy has been used in several high-profile
+malware campaigns, most notoriously, the 2011
+compromise of rsa securid data. the same year,
+poison ivy powered a coordinated attack dubbed
+nitro against chemical makers, government
+agencies, defense firms and human-rights groups. several ongoing cyber attack campaigns use
+poison ivy, including these:
+admin@338 active since 2008, this
+campaign mostly targets the financial
+services industry, though we have also seen
+activity in the telecom, government, and
+defense sectors. th3bug first detected in 2009, this
+campaign targets a number of industries,
+primarily higher education and healthcare. menupass also launched in 2009, this
+campaign appears to originate from china,
+targeting u.s. and overseas defense
+contractors. understanding why poison ivy remains one of the
+most widely used rats is easy. controlled through
+a familiar windows interface, it offers a bevy of
+handy features: key logging, screen capturing,
+video capturing, file transfers, password theft,
+system administration, traffic relaying, and more. and poison ivy is so widely used that security
+professionals have a harder time tracing attacks
+that use the rat to any particular attacker. by tracking the pivy server activity, security
+professionals can find these telltale indicators:
+we hope to eliminate some of that anonymity with
+the fireeye calamine package. the package,
+which enables organizations to easily monitor
+poison ivy s behavior and communications,
+includes these components: the domains and ips used for command and
+control (cnc) the attacker s pivy process mutex the attacker s pivy password pivy callback-decoding tool (chopshop
+module) the launcher code used in the malware
+droppers ivy memory-decoding tool (immunity
+debugger pycommand script) a timeline of malware activity chopshop1 is a new framework developed by the
+mitre corporation for network-based protocol
+decoders that enable security professionals to
+understand actual commands issued by human
+operators controlling endpoints. the fireeye
+pivy module for chopshop decrypts poison ivy
+network traffic.
+pycommands, meanwhile, are python scripts that
+automate tasks for immunity debugger, a popular
+tool for reverse-engineering malware binaries.2
+the fireeye pycommand script dumps
+configuration information from a running pivy
+process on an infected endpoint, which can
+provide additional telemetry about the threat
+actor behind the attack.
+fireeye is sharing the calamine tools with the
+security community at large under the bsd
+2-clause license3 for both commercial and
+non-commercial use worldwide. the tools are
+available for download at the following locations: this report explains how calamine can connect
+these and other facets of the attack. this evidence
+is especially useful when it is correlated with
+multiple attacks that display the same identifying
+features.
+combining these nuts-and-bolts details with
+big-picture intelligence can help profile threat
+attackers and enhance it defenses.
+calamine may not stop determined attackers that
+use poison ivy. but it can make their criminal
+endeavors that much more difficult. introduction
+poison ivy is a remote access tool that is freely
+available for download from its official web site at
+www.poisonivy- . first released in 2005,
+the tool has gone unchanged since 2008 with v
+ersion 2.3.2. poison ivy includes features common
+to most windows-based rats, including key
+logging, screen capturing, video capturing, file
+transfers, system administration, password theft,
+and traffic relaying.
+poison ivy s wide availability and easy-to-use
+features make it a popular choice for all kinds of for more information about the bsd 2-clause license, see the open source initiative s template at http:// . but it is probably most notable for its
+role in many high profile, targeted apt attacks.
+these apts pursue specific targets, using rats to
+maintain a persistent presence within the target s
+network. they move laterally and escalate system
+privileges to extract sensitive information whenever the attacker wants to do so.4,5 because
+some rats used in targeted attacks are widely
+available, determining whether an attack is part of
+a broader apt campaign can be difficult. equally
+challenging is identifying malicious traffic to
+determine the attacker s post-compromise
+activities and assess overall damage these rats
+often encrypt their network communications after
+the initial exploit.
+in 2011, three years after the most recent release
+of pivy, attackers used the rat to compromise
+security firm rsa and steal data about its
+secureid authentication system. that data was
+subsequently used in other attacks.6 the rsa
+attack was linked to chinese threat actors and
+described at the time as extremely sophisticated.
+exploiting a zero-day vulnerability, the attack
+delivered pivy as the payload.7,8 it was not an
+isolated incident. the campaign appears to have s
+tarted in 2010, with many other companies
+compromised.9
+pivy also played a key role in the 2011 campaign
+known as nitro that targeted chemical makers,
+government agencies, defense contractors, and
+human rights groups.10,11 still active a year later,
+the nitro attackers used a zero-day vulnerability in java to deploy pivy in 2012.12 just recently,
+pivy was the payload of a zero-day exploit in
+internet explorer used in what is known as a strategic web compromise attack against
+visitors to a u.s. government website and a
+variety of others.13
+rats require live, direct, real-time human
+interaction by the apt attacker. this
+characteristic is distinctly different from
+crimeware (malware focused on cybercrime),
+where the criminal can issue commands to their
+botnet of compromised endpoints whenever they
+please and set them to work on a common goal
+such as a spam relay. in contrast, rats are much
+more personal and may indicate that you are
+dealing with a dedicated threat actor that is
+interested in your organization specifically. technical analysis
+build and implantation
+the poison ivy builder kit allows attackers to
+customize and build their own pivy server, which
+is delivered as mobile code to a target that has
+been compromised, typically using social
+engineering. once the server executes on a
+target s endpoint, it connects to a pivy client
+installed on the attacker s machine, giving the
+attacker control of the target system.
+the pivy server code can executed on the target
+endpoint in a number of ways, depending on how
+the attacker configured it. in the most common
+configuration, the pivy server divides its code
+into two parts: networking code the initialization and maintenance code is injected
+into the already-running process.
+depending on how the attacker configures it, the
+networking code launches a hidden web browser
+process (the system s default browser) and injects
+itself into that process. the networking code then
+remotely downloads (from the attacker s pivy
+client as shellcode) the rest of the code and data it
+needs for its features and functionality. the new
+code executes on the target s endpoint within the
+context of the target process. all of pivy s global
+variables, configuration details, and function
+pointers are stored in a c-style struct (data structure), which is also injected into the target
+processes in both the pivy networking code and
+initialization and maintenance code.
+this distinct characteristic has the side effect of
+having every call instruction and global
+variable address being referenced as an offset to
+a register when looking at the code s
+disassembly. the code injected into is peculiar in that, unlike most malware-injected
+code, this code is injected function by function each with its own memory region, filling in the
+proper function pointers in its struct. if the persistence pivy option is enabled, a watchdog
+thread is also injected into , which
+automatically restarts the pivy server process if
+it is unexpectedly terminated by the target s
+operating system. pivy s keylogging function, if
+enabled, is also injected into .
+command and control protocol figure 1: pivy server
+configuration details
+being reported to the
+pivy client figure 2: data and functions
+referenced as offsets to the struct
+pointed to by the esi register figure 3: injected
+functions in separate
+memory regions in figure 4: the
+persistence thread in can easily
+be killed from process
+explorer poison ivy features a complex, custom network
+protocol over tcp. most of this communication is
+encrypted using the camellia cipher with a 256-bit
+key.14 the key is derived from a password
+provided by the attacker when building the pivy
+server. the password, admin by default, can be
+provided in plain text or as hex-ascii. the
+password is zero-padded to 32 bytes (256 bits).
+the key is validated at the beginning of the tcp
+session with a challenge-response algorithm. the
+pivy server sends 256 bytes of randomly
+generated data to the pivy client which, in turn,
+encrypts the data using the key and sends it back
+to the pivy server for validation. much of the data
+sent throughout pivy s communications is also
+compressed before encryption using microsoft s
+lznt1 compression algorithm,15 which pivy
+utilizes through the windows rtlcompressbuffer
+api. the protocol operates by sending encrypted
+data in chunks that are prepended with the
+the pi_chunk_header structure is arranged as
+follows:
+command_id this member identifies which
+feature of pivy the chunked data is related to.
+stream_id this member identifies which stream
+this flow corresponds to. pivy s protocol supports
+sending multiple streams of data simultaneously.
+padded_chunk_size because camellia is a
+16-byte block cipher, padding is utilized in the
+headers and in the data chunks.
+chunk_size chunks are assembled into a stream
+of data that could be anything, such as a
+transferred file, shellcode to execute, a screen
+capture bitmap file, or raw data.
+decompressed_chunk_size if this size is different
+from the chunk_size, the chunk is compressed
+using lznt1.
+total_stream_size this member specifies the
+total size of the data being sent for the related
+command_id.
+padding this member specifies the zero padding
+(up to 32 bytes). figure 5: pivy initial
+communication
+protocol figure 6: pivy data
+chunks with headers calamine chopshop module
+the fireeye poison ivy decoder checks the
+beginning of each tcp session for possible pivy
+challengeresponse sequences. if found, the
+module will try to validate the response using one
+or more passwords supplied as arguments. if no
+password is supplied, it tries the default admin password. webcam, audio, keylog, and single screen
+captures are saved to disk when the -c option
+is used. the audio captures are saved as raw data that
+can easily be converted to .wav files u sing a
+tool such as sox.17 the decoder prints the
+sample rate, channel, and bit data. you can supply a single password in either
+plain-text form or hex-ascii form. for multiple
+passwords, you can specify a text file containing
+line-delimited passwords. if the decoder identifies
+valid initial pivy flows based on a supplied
+password, then the decoder decodes the rest of
+the relevant flow or flows. file and registry search details and results
+are displayed. the details of any network relays instantiated
+are displayed. active port listings are displayed. to use the fireeye chopshop module, you must
+install camcrypt, a python wrapper for an
+open-source implementation of the camellia
+encryption library.16 most of the features of pivy
+are covered to some extent in this module. this module partially supports decoding listings of
+windows files, the registry, services, processes,
+devices, and installed application listings. during
+pivy flow decoding, the module s default output
+indicates that listing requests have occurred and,
+when applicable, highlights which key or directory
+is being listed. note: if the pivy flows do not correspond to any
+supplied password, then decoding fails.
+fortunately, you can easily locate the custom pivy
+password if you have a compromised endpoint
+infected with pivy or a copy of the pivy server
+code, as explained in the section locating the
+pivy password with the calamine pycommand
+script. calamine chopshop usage notes
+calamine chopshop offers the following features
+and options:
+16
+files transferred to or from the pivy server
+are saved to disk when the -f option is used. directory listings are printed, but without file
+details. when the module is invoked with the -1
+option, all returned list data is saved to a file in raw
+for m, just as it is seen by the pivy client: a mixtur
+e of strings and binary data describing those
+strings. if you are interested in the details of what
+was listed, running the strings tool on raw file
+dumps is useful.
+if you encounter an unrecognized command or
+want to extend the functionality of this decoder,
+the -d option is useful. it prints hex dumps of all
+the headers and assembled streams in both
+directions, helping to analyze and build additional
+parsing functionality. locating the pivy password with the calamine
+pycommand script
+many attackers leave the default admin password unchanged. in this case, you can start
+using this decoder immediately. often, however,
+the attacker opts for better security by creating a
+unique password. but if you have access to the
+pivy-infected endpoint or to the pivy server
+executable, retrieving the password is easy. you
+can retrieve the password a number of ways,
+depending on your circumstance and preferences. 2. set breakpoints on the send and connect
+functions. if you prefer working with memory dumps, digital
+forensics expert andreas schuster has released a
+wonderful volatility plugin for pivy.18 volatility
+dumps most of pivy s useful configuration data,
+including the password, as shown at the volatility
+project page (http:// /
+source/browse/trunk/contrib/plugins/malware/ ?r=2833). 7. check the logs for the configuration details. if you have a malware-analysis environment setup,
+the calamine pycommand19 script for immunity
+debugger is quick and simple.18 the volatility
+plugin is available at https://www.volatilesystems.
+com/default/volatility.19 corelan team. starting to
+write immunity debugger pycommands : my
+cheatsheet. january 2010. 3. continue execution.
+4. wait for the execution to break.
+5. execute until return and step out of the
+function.
+6. run the pycommand. damage assessment
+to effectively assess the damage sustained in an
+attack, you must reconstruct the attacker s
+activities. depending upon the attacker s cleanup
+efforts, fully reconstructing their activities from
+host forensics alone may not be possible. but if
+pivy network activity is collected, the calamine
+chopshop module can help uncover this
+information.
+in the following example, we set up a test
+environment and executed commands typically
+run by attackers after they compromise a system
+with pivy and prepare to move laterally. then follow these steps to use the pycommand (these
+steps may vary in some situations):
+1. attach immunity debugger to the process pivy
+injects into (or to the pivy process itself if pivy
+does not inject). ump the password hashes on the endpoint
+to a file download a file containing the password
+hashes off the endpoint (to crack the target s
+passwords offline) take a screenshot of the target s desktop extracting intelligence
+apt activity is best described as a campaign a
+series of attacks over time. each individual attack
+within a campaign can be divided into the
+following phases:20,21,22
+reconnaissance exploitation cnc lateral movement exfiltration (or other malicious actions on the
+target) this assessment demands more than just malware
+analysis. it requires analyzing both the technical
+and contextual aspects of a breach and exploring
+competing hypotheses.23,24 these steps are
+important because investigators will always face
+visibility gaps limitations in knowing the
+geographic and industry reach of attacks or details
+of malware activity in some phases of the attack. poison ivy sample analysis each of these phases provides opportunities to
+derive threat intelligence about the adversary.
+over time, security professionals can acquire and
+analyze evidence to determine whether the
+attacks constitute malware-based espionage.
+such an assessment requires understanding these
+components of an attack: timing and targeting preferences exploits and malware network infrastructure scope of attackers activities within a
+compromised network (including stolen data) characteristics of the target population for this analysis, we collected 194 poison ivy
+samples used in targeted attacks between 2008
+and 2013. we extracted 22 different passwords
+and 148 mutexes. we also mapped out the cnc
+infrastructure, which comprised 147 domains and
+165 ip addresses.
+we analyzed these samples to better understand
+the tools, tactics, and procedures (ttps) of the
+attackers, explore campaign connections among
+them, and enable defenders to better secure their
+networks. in addition to clustering the samples
+based on technical indicators, such as the
+passwords and cnc information extracted from
+the samples, we also analyzed contextual
+indicators where possible, such as attackers targeting preferences and lures used in social
+engineering.
+sans computer forensics. security intelligence: defining apt campaigns. june 2010.
+sans computer forensics. security intelligence: attacking the cyber kill chain. october 2009.
+richard bejtlich. incident phases of compromise. june 2009.
+richard bejtlich. attribution is not just malware analysis. january 2010.
+jeffrey carr. mandiant apt1 report has critical analytic flaws. february 2013. each pivy server (the malware that the attacker
+sends to the target) can be configured to connect
+to multiple cnc servers using any tcp port. so
+seeing a pivy sample that attempts to connect to
+multiple cnc servers on different tcp ports is not
+unusual. but the most common ports used in
+targeted attacks are those associated with web
+traffic especially 443, the tcp port used for
+ssl-encrypted web traffic. table 1: common tcp ports
+used by pivy variants in apt
+attacks table 2: common process
+mutex seen in pivy variants
+attributed to apt attacks port 443 is a significant choice for two reasons.
+first, perimeter defenses must allow outbound
+traffic through this port so that users can access
+legitimate ssl-encrypted websites. second,
+because the traffic on port 443 is encrypted,
+pivy s encrypted traffic may bl end in with normal
+network activity. (many protocol-aware perimeter
+defenses, however, can detect and flag pivy
+traffic). tcp port used pivy sample count
+pivy process mutex pivy sample count the attacker can set the pivy process mutex
+name at build time.25 while some attacks use the
+default mutex of )!voqa.i4, most create a custom
+mutex for each attack. of the 147 mutexes in our
+sample set, 56 were designed for one-time use.
+if attackers create a unique password at build time
+rather than using the pivy default admin , that
+custom password is the most unique indicator.
+while threat actors may change passwords used
+over time, we have found that they often use the
+same one for significant periods. when combined
+with cnc data, the passwords used by the actors
+provide unique indicators that can be used to
+cluster related activity.
+clustering
+to cluster the activity of specific apt campaigns
+across our pivy sample set, we first grouped the
+pivy samples by common cnc infrastructure.
+using passive dns, we clustered the domain
+names used by the common ip address to which table 3: common pivy passwords
+seen in pivy variants attributed to
+apt attacks
+they resolved. because attackers may park their
+domains by pointing to ip addresses that they do
+not necessarily control (and to account for other
+possible anomalies in passive dns data), we
+layered additional indicators extracted from the
+samples, such as pivy passwords, mutexes,
+campaign marks/codes, 26 and launcher
+information.27 from our data set, we focused on
+three separate apt campaigns and corresponding
+threat actors identified by the pivy password
+used in subsequent attacks:
+admin@338 th3bug menupass each of these campaigns is detailed in the
+corresponding sections. pivy password pivy sample count admin
+keaidestone
+menupass
+suzuki
+happyyongzi
+a mutex is a windows object used for inter-process synchronization. they are often used by malware to ensure only one instance of the malware is running
+on an infected system at a given time.
+a campaign mark/code is typically a string designated by a threat actor that is often included as part of the malware communication and/or embedded within
+the malware binaries. it is used to identify targeted attack campaigns against a set number of targets (usually by industry), so the threat actor can keep
+attacks organized.
+launchers are malware built specifically to load other malware (payload), often by decrypting the payload and injecting it into a host process on the target s
+endpoint. to triangulate the timing (when the sample was
+likely used), we used the portable executable (pe)
+compile time extracted from the pivy samples and
+the date each sample appeared first appeared in a
+malwareanalysis services such as virustotal. each
+of these apt campaigns has been active from
+2008 through 2013.
+campaign 1: admin@338
+our data set for the admin@338 threat actor
+contains the following: figure 9: percent of admin@338
+apt group attacks by industry 21 poison ivy samples 3 passwords 43 cnc servers the earliest admin@338 pivy sample we have
+dates to december 27, 2009. but we believe that
+this campaign was active as early as january 7,
+2008, using other pivy passwords (key@123 and
+gwx@123). this ongoing campaign tends to target
+the finance, economic, and trade policy but we see
+significant activity in the isp/telco, government,
+and defense sectors as well. attack vector
+the preferred attack vector used by this campaign
+is spear-phishing emails. using content that is
+relevant to the target, these emails are designed
+to entice the target to open an attachment that
+contains the malicious pivy server code. figure 10: example spear-phishing
+email launched by the admin@338
+apt group wikipedia. gb 2312. february 2013. the content of the spear-phishing emails and the
+decoy documents opened after exploitation tend
+to be in english although the character set of the
+email message body in figure 10 is actually
+chinese (character set gb2312).28 weaponization
+this campaign has used weaponized microsoft
+word documents (cve-2012-0158),29 adobe
+acrobat pdfs (cve-2009-4324)30 and
+microsoft help files (.hlp) to drop pivy on their
+targets. clustering
+in addition to the pivy password admin@338, we
+clustered individual attacks by using passive dns
+data to look at the ip addresses the cnc servers
+have resolved to over time. we found that
+common ip addresses among pivy samples for
+admin@338, key@123 and gwx@123. the decoy documents that are opened in
+exploitation typically contain content that is
+contextually relevant to both the text of the
+spear-phishing email and to the interests of the
+intended target. the documents are legitimate but weaponized documents in english. figure 11: gb2312 encoding in
+spear-phishing email launched by
+the admin@338 apt group figure 12: contents of decoy
+attachments used by the
+admin@338 apt group this data indicates a relationship among the
+threat actors behind these attacks in most cases,
+they at least share a common cnc infrastructure.
+in addition to historic dns resolutions, pivy
+process mutexes suggest a relationship between
+pivy passwords gwx@123 and admin@338.
+although the mutexes of gwx@123, wwwst@
+admin, and admin@338 samples were different,
+the choice of characters in the mutex revealed a
+similar pattern. campaign 2: th3bug
+our data set for th3bug threat actor comprises
+the following: figure 14: linkage
+of admin@338 pivy
+samples by password
+and mutex figure 15: percent of
+th3bug apt group
+attacks by industry 14 poison ivy samples 2 passwords 9 cnc servers the earliest th3bug pivy sample we have is dated
+october 26, 2009. this ongoing campaign targets
+a number of industries but appears to prefer
+targets in higher education and the healthcare
+sectors. attack vector
+unlike the other two campaigns described in this
+report (admin@338 and menupass), th3bug does
+not appear to rely on spear phishing to distribute
+pivy. instead, attacks attributed to th3bug use a
+strategic web compromise to infect targets. this
+approach is more indiscriminate, which probably
+accounts for the more disparate range of targets. in the fireeye blog, we documented a recent
+th3bug strategic web compromise.31
+in the following example, the actor or actors
+behind the th3bug campaign compromised
+multiple websites that catered to the intended
+targets. the attacker used injected javascript on
+the compromised websites to redirect targets to
+an internet explorer exploit that dropped stage 1
+launcher/downloader mobile code. this
+downloader then retrieved and installed a pivy
+rat variant. figure 16: example of
+initial infection vector
+by th3bug apt group thoufique haq and yasir khalid. internet explorer 8 exploit found in watering hole campaign targeting chinese dissidents. march 2013. weaponization
+in related campaigns, th3bug has used a number
+of different java and internet explorer exploits,
+including (cve-2013-0422),32 (cve-20131347),33 and (cve-2011-3544).34 figure 17: example of rop exploit
+code used by th3bug apt group figure 18: cluster intel of the
+th3bug apt group the default pivy password of admin has been
+used by multiple, distinct threat actors so clearly,
+we cannot link all pivy samples with the admin
+password to th3bug. but evidence suggests that
+the attackers originally used the default password
+before settling on th3bug. we can link at least one
+pivy sample that uses the admin password to the
+th3bug campaign based on the following
+connections:
+the domain resolved to on january 12, 2012. the domain n also
+resolved to on january 3,
+2012. figure 19: partial
+cluster intel of the
+th3bug apt group
+(zoomed in) the sample
+connected to with the
+pivy password admin. the domain n also
+resolved to on december the domain resolved to the sample
+connected to domain with the
+pivy password th3bug. we found a smaller number of distinct pivy
+samples linked to th3bug than we did for the
+admin@338 and menupass campaigns. this
+paucity is likely a result of two factors.
+first, th3bug does not appear to stage a high
+volume of attacks. instead, it appears to run only a
+handful of strategic web compromise attacks
+each year. second, th3bug stages its delivery of
+pivy.
+so to acquire the second-stage pivy server
+payload, an attack must be observed in real time. campaign 3: menupass
+our data set for the menupass threat actor
+comprises the following: figure 20: percent of
+menupass apt group
+attacks by industry 118 poison ivy samples 8 passwords 61 domains 74 ip addresses the earliest menupass pivy sample we have is
+dated december 14, 2009. this sample
+connected to a control server at with a password xiaoxiaohuli (chinese translation: little little fox ). based on what we have found, it
+appears that the threat actor behind menupass
+prefers to target u.s. and foreign defense
+contractors. attack vector
+the menupass campaign appears to favor spear
+phishing to deliver payloads to the intended
+targets. the email shown in figure 21 shows a
+typical menupass spear-phishing attempt.
+while the attackers behind menupass have used
+other rats in their campaign, it appears that they
+use pivy as their primary persistence mechanism. weaponization
+the menupass campaign has used weaponized
+microsoft word documents (cve-2010-3333)35
+and zip files containing executable files to drop
+pivy directly onto its targets. figure 22 outlines
+several executables delivered in zip files attached
+to menupass spear-phishing emails. figure 21: example
+of spear-phishing
+email launched by the
+menupass apt group figure 22: example
+of weaponized,
+nested exes, used by
+menupass apt group clustering
+the menupass attackers favor using a launcher
+that masquerades as a microsoft foundation
+class library application36 using the document/
+view architecture. this launcher includes a packed
+copy of the pivy server that is subsequently
+unpacked and executed in memory shortly after a
+useless call to the findfirstfile api. out of the
+155 samples we collected f or menupass, 81 of
+them are mfc apps with a document class. out of
+these 81 mfc launchers, 64 use the cbricksdoc
+class name. we also found these names:
+some samples were packed into projects taken
+from the web and repurposed to serve as
+launchers.
+the most popular pivy password used by the
+menupass campaign is keaidestone (used in 35
+samples) followed by menupass (24 samples). the
+threat actor also used these pivy passwords in
+a number of ips in the /24 classless
+inter-domain routing (cidr) block have hosted
+domains used in the menupass campaign. we can
+see the connection between the keaidestone
+password and the xgstone password by
+observing the following connections in this same
+/24 cdir block: figure 21: example
+of spear-phishing
+email launched by the
+menupass apt group figure 24: partial
+cluster intel of the
+menupass apt
+group (zoomed in on
+menupass) similar to other threat actors, this threat actor has
+also used pivy samples using the default admin
+password. again, not all pivy samples with the
+password admin can be linked to menupass. but
+we can see the connection between the menupass
+and at least a couple of instances of pivy using the
+admin password via the following connections: the sample
+compiled on 2011-08-31 and connected to with the password menupass.
+the domain resolved to
+on november 22, 2012. this
+same ip also hosted the domain on
+the same date.
+the sample
+was compiled on june 9, 2012 and connected
+to with the password of admin.
+a number of menupass and admin samples
+also shared the same cbricksdoc launcher
+including but not limited to the password of fishplay can be linked to
+menupass by observing the following
+conclusion
+we cannot say with certainty why the actors
+responsible for the admin@338, menupass, and
+th3bug campaigns rely on poison ivy. but possible
+explanations include pivy s easy-to-use features
+and the relative anonymity that an off-the-shelf
+rat provides for attackers.
+compared to other rats, pivy is very easy to
+operate. its graphical user interface (gui) makes
+building new servers and controlling infected
+targets simple. attackers can point and click their
+way through a compromised network and
+exfiltrate data.
+commodity rats also complicate efforts by
+security professionals to correlate a threat actor s
+activity over time attackers can hide in the sea of
+malicious activity that also uses poison ivy-based
+malware.
+by exposing the role of pivy and other commodity
+rats in apt campaigns we hope to complicate
+attackers ability to hide behind these off-the-shelf
+tools and perhaps force them away from using
+these rats.
+in this report, we have provided several
+techniques that network defenders can use to not
+only identify a pivy infection, but also classify and
+correlate detected infections to previously
+observed apt activity.
+in the process of building their pivy servers,
+attackers leave a number of potentially useful
+clues, such as: the domains and ips used for cnc the chosen pivy process mutex the chosen pivy password launcher code used in the droppers timeline of activity targets of attack together, all of these data points can help
+effectively identify and correlate apt activity that
+uses the poison ivy rat. 

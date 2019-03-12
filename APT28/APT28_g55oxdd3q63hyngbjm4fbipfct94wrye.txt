@@ -1,0 +1,356 @@
+about the threat posed by russian hacking
+groups. besides well-known events such as
+the attacks against estonia, georgia, and ukraine;
+recent headlines have seen russian hacking syndicates
+credited with targeting nato officials at conferences,
+stealing hundreds of millions from banks, and
+successfully penetrating the white house unclassified
+computer network. the increase in cyber-exploits is
+also accompanied by a much more aggressive russian
+foreign policy, which has seen them invade ukraine
+and literally seize control of sovereign territory in
+crimea. so it should not surprise anyone that just
+as nuclear capable russian bombers are increasingly
+penetrating foreign airspace, their cyber-warriors
+appear to be ramping up their intrusions as well.
+but this time, perhaps for the first time, root9b has
+managed to find where they were hiding and identified
+effective defenses against their intended attacks. this is
+what happened in late april and early may of this year. our firm of cybersecurity experts, staffed by
+veterans from the united states department of
+defense, identified suspicious activity within one
+of our client s networks; a threat which on closer
+inspection bore the unique signature of a group of
+russian hackers well-known in the cyber-security 2 industry. as cyber threat analysts continued to
+follow the indicators, they uncovered a global
+attack in the making, and took steps to protect not
+only our clients, but other identified victims as well. sofacy, sednit, sourface, apt-28, and a host of other
+names are all used to describe this particularly prolific
+and superbly talented group of russian hackers, which
+has strongly suspected ties to russian intelligence
+services. in the last year alone russian hackers have
+reportedly stolen up to 900 million dollars from banks
+around the world. over the past three to five years
+they have built the largest botnets ever discovered, and
+stolen the log-in and password credentials to literally apt-28 may 10, 2015 root9b: the threat defiance report tens of millions of online accounts. well known for
+their ability to infiltrate and remain undiscovered
+in networks for long periods of time, they may be
+the most successful group of hackers in the world.
+whereas previous attacks have been attributed and
+analyzed only after they have run their course, this
+was the first and only known sofacy attack to be
+discovered, identified, and reported all before it
+could even begin! the analysts and tools that enabled
+this to happen are unique and proprietary. this report
+documents the first ever operation to use threat
+intelligence and adversary tactics to discover and
+reveal the prepositioning of sofacy zero-day malware.
+this document also
+includes the reporting of
+previously unknown malware indicators and hashes. the threat
+russian president vladimir putin recently described
+the internet as an invention of the cia. but the
+group most widely associated with his government
+dominates the world of industrial scale hacking. first
+discovered circa 2007 using security vulnerabilities in
+microsoft windows, sofacy has gone on to develop and
+launch truly enormous attacks exploiting numerous
+applications including adobe s acrobat, microsoft
+excel, and others. some attacks have focused on the
+sorts of targets that seem likely to be of interest to
+russian intelligence services. nato, defense industry
+corporations, and government domains of states
+opposed to russia on various issues have all been, at
+times, victims of sofacy. at other times large banks
+and private corporations have been hit hard by sofacy
+exploits, at a cost of hundreds of millions to the victims.
+sofacy s choice of targets has historically been an
+interesting mixture that has fueled an ongoing
+debate over whether the group is criminal in
+nature, or actually an agent of a nation-state. most
+cybersecurity analysts have concluded that the group s
+affiliation with the russian government is undeniable.
+but there are detractors. those who argue loudest
+against such assertions cite sofacy s prolific criminal
+profit as evidence that they are most likely not
+agents of the federal security service (fsb); while
+others suppose that the crimes committed bearing 3 sofacy s unique signatures is a perfect cover behind
+which the russian government prefers to remain.
+the defenders
+started in 2012 and staffed almost entirely by former
+united states department of defense civilians and
+military cyber-warriors, root9b brings a unique
+base of knowledge and experience to the task of
+securing corporate networks. this comes at a time
+when the demand for services is stronger than ever
+and increasing daily. calling on years of collective
+experience in positions that placed their analysts at
+the tip of the cyber-spear, root9b has developed a
+unique approach to the problem of cyber-defense.
+understanding that the present tools are failing at
+an alarming rate, they have developed methods and
+software applications which seek to augment, rather
+than replace, existing cyber-security defenses. the
+problem is not that traditional methods do not
+work. it is that hackers are becoming increasingly
+sophisticated and able to generate new threats faster
+than ever before. standard network security systems
+typically fail against what are known as zero-day
+threats. zero-day is a term that refers to a new kind
+of hacking exploit that has never been seen before,
+and is therefore not detected by standard virus and
+intrusion detection software. typically, such threats
+take an alarmingly long time to detect and eliminate,
+often more than a year. they were once relatively rare,
+because it takes a high degree of skill to develop and
+exploit them. the production and sale on the black
+market has increased exponentially in recent years,
+developing into a criminal industry that is placing
+online commerce, as well as national security, at
+growing risk. in the time between deployment of a
+zero-day and its eventual discovery and eradication,
+corporations can suffer enormous losses without
+even realizing that the threat was ever there. to combat threats, root9b realized that technology is
+not the problem. computers don t attack networks.
+people do, said root9b. you cannot build a better
+system to stop a determined human, you must think
+like the attacker and provide manned cyber defense
+operations as the new adaptive security posture.
+root9b operators and software developers designed apt-28 may 10, 2015 root9b: the threat defiance report and constructed proprietary methods of discovering
+and dealing with adversaries. with a network defense
+strategy of pursuit and deterrence in mind, root9b
+operators conduct active adversary pursuit (hunt)
+operations as a tailored solution for cyber security
+teams. working in concert with traditional network
+defense appliances that currently reside in our client s
+proprietary network, root9b s hunt platform delivers
+a pro-active defense protection capability to identify,
+pursue, and mitigate cyber threats. this approach was
+developed by root9b in order to leverage previously
+existing security products with client-specific threat
+intelligence and proprietary capabilities that can
+identify
+generate
+actionable intelligence, and install solutions with
+much greater speed and efficiency. vulnerabilities, sophisticated winning in advance
+during the end of april 2015, root9b analysts were
+conducting routine security analysis to explore and
+discover new and emerging cyber threats. threat
+analysts discovered what appeared to be a targeted
+spearfishing domain aimed at a financial institution.
+the server it was found on raised even more
+questions, because although security experts knew
+the server as a bad actor, it was generally associated
+with malware used in nation state attacks. as analysts
+continued their work they discovered several more
+pieces of new malware. the malicious code bore
+specific signatures that have historically been unique
+to only one organization, sofacy. this malware 4 was pointing at a spearfishing domain registered to
+impersonate a middle eastern financial institution
+and the domain registration details did not match
+normal sofacy operational signatures. that said, the
+malicious software certainly did. members of root9b s
+operations
+team conducted hunt operations,
+remotely deploying their live memory capability across
+the clients proprietary networks to analyze known
+techniques that can evade the most efficient security
+products on the market. root9b s capability parses live
+memory while the system is running and looks for
+indicators of advanced tactics such as code injection
+or security product bypassing. using a combination
+of standard industry tools and proprietary techniques
+our analysts began to develop a larger picture of what
+was taking place. immediately, root9b identified that
+preparations were being made for a larger scale attack
+similar to previous sofacy attributed exploits, and
+the attack was still in the preparatory stages. to our
+analysts, this was a rare opportunity. it is rare enough
+to learn of an attack of this potential magnitude in
+advance, but to have all of the information necessary
+to stop it before it begins is unprecedented, said an
+unnamed root9b analyst. evidence of intrusion within client networks pointed
+to a specific server, , that had been
+previously linked to malicious activity and identified
+by other security firms as part of the infrastructure
+utilized by the sofacy group. analysts studied the
+remaining domains registered on that server, and
+initially noted that one in particular, cbiuaebank. apt-28 may 10, 2015 root9b: the threat defiance report com, appeared to be a fake version of ,
+the actual domain of the website of commercial
+bank international of the united arab emirates.
+further analysis lead to even more suspicion, and
+those suspicions grew even stronger as they watched
+another comparable domain created, cbiuaebn.
+com. as analysts passively monitored carbon2u.
+com, they observed as the apparent fake domains
+they were monitoring migrated to other servers; first
+to and later to .
+this gave analysts two more suspicious servers to
+study, and added considerable data analysis. root9b analysts began to dissect the data at hand to
+identify common tactics, techniques, and procedures
+used by the adversaries which could provide further
+information about the planned hack, including
+information about potential attack vectors. as
+root9b analyzed increasing amounts of metadata
+and associated indicators, they were able to identify
+a very unique signature consistently used by someone
+involved in setting up the hack. investigating the 5 apparently fictitious list of personas used to create
+and register domains, a pattern emerged. due to
+the nature of this unique signature, root9b is in the
+process of further documenting and reporting to the
+proper authorities. the discovery of the hacker s single mistake in
+tradecraft was indeed a powerful catalyst, and lead
+to the discovery of a treasure trove of new indicators.
+the new discoveries included evidence related to past
+attempts to launch attacks against many of the same
+targets, including the aforementioned commercial
+bank international. what the analysts eventually
+had was a very detailed view of the specific tactics
+employed by this adversary; and a window into a
+plan for a hack that was even larger than originally
+believed, much larger. where initially they had only
+a single fake domain pointed at cbi, now there were
+six additional domains, all used to target this single
+victim. many of the fake domains appeared to have
+been created by several of the same accounts, and open
+source analysis indicated that the names listed for the apt-28 may 10, 2015 root9b: the threat defiance report person registering the addresses was clearly fictitious;
+probably chosen at random from the internet. the analysts at root9b understand better than anyone
+the significance of this analysis. as far as any of them
+know, and it stands to reason that they would, there
+has never been a case of a large-scale attack utilizing
+numerous zero-day exploits that were so thoroughly
+mapped in advance before. the analysts who worked
+this case now understand that the attackers began
+preparations for this campaign in june 2014, a full
+eleven months ago. the design of the hack bears
+striking similarity to the very exploits that have made
+sofacy so feared and respected. at least nine months
+of meticulous preparation coupled with one slip of
+tradecraft has enabled root9b to inform potential
+targets prior to the execution of the strategy. with the exception of , there
+are numerous consistencies amongst the tactics
+employed by the hackers. the group generates what
+are likely fictitious personalities as the owners of each of the fake domains. all of the fictitious
+personalities list the same street address. while they
+change names and house numbers for them, they all
+reside on cloverdale lane in desoto, texas. analysts
+noting the similarity did not have to visit the street
+to determine that it was unlikely that they each
+resided in different homes on the same street. in
+fact, even the house numbers changed only slightly
+from one domain to the other. in addition to the
+links between the addresses, streets, and names, they
+found that the registrant phone numbers were also
+very closely related. the only differences in registrant
+data from one domain to the next involved very slight
+modifications to the country codes or by changing the
+third digit. this kind of flaw in tradecraft allowed for
+further detailed network analysis. further analysis of the street addresses enabled
+root9b to correlate the address and personas listed as
+registrants via public records, doing so showed that
+most of these addresses did not even exist, and the
+few addresses confirmed to physically exist did not
+have residents with the names listed. this became a 6 key signature of the hackers; a common thread which
+unraveled all of sofacy s careful preparation. often
+those wanting to generate a free and anonymous email
+address will use a false name and address in order to
+conceal and preserve their true identity. the information below dictates open source research
+on the adversary s creation of domains. as previously
+noted, root9b is in the process of further documenting
+and reporting probable fictitious personas to the
+authorities.
+correlating the increasing amounts of information,
+root9b analysts have determined that the adversary
+responsible for the initial attack in june 2014 was
+almost certainly the same, or very closely-related to
+the entity responsible for creating at least two of the
+domains in april 2015. the same person was ostensibly
+responsible for registering the two most recent
+domains ( and cbiuaebank.
+com). analysts from root9b now believe that the
+adversary most likely selected this name through
+an internet search, and that these personas, while
+possibly real names, are not the true names of those
+individuals associated with the preparations for this
+attack. root9b analysts have also identified an additional
+persona; one that did not appear to directly relate to
+this attack against cbi uae bank, but that carried
+similar operational tactics to include comparable
+street address schemes and the registration of 7 domains closely resembling financial institutions.
+by studying the new persona, root9b discovered
+they had previously created several domains and
+websites, all of which have been flagged as fake
+financial institutions by security analysts. also
+identified during this analysis, was the prepositioning
+of a domain targeting the financial institution b-of- , created in april 2015. this indicates
+that bank of america, is among the probable targets. this same individual has registered numerous other
+fake domains on many more name servers. one of
+these name servers, , contains
+several other international financial institutions. one
+of those domains, t-d- , was
+updated	on	23	march	2015,	and	appears	to	be	targeting
+toronto dominion (td) canada trust. among the
+apparent targets of other domains similarly created
+or updated in 2015 are: the united nations, united
+nations children s fund, united bank for africa,
+regions bank, and possibly commerzbank. intelligence. the targets results
+while root9b s discovery began with servicing
+their own customers, their analysis has revealed an
+adversary pattern that has enabled the identification
+of previously unknown target vectors. as root9b
+analysts continued to peel back the layers, it became
+more apparent, that this attack was likely associated
+with russian
+included
+multiple major financial institutions, as well as the
+international government domain. in addition to
+identifying targets, root9b analysts also discovered
+indicators of malware, the analysis of which revealed
+several zero-day threats and their corresponding hashes. each new discovery revealed more
+information, enabling a more complete picture to
+emerge. root9b discovered and analyzed numerous
+other domains being staged or recently created for
+the malicious cyber operation. also discovered was a
+fatal flaw in the hackers tradecraft that lead to a major
+breakthrough. research based on the adversary s flaw
+in tactics showed that there was a strong likelihood of
+two distinct subgroups, each of which utilized unique apt-28 may 10, 2015 root9b: the threat defiance report according to their conclusions, root9b analysts expect
+that spear-phishing attacks will begin in the near
+future, or may have already commenced. as root9b
+continues to work with authorities it is recommended
+that the aforementioned financial institutions take
+caution examining any and all correspondence. in
+addition, it is recommended that networks begin
+blocking the following hashes and communications
+with the identified command and control (c2)
+server:
+methods of cover for their activity. each of the two
+groups also had a unique theme to their target sets.
+the first seemed to focus on military, diplomatic,
+and media targets, and relied on the cover of proxies
+and private domain registrations. as documented
+earlier, the other group used deliberately falsified
+personalities, all of which claimed to be american
+citizens, and focused on financial and banking targets.
+understanding the scope of the newly staged malicious
+operations, root9b also tipped the information to the
+appropriate international and domestic government
+authorities. while the continued vector of the attack remains
+unclear, root9b assesses that it will most likely be a
+spear-phishing campaign. this attack vector will likely
+use a well-crafted email containing either a malicious
+file or web hyperlink to what recipients believe is the
+actual website; but is instead a fake landing page.
+in typical attacks of this nature, once users navigate
+to the link, visitors are prompted to supply account
+credentials and personal information under the false
+assumption that they are communicating with their
+bank via a secure link. however, it is possible, that the
+sofacy group could utilize this server as a vector to
+deliver malicious code to the banking victims in an
+attempt to obtain access to the network. as of october
+2014, the symantec corporation had reported an
+increased use of spear-phishing emails containing
+malware
+targeted against financial
+institutions. 

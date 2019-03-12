@@ -1,0 +1,738 @@
+executive summary our clients often ask us to assess the threat russia poses in cyberspace. russia has
+long been a whispered frontrunner among capable nations for performing
+sophisticated network operations. this perception is due in part to the russian
+government s alleged involvement in the cyber attacks accompanying its invasion of
+georgia in 2008, as well as the rampant speculation that moscow was behind a
+major u.s. department of defense network compromise, also in 2008. these
+rumored activities, combined with a dearth of hard evidence, have made russia into
+something of a phantom in cyberspace. in this paper we discuss a threat group whose
+malware is already fairly well-known in the
+cybersecurity community. this group, unlike the
+china-based threat actors we track, does not
+appear to conduct widespread intellectual
+property theft for economic gain. nor have we
+observed the group steal and profit from
+financial account information. the activity that we profile in this paper
+appears to be the work of a skilled team of
+developers and operators collecting intelligence
+on defense and geopolitical issues intelligence
+that would only be useful to a government. we
+believe that this is an advanced persistent
+threat (apt) group engaged in espionage
+against political and military targets including the country of georgia, eastern european
+governments and militaries, and european
+security organizations since at least 2007.
+they compile malware samples with russian
+language settings during working hours
+consistent with the time zone of russia s major
+cities, including moscow and st. petersburg. while we don t have pictures of a building,
+personas to reveal, or a government agency to
+name, what we do have is evidence of long-
+standing, focused operations that indicate a
+government sponsor specifically, a
+government based in moscow. we are tracking this group as apt28. 1 markoff, john. before the gunfire, cyberattacks . the new york times 12 august 2008. web. http:// 2 knowlton, brian. military computer attack confirmed . the new york times. 25 august 2010. web. http:// / technology/26cyber.html 3 apt 28: a window into russia s cyber espionage operations? key findings apt28 targets insider information
+related to governments, militaries, and
+security organizations that would
+likely benefit the russian government. georgia eastern europe security organizations apt28 likely seeks to collect intelligence
+about georgia s security and political
+dynamics by targeting officials working
+for the ministry of internal affairs and
+the ministry of defense. apt28 has demonstrated interest in
+eastern european governments and
+security organizations. these victims
+would provide the russian government
+with an ability to predict policymaker
+intentions and gauge its ability to
+influence public opinion. apt28 appeared to target individuals
+affiliated with european security
+organizations and global multilateral
+institutions. the russian government
+has long cited european security
+organizations like nato and the osce
+as existential threats, particularly during
+periods of increased tension in europe. 4 malware compile times suggest
+that apt28 developers have
+consistently updated their tools
+over the last seven years. key findings since 2007, apt28 has systematically evolved its malware,
+using flexible and lasting platforms indicative of plans for
+long-term use. the coding practices evident in the group s
+malware suggest both a high level of skill and an interest in
+complicating reverse engineering efforts. malware compile times suggest that apt28 developers apt28 tailors implants for specific victim have consistently updated their tools over the last
+seven years. apt28 malware, in particular the family of modular backdoors that we call chopstick, indicates
+a formal code development environment. such an
+environment would almost certainly be required to
+track and define the various modules that can be
+included in the backdoor at compile time. environments. they steal data by configuring their
+implants to send data out of the network using a victim
+network s mail server.
+several of apt28 s malware samples contain counter-
+analysis capabilities including runtime checks to
+identify an analysis environment, obfuscated strings
+unpacked at runtime, and the inclusion of unused
+machine instructions to slow analysis. indicators in apt28 s malware suggest that the group consists of
+russian speakers operating during business hours in russia s major cities. more than half of the malware samples with portable
+executable (pe) resources that we have attributed to apt28
+included russian language settings (as opposed to neutral or
+english settings), suggesting that a significant portion of
+apt28 malware was compiled in a russian language build
+environment consistently over the course of six years (2007
+to 2013). over 96% of the malware samples we have attributed to apt28
+were compiled between monday and friday. more than 89%
+were compiled between 8am and 6pm in the utc+4 time zone,
+which parallels the working hours in moscow and st.
+petersburg. these samples had compile dates ranging from
+mid-2007 to september 2014. 5 three themes in apt28 s targeting clearly
+reflect areas of specific interest to an
+eastern european government, most likely
+the russian government. apt28 targeting reflects russian
+interests
+many of apt28 s targets align generally with interests that are typical of any
+government. however, three themes in
+apt28 s targeting clearly reflects areas of specific
+interest to an eastern european government, most
+likely the russian government. these include the
+caucasus (especially the georgian government),
+eastern european governments and militaries, and
+specific security organizations. whose accounts apt28 hopes to breach, the
+subjects of the lures provide clues as to apt28 s
+targets and interests. for example, if the group s
+lures repeatedly refer to the caucasus, then this
+most likely indicates that apt28 is trying to gain
+access to the accounts of individuals whose work
+pertains to the caucasus. similarly, apt28 s practice
+of registering domains that mimic those of legitimate
+news, politics, or other websites indicates topics that
+are relevant to apt28 s targets. apt28 uses spearphishing emails to target its
+victims, a common tactic in which the threat group
+crafts its emails to mention specific topics (lures)
+relevant to recipients. this increases the
+likelihood that recipients will believe that the
+email is legitimate and will be interested in
+opening the message, opening any attached files,
+or clicking on a link in the body of the email. since
+spearphishing lures are tailored to the recipients we identified three themes in apt28 s lures and
+registered domains, which together are
+particularly relevant to the russian government. in addition to these themes, we have seen apt28
+target a range of political and military
+organizations. we assess that the work of these
+organizations serves nation state governments. 7 bloomberg. neiman marcus hackers set off 60,000 alerts while bagging credit card data. february 2014.
+8 ibid.
+9 ibid. 6 apt 28: three themes the caucasus,
+particularly the
+country of georgia eastern european
+governments and
+militaries the north atlantic
+treaty organization
+(nato) and other
+european security
+organizations apt28 interest in
+the caucasus,
+particularly georgia abkhazia russia chechnya kavkaz center georgia tbilisi turkey armenia armenian military yerevan azerbaijan the caucasus, a region that includes chechnya and other russian republics and
+the independent states of georgia, armenia, and azerbaijan, continues to experience
+political unrest. the georgian government s
+posture and ties to the west are a frequent
+source of moscow s frustration, particularly after
+the 2008 war. overall, issues in the caucasus
+likely serve as focal points for russian
+intelligence collection efforts. since 2011, apt28 has used lures written in
+georgian that are probably intended to target
+georgian government agencies or citizens.
+apt28 is likely seeking information on georgia s
+security and diplomatic postures. specifically,
+the group has targeted the georgian ministry of
+internal affairs (mia) and the ministry of
+defense (mod). we also observed efforts to
+target a journalist working on issues in the
+caucasus and a controversial chechen news site. 7 apt28 made at least two specific attempts to target
+the georgian ministry of internal affairs. georgian ministry of internal affairs (mia) apt28 targeting of the georgian
+ministry of internal affairs (mia)
+the mia harbors sensitive information about the
+inner workings of georgia s security operations, the
+country s engagement in multilateral institutions,
+and the government s communications backbone. it
+is responsible for3: policing, internal security, and border patrols counterintelligence counterterrorism defense of georgia s strategic facilities international relations and assets operative-technical tasks apt28 made at least two specific attempts to
+target the mia. in one case, we identified an
+apt28 lure from mid-2013 that referenced
+mia-related topics and employed malware that
+attempted to disguise its activity as legitimate
+mia email traffic. the lure consisted of a
+weaponized excel file that presented a decoy
+document containing a list of georgian driver s license numbers. the backdoor attempted to
+establish a connection to a georgian mia mail
+server and communicate via mia email addresses
+ending with @ . once connected to the
+mail server, apt28 s backdoor sent an email
+message using a subject line related to driver s
+licenses (in georgian), and attached a file
+containing system reconnaissance information.
+this tactic could allow apt28 to obtain data from
+the mia s network through a less-monitored
+route, limiting the mia network security
+department s abilities to detect the traffic. in the second example of mia targeting, an apt28
+lure used an information technology-themed decoy
+document that included references to the windows
+domain mia users\ortachala (figure 1).
+this probably referred to the mia facility in the
+ortachala district of tbilisi, georgia s capital city.
+the decoy document also contains metadata listing mia as the company name and beka nozadze 4
+as an author, a possible reference to a system
+administrator in tbilisi. the text of the document
+purports to provide domain and user group setup 3 georgian ministry of internal affairs website http:// 4 queries on the author yielded a linkedin page for a person of the same name who serves as a system administrator in tbilisi. 8 information for internal windows xp and windows
+7 systems. apt28 possibly crafted this document
+to appear legitimate to all mia system users and
+intended to breach the mia network specifically
+using the embedded malware. apt28 targeting of the georgian
+ministry of defense
+apt28 also appeared to target georgia s mod
+along with a u.s. defense contractor that was training the georgian military. apt28 used a lure
+document that installed a sourface downloader
+(further discussed in the malware section) and
+contained a listing of birthdays for members of a
+working group between the georgian mod and
+the u.s. defense contractor. the u.s. contractor
+was involved in a working group to advise the mod
+and georgian armed forces, assess georgia s
+military capabilities, and develop a military training
+program for the country. figure 1: georgian mia-related decoy 9 we wish our cooperation will be both profitable and trusted. our aim in the caucasian region is
+to help people who struggle for their independence, liberty and human rights. we all know, that
+world is often unfair and cruel, but all together we can make it better.
+send your articles on this email in russian or english, please. there are some difficulties with
+caucasian languages, but we ll solve the problem pretty soon, i hope. targeting journalists could provide apt28 and its sponsors
+with a way to monitor public opinion, identify dissidents,
+spread disinformation, or facilitate further targeting. we believe that apt28 s targeting of the mod
+aligns with russian threat perceptions. the
+growing u.s.-georgian military relationship has
+been a source of angst for russia. georgia and
+russia severed diplomatic relations following the
+russia-georgia war in 2008, and georgia has
+since sought to align itself more closely with
+western security organizations. additionally, in
+june 2014, despite russia s vocal objections,
+georgia, along with ukraine and moldova, signed
+association accords with the eu.5 this move
+placed all three countries more firmly in the eu s
+political, economic, and security spheres of
+influence. georgian military security issues,
+particularly with regard to u.s. cooperation and
+nato, provide a strong incentive for russian
+state-sponsored threat actors to steal information
+that sheds light on these topics. apt28 targeting a journalist covering
+the caucasus
+another one of apt28 s lures appeared to target
+a specific journalist covering issues in the
+caucasus region. in late 2013, apt28 used a lure
+that contained a letter addressing a journalist by
+his first name and claiming to originate from a chief coordinator in reason magazine s caucasian issues department - a division that
+does not appear to exist.6 (reason magazine is a
+us-based magazine) the letter welcomed the
+individual as a contributor and requested topic
+ideas and identification information in order to
+establish him at the magazine. in the background,
+the decoy document installed a sourface
+backdoor on the victim s system. 5 the eu s association agreements with georgia, the republic of moldova and ukraine . european union press release database. 23 june 2014. web. http://e 6 we attempted to identify candidate journalists in the country. one of these was a georgian national of chechen descent, whose work appears to center on chechen and human rights issues. ultimately, however, we cannot confirm the identity of the target(s). 10 apt28 domain kavkazcentr[.]info rnil[.]am real domain
+the kavkaz center / the caucasus center, an international islamic news agency with coverage of
+islamic issues, particularly russia and chechnya ( )
+armenian military ( ) apt28 s other targets in the caucasus
+we have seen apt28 register at least two
+domains mimicking the domains of legitimate
+organizations in the caucasus, as shown in the
+table below. one apt28 domain imitated a key
+chechen-focused news website, while the other
+appeared to target members of the armenian
+military by hosting a fake login page. of particular note, the kavkaz center is a
+chechen-run website designed to present an
+alternative view to the long-running conflict
+between russia and chechen separatists. in
+200410 and 2013,11 russia s foreign minister
+voiced his displeasure that a swedish company
+continues to host the kavkaz center website. the body of the letter suggests that apt28 actors
+are able to read at least two languages russian
+and english. the grammar of the letter also
+indicates that english is not the author s first
+language, despite it purportedly originating from a
+us-based magazine. this implies that russian may
+be the apt28 author s preferred language. targeting journalists could provide apt28 and its
+sponsors with a way to monitor public opinion,
+identify dissidents, spread disinformation, or
+facilitate further targeting. several other nation
+states are suspected of targeting journalists and
+dissidents to monitor their activity, including china
+and iran.7,8 journalists in the caucasus working on
+caucasus independence issues would be a prime
+target for intelligence collection for moscow.
+journalists critical of the kremlin have long
+been targets of surveillance and harassment,
+and a number of governments and human
+rights organizations have publicly criticized the
+government for its treatment of journalists and its
+increasing consolidation of control over the media.9 7 moran, ned, villeneuve, nart, haq, thofique, and scott, mike. operation saffron rose . fireeye. 13 may 2014. web. http://www. /blog/technical/ malware-research/2014/05/operation-saffron-rose.html 8 the new york times publicly disclosed their breach by apt12, which they assess was motivated by the china-based actors need to know what the newspaper was publishing about a controversial topic related to corruption and the chinese communist party s leadership. 9 russia . freedom house press release. 2013. web. http:// 10 chechen website promotes terror: lavrov . upi. 16 november 2014. web. http:// - terror-lavrov/upi-11601100627922/ 11 lavrov urges sweden to ban chechen website server the voice of russia. 15 may 2013. web. http:// - sweden-to-ban-chechen-website-server/ 11 apt28 targeting of
+eastern european
+governments and
+militaries figure 3: decoy mh17
+document probably sent
+to the polish government eastern european countries political and military postures are traditionally core russian
+government interests. the kremlin has long
+regarded the former soviet republics and satellite
+states as in its sphere of economic, political, and
+military interest. over the past two decades, as many
+of these states joined nato and the eu, russia has
+attempted to regain its influence in the region. many
+of apt28 s targets parallel this continued focus on
+eastern european governments and militaries. apt28 targets eastern european
+government organizations
+we have evidence that apt28 made at least two
+attempts to compromise eastern european
+government organizations: in a late 2013 incident, a fireeye device
+deployed at an eastern european ministry of
+foreign affairs detected apt28 malware in
+the client s network. more recently, in august 2014 apt28 used a
+lure (figure 3) about hostilities surrounding a
+malaysia airlines flight downed in ukraine in
+a probable attempt to compromise the polish
+government. a sourface sample employed
+in the same malaysia airlines lure was
+referenced by a polish computer security
+company in a blog post.12 the polish security
+company indicated that the sample was sent
+to the government, presumably the polish
+government, given the company s location
+and visibility. 12 mht, ms12-27 oraz *malware*.info malware@prevenity. 11 august 2014. web. http:// 12 apt28 domain standartnevvs[.]com real domain bulgarian standart news website ( ) novinitie[.]com, n0vinite[.]com bulgarian sofia news agency website ( ) qov[.]hu[.]com q0v[.]pl, mail[.]q0v[.]pl poczta.mon[.]q0v[.]pl hungarian government domain ( ) polish government domain ( ) and mail server domain (mail. ) polish ministry of defense mail server domain (poczta.mon. ) we have evidence that apt28 made at least two attempts
+to compromise eastern european government
+organizations. this domain registration suggests that apt28
+sought to target individuals either participating in
+the exercises or interested in baltic military and
+security matters. such targets would potentially
+provide apt28 with sensitive tactical and
+strategic intelligence concerning regional military
+capabilities and relationships. these exercises are
+a particular point of interest in moscow: pro-
+kremlin press cited russia s interpretation of
+these military exercises and nato s involvement
+as a sign of aggression, and russia s foreign
+minister publicly stated that the exercise was a
+demonstration of hostile intention. 15 apt28 has registered domains similar to those of
+legitimate eastern european news sites and
+governments, listed in table 2. these domain
+registrations not only suggest that apt28 is
+interested in eastern european political affairs,
+but also that the group targets eastern european
+governments directly. in addition, apt28 used one domain for command
+and control sessions (baltichost[.]org) that was
+themed after the baltic host exercises. baltic host
+is a multinational logistics planning exercise, hosted
+annually since 2009 by one of the three baltic
+states (estonia, latvia, and lithuania, all three of
+which are on russia s border) on a rotational basis.
+in june 2014, this event was integrated with a
+larger u.s. army training event, and focused on
+exercises to improve interoperability with regional
+allies and partners.13, 14 13 saber strike and baltic host kick off in latvia, lithuania and estonia . estonian defense forces. 9 june 2014. web. 11 june 2014. http:// / news/8251/saber-strike-and-baltic-host-kick-off-in-latvia,-lithuania-and-estonia 14 baltic host 2014 rendering host nation support for the training audience of exercise saber strike 2014 and repelling faked cyber-attacks . republic of lithuania ministry of national defense. 12 june 2014. web. http:// support_for_the_training_audience_of_exercise_saber_strike_2014_and_repelling_faked_cyber-attacks.html 15 tanks, troops, jets: nato countries launch full-scale war games in baltic . russia today. 9 june 2014. web. http:// - exercise-nato/ 13 apt28 targeting of
+nato and other
+european security
+organizations a pt28 s lures and domain registrations also demonstrate their interest in nato and
+other european security organizations. nato remains a chief russian adversary, or in the
+words of russia s 2010 military doctrine, a main
+external military danger particularly as it moves closer to the borders of the russian federation. 16
+as the traditional western counterweight to the
+soviet union, russia regards nato, particularly
+nato s eastward expansion, as a threat to russia s
+strategic stability. apt28 also registered a domain
+name imitating the organization for security
+and cooperation in europe (osce), an
+intergovernmental organization that has cited
+widespread fraud in numerous russian state elections. insider information about nato, the
+osce and other security organizations would
+inform russian political and military policy. several of the domains apt28 registered imitated
+nato domain names, including those of nato
+special operations headquarters and the nato
+future forces exhibition. we also observed a user
+that we suspect works for nato hq submit an
+apt28 sample to virustotal, probably as a result
+of receiving a suspicious email. table 3: examples of apt28 domains imitating legitimate nato and security websites apt28 domain
+nato.nshq[.]in
+natoexhibitionff14[.]com nato future forces 2014 exhibition & conference ( )
+login-osce[.]org real domain
+nato special operations headquarters ( ) organization for security and cooperation in europe ( ) 16 the military doctrine of the russian federation, approved by presidential edict on 5 february 2010. 14 apt28 also demonstrated an interest in defense
+attaches working in european countries. we identified
+an apt28 lure containing a decoy document with a list
+of british officers and u.s. and canadian military
+attach s in london. finally, apt28 used a lure that contained an apparent
+non-public listing of contact information for defense
+attach s in the ankara military attach corps (amac), which appears to be a professional organization of
+defense attach s in turkey. figure 4: decoy
+document used
+against military
+attaches in 2012 figure 5: ankara
+military attache corps
+decoy document 15 apt28 targets european
+defense exhibitions
+in addition to targeting european security
+organizations and governments, it appears that
+apt28 is targeting attendees of european
+defense exhibitions. some of the apt28-
+registered domains imitated those of defense
+events held in europe, such as the farnborough
+airshow 2014, euronaval 2014, eurosatory
+2014, and the counter terror expo. in september
+2014, apt28 registered a domain (smigroup-
+online.co[.]uk) that appeared to mimic that for the smi group, a company that plans events for the defence, security, energy, utilities, finance and
+pharmaceutical sectors. among other events, the
+smi group is currently planning a military satellite
+communications event for november 2014. targeting organizations and professionals
+involved in these defense events would likely
+provide apt28 with an opportunity to procure
+intelligence pertaining to new defense
+technologies, as well as the victim organizations operations, communications, and future plans. targeting organizations and
+professionals involved in
+these defense events would
+likely provide apt28 with an
+opportunity to procure
+intelligence pertaining to
+new defense technologies. 16 other apt28 targets
+are consistent
+with nation state
+interests international organization european commission un office for the coordination of humanitarian affairs apec nato osce world bank other hizb ut-tahir chechnya global diplomatic forum military trade shows apt28 has targeted a variety of organizations that fall outside of the three themes we
+highlighted above. however, we are not profiling all of apt28 s targets with the same
+detail because they are not particularly indicative
+of a specific sponsor s interests. they do indicate
+parallel areas of interest to many governments
+and do not run counter to russian state interests. other probable apt28 targets that we have
+identified: key
+apt28 registered domains
+lure document
+phishing email 18 apt 28: a window into russia s cyber espionage operations? our analysis of some of the group s more
+commonly used tools indicates that apt28
+has been systematically updating their
+malware since 2007. apt28 malware indicates skilled russian
+developers apt28 s tools are suggestive of the group s skills, ambitions, and identity. our analysis
+of some of the group s more commonly used tools indicates that apt28 has been
+systematically updating their tools since 2007.
+apt28 is most likely supported by a group of
+developers creating tools intended for long-term
+use and versatility, who make an effort to
+obfuscate their activity. this suggests that apt28
+receives direct ongoing financial and other
+resources from a well-established organization,
+most likely a nation state government. apt28 s
+malware settings suggest that the developers
+have done the majority of their work in a russian
+language build environment during russian
+business hours, which suggests that the russian
+government is apt28 s sponsor. some of apt28 s more commonly used tools are
+the sourface downloader, its second stage
+backdoor eviltoss, and a modular family of
+implants that we call chopstick. 19 sourface: this downloader is typically
+called sofacy within the cyber security
+community. however because we have
+observed the name sofacy used to refer to
+apt28 malware generally (to include the
+sourface dropper, eviltoss,
+chopstick, and the credential harvester
+oldbait), we are using the name
+sourface to precisely refer to a specific
+downloader. this downloader obtains a
+second-stage backdoor from a c2 server.
+coreshell is an updated version of
+sourface.
+eviltoss: this backdoor has been delivered
+through the sourface downloader to gain
+system access for reconnaissance,
+monitoring, credential theft, and shellcode
+execution. chopstick: this is a modular implant compiled from a software framework that
+provides tailored functionality and flexibility. a number of the malware variants that we profile
+below, especially the chopstick family,
+demonstrate formal coding practices indicative of
+methodical, diligent programmers. the modularity
+of chopstick alone, with its flexible and lasting
+platform, demonstrates planning for long-term
+use and versatility. we have also noted that
+apt28 tailors implants to their target
+environments, configuring them to use local
+network resources such as email servers. one of the latest samples of coreshell includes counter-reverse engineering tactics
+via unused machine instructions. this would
+hinder static analysis of coreshell behavior
+by creating a large amount of unnecessary
+noise in the disassembly. a number of coreshell droppers also conduct runtime checks, attempting to
+determine if they are executing in an analysis
+environment, and if so, they do not trigger
+their payloads. apt28 has attempted to obfuscate their code and
+implement counter-analysis techniques: many samples across the sourface/ coreshell, chopstick, and eviltoss figure 6: typical deployment of sourface ecosystem spearphishing email document with exploit dropper malware sourface downloader obtains 2nd stage c2 server deploys 2nd stage droppers 2nd stage implant 20 malware families obfuscate strings that are
+decoded at runtime. two of the malware
+families (sourface/coreshell and
+eviltoss) use the same decryption
+sequence and similar algorithms for string
+encoding and decoding. these families
+encode their strings at compile time using a
+custom stream cipher. from a high level,
+these ciphers share a similar design across
+the malware families but differ slightly in the
+internal arithmetic operations. apt28 has employed rsa encryption to protect files and stolen information moved
+from the victim s network to the controller. apt28 has made incremental and systematic
+changes to the sourface downloader and its
+surrounding ecosystem since as early as 2007.
+these changes indicate a long-standing and
+dedicated development effort behind apt28. we
+have observed samples of the sourface
+downloader compiled between 2007 and 2014.
+we call sourface (samples are frequently
+named ) a first stage downloader
+because its primary job is to retrieve a second
+stage payload from a c2 server. until 2013, the
+sourface downloader used hard-coded ip
+addresses for c2 communications, whereas the
+future coreshell samples use domains. evolution of
+sourface ecosystem
+indicates systematic development what is a malware ecosystem?
+first, a malware family is a collection of malware in which each sample shares a significant
+amount of code with all of the others. there are exceptions: for example, some files
+contain public and standard code libraries that we do not take into consideration
+when making a family determination. a malware ecosystem is a group of malware families that work together to perform
+the same objective. perhaps the simplest and most typical ecosystem
+is a dropper and a backdoor that are used together. they may not share the
+same code structure, but they are related because one drops and installs
+the other. the ecosystem surrounding the sourface downloader frequently
+consists of a dropper, which installs sourface. the sourface
+downloader then receives another dropper from its c2 server, and
+this second dropper installs a second stage backdoor, which is
+usually eviltoss. 21 in april 2013, based on compile time, the group
+began to make significant alterations to the
+sourface downloader. they started by
+changing the compiled dll name to and making minor changes to the network
+communications, as seen in figure 7. the hostname, volume serial number and os
+version data are encoded in the new url format.
+as seen in the table below, the sourface/
+coreshell developers also made other
+modifications that changed the exported function
+name and file size over time. same as previous. 17 sourface with minor changes to network communications (see figure 7).
+18 basic anti-debug measures added (process listing, rand timing, is debuggerpresent).
+19 switches from loading a secondary dll ( ) to uploading the contents of %temp% .
+20 statically links msvcrt library.
+21 statically links msvcrt library and the strings used to identify the imported libraries and functions are reversed prior to being used, then reversed back after use.
+22this version added assembly level obfuscation, which slows down analysis. this variant requires the os to be at least windows vista. 22 in april 2013, based on compile time, the
+group began to make significant alterations to
+the sourface downloader. figure 8: nato-themed decoy
+delivered with possible eviltoss
+predecessor from 2004 variants of the sourface second stage
+backdoor, eviltoss, share some code similarities
+with sourface. however, it contains more
+capabilities, including the ability to provide access
+to the file system and registry, enumerate network
+resources, create processes, log keystrokes, access
+stored credentials, and execute shellcode. the
+backdoor encrypts data that it uploads with an rsa
+public key. many of its variants we have seen are
+named . eviltoss variants may use the
+simple mail transfer protocol (smtp) to send
+stolen data in an attachment named detaluri.
+dat . the backdoor attaches this file to a
+preformatted email and sends it out through a
+victim s mail server. interestingly, we found an antivirus report from
+200423 detailing what appears to be an early
+variant of eviltoss. the backdoor was installed
+alongside the nato-themed decoy document
+depicted in figure 8. the backdoor sent data via
+smtp to nato_smtp@mail[.]ru and received its
+tasking via pop from nato_pop@mail[.]ru.
+although we have not conclusively attributed
+this sample to apt28, it does suggest the
+possibility that apt28 has been operating since
+as early as 2004.24 23 http:// 24 although the malware family and interest in nato make it likely that apt28 was involved, we cannot conclusively attribute this sample to apt28 based on these factors alone. we have no evidence that they controlled the c2 for this malware or were using eviltoss in 2004. apt28 could have possibly obtained
+this source code from another group of actors. also, malware can be passed from group to group. the other malware that we associate with apt28 in this
+paper is more strongly attributed to the group using additional factors, some of which we mention in appendix a. 23 modular implants
+indicate a formal
+development
+environment a modular development framework
+suggests the group has had an organized
+development effort since as early as 2007. during our research, we discovered that apt28 uses a backdoor developed using a
+modular framework. we call this backdoor chopstick, a somewhat ironic name
+that comes from our semi-random name
+generator. the modular design allows flexible
+options for compiling variants with different
+capabilities as needed, as well as deploying
+additional capabilities at runtime. this allows the
+developers to make targeted implants, including
+only the capabilities and protocols necessary for a
+specific environment. such a modular framework
+suggests the group has had an organized
+development effort since as early as 2007. a
+formal development environment, in which code is
+versioned and well-organized, would almost
+certainly be required to track and define the
+various modules that can be included in the
+backdoor at compile time. 24 chopstick variants may move messages and
+information using at least three methods: 1. communications with a c2 server using http. these protocols are covered in more
+detail in appendix d. 2. email sent through a specified mail server. one chopstick v1 variant contained
+modules and functions for collecting
+keystroke logs, microsoft office documents,
+and pgp files. the monitoring for new files of
+interest is performed by a directory
+observer module. in one sample this
+information was intended to be sent via
+smtp using a georgian mia mail server. it
+used one of four embedded sender email
+addresses (@ ) to send files via
+email to another email address on the same
+mail server. all information required for the
+email was hardcoded in the backdoor. 3. local copying to defeat closed networks. one variant of chopstick focuses on
+apparent air gap / closed network capabilities
+by routing messages between local
+directories, the registry and usb drives. apt28 malware
+indicates russian
+speakers in a
+russian time zone during our research into apt28 s malware, we noted two details consistent across
+malware samples. the first was that apt28 had consistently compiled russian language
+settings into their malware. the second was that
+malware compile times from 2007 to 2014
+corresponded to normal business hours in the utc
++ 4 time zone, which includes major russian cities
+such as moscow and st. petersburg. use of russian and english language
+settings in pe resources
+pe resources include language information that
+can be helpful if a developer wants to show user interface items in a specific language.25 non-default
+language settings packaged with pe resources are
+dependent on the developer s build environment.
+each pe resource includes a locale identifier with
+a language id composed of a primary language
+identifier indicating the language and a sublanguage
+identifier indicating the country/region. 26 at the time of the writing of this paper, we had
+identified 103 malware samples that were both
+attributed to apt28 and contained pe resources.
+table 5 shows the locale identifiers27 with
+associated language and country/region for
+these samples. table 5: locale and language identifiers associated with apt28 malware 25microsoft developer network multiple language resources http:// 26, 27 microsoft developer network language identifier constants and strings http:// 25 apt 28: a window into russia s cyber espionage operations? the samples with russian language settings were
+compiled between late 2007 and late 2013, as
+depicted in figure 9. this consistency over a
+long timeframe suggests that the developers of
+apt28 malware were using a build environment with russian language settings at least some of
+the time and made no effort to obscure this
+detail. overall, the locale ids suggest that
+apt28 developers can operate in both russian
+and english. ompile times align with working
+hours in moscow and st. petersburg of the 140 malware samples that we have
+attributed to apt28 so far, over 89% were
+compiled between 0400 and 1400 utc time, as
+depicted in figure 10. over 96% were compiled
+between monday and friday. this parallels the
+working hours in utc+0400 (that is, compile
+times begin about 8am and end about 6pm in this
+time zone). this time zone includes major russian
+cities such as moscow and st. petersburg. conclusion we started researching apt28 based on activity
+we observed on our clients networks, similar to
+other targeted threat groups we have identified
+over time. we assess that apt28 is most likely
+sponsored by the russian government. we
+summarize our key observations about apt28 in
+figure 11 below. apt28 s characteristics their targeting, malware,
+language, and working hours have led us to
+conclude that we are tracking a focused, long-
+standing espionage effort. given the available
+data, we assess that apt28 s work is sponsored
+by the russian government. backdoors using http protocol
+backdoors using victim mail server
+local copying to defeat closed/air gapped networks figure 11: summary of key observations about apt28
+malware
+evolves and maintains tools for continued, long-term use uses malware with flexible and lasting platforms constantly evolves malware samples for continued use malware is tailored to specific victims environments, and is designed to hamper reverse engineering efforts development in a formal code development environment
+various data theft techniques targeting
+georgia and the caucasus ministry of internal affairs ministry of defense eastern european governments & militaries hungarian government ministry of foreign affairs in eastern europe security-related organizations nato osce defense attaches defense events and exhibitions
+russian attributes
+russian language indicators consistent use of russian language in malware over a period of six years malware compile times correspond to work day in moscow s time zone consistent among apt28 samples with compile times from 2007 to 2014 lure to journalist writing on caucasus issues suggests apt28 understands both russian and english the compile times align with the standard workday in the utc + 4 time zone which includes major russian cities such
+as moscow and st. petersburg journalist writing on caucasus issues
+kavkaz center polish government baltic host exercises 28 appendix a:
+distinguishing
+threat groups we use the term threat group to refer to actors
+who work together to target and penetrate
+networks of interest. these individuals may share
+the same set of tasks, coordinate targets, and
+share tools and methodology. they work together
+to gain access to their targets and steal data. the art of attributing disparate intrusion activities
+to the same threat group is not always simple.
+different groups may use similar intrusion
+methodologies and common tools, particularly
+those that are widely available on the internet,
+such as pwdump, htran, or gh0st rat. there may
+be overlaps between groups caused by the sharing
+of malware or exploits they have authored, or
+even the sharing of personnel. individual threat
+actors may move between groups either
+temporarily or permanently. a threat actor may
+also be a private citizen who is hired by multiple
+groups. multiple groups, on occasion, compromise
+the same target within the same timeframe. distinguishing one threat group from another is
+possible with enough information, analytical
+experience, and tools to piece it all together. we
+can analyze multiple incidents and tell by the
+evidence left behind that a given incident was the
+result of one threat group and not another. threat actors leave behind various forensic
+details. they may send spear phishing emails from
+a specific ip address or email address. their emails
+may contain certain patterns; files have specific
+names, md5 hashes, timestamps, custom
+functions, and encryption algorithms. their
+backdoors may have command and control ip
+addresses or domain names embedded. these are
+just a few examples of the myriad of forensic
+details that we consider when distinguishing one
+threat group from another. at the most basic level, we say that two intrusion
+events are attributed to the same group when we
+have collected enough indicators to show beyond
+a reasonable doubt that the same actor or group
+of actors were involved. we track all of the
+indicators and significant linkages associated with
+identified threat groups in a proprietary database
+that comprises millions of nodes and linkages
+between them. in this way, we can always go back
+and answer why we associated cyber threat
+activity with a particular group. 29 file named military georgian language it document for ministry of internal affairs (internal document) usb disk security is the best software to block threats that can damage your pc or compromise
+your personal information via usb storage. food security in africa ( food and nutrition crisis reaches peak but good forecast for 2013 ) idf soldier killed and another injured in a terror attack echo crisis report on portugal s forest fires fbi to monitor facebook, twitter, myspace georgia (us state, not the country of georgia) murder case uncovers terror plot military attaches in london (internal document) south africa mfa document john shalikashvili (georgian-polish-american us general) questionnaire asia pacific economic cooperation summit 2013 reporters (internal document) defense attaches in turkey (internal document) turkish cypriot news about syria chemical weapons georgian language document about drivers licenses (internal document) coreshell
+apparent reason magazine-related lure sent to a journalist
+mandarin language document, possibly related to a chinese aviation group (non-public document) coreshell netherlands-malaysia cessation of hostilities; related to ukraine airline attack coreshell after collecting host information, chopstick creates a hidden file that may be named
+%allusersprofile% for temporary storage and creates a windows mailslot with the
+name check_mes_v5555 .28 its usage of a windows mailslot would potentially allow external binaries to
+write data to the check_mes_v5555 mailslot, possibly allowing chopstick to encrypt and store
+output from other malware. it creates a thread that records user activity on the host, capturing desktop
+screenshots in jpeg format, tracks current window focus, collects keystrokes, and scrapes window
+contents (text, context menus, etc.). user activity is captured once every 500 milliseconds and logged in
+an html-like format. the thread writes user activity log messages to the check_mes_v5555 mailslot in
+plain text. chopstick reads messages from the mailslot, encrypts them using rc4, and then stores the
+encrypted message in an temporary file. the rc4 encryption used here also uses a 50-
+byte static key plus four-byte random salt value. after approximately 60 seconds of execution time, chopstick begins communicating with one of its c2
+servers over http. after sending an initial http get request it uploads the file contents of edg6ef885e2.
+tmp to the c2 server using http post requests. it does not wait for a response from the server to begin
+uploading. once the contents of are uploaded, chopstick deletes the file. figure 13
+below contains an example of an http post request uploading a segment from . 8a mailslot is a windows inter-process communication (ipc) mechanism similar to a named pipe, but is designed for one-way communications between processes and can also be used across the network. 37 chopstick uses a url-safe base64 encoding, using an alphabet that substitutes + and / for - and _ , respectively. each http request contains multiple base64 encoded url parameters, however only
+one parameter contains information encoded by the malware ( ai= ) and the rest of the url parameters
+appear to be randomly generated per request. chopstick encrypts an 11-byte sequence in the ai= parameter. the purpose of this parameter
+appears to be to uniquely identify the particular instance of the backdoor to the c2 server. the base64
+encoded text of this parameter begins with a number of randomly generated alphabetical characters
+presumably intended to prevent people from base64 decoding the whole string without some knowledge
+of how the malware family works. the first four bytes of the message are an xor key for the remainder of
+the data. once decrypted using the xor key, an 11-byte sequence is revealed. the first seven bytes are
+static, and are hard-coded in chopstick, while the last four bytes appear to be unique. the message body of the post request is also base64 encoded. this encoded string is also prefixed with
+random characters designed to break the output of a base64 decode operation on the entire string. the
+first 15 bytes of the decoded message body comprise another 11-byte sequence similar to the sequence
+stored in the ai= parameter as described above. decrypting these bytes yields another static seven-byte
+sequence, followed by four unique bytes. the remainder of the message body consists of the rc4
+encrypted data containing the html-formatted user activity log, . after uploading , chopstick continues to query its c2 servers for commands using
+http get requests. the malware contains code which allows it to load or memory-map external modules
+that export the following functions: sendrawpacket, getrawpacket, initializeexp, destroyexp,
+isactivechannel, getchannelinfo, setchannelinfo, run, getmoduleinfo, givemessage,
+and takemessage. 38 modularity
+chopstick backdoors are compiled within a modularized development framework. this means that
+two separate chopstick backdoors may contain vastly different functionality, depending on which
+modules were included at compile time. the modules that are included in an instance of chopstick
+may be reported to the c2 server as part of post messages. figure 14 includes an example from a
+chopstick v1 variant:
+description
+kernel, probably version 2. handles communication between modules and c2
+tunnels.
+logs keystrokes and takes screen captures.
+facilitates filesystem access, such as directory browsing along with reading,
+deleting and opening files.
+remote command shell access.
+load additional dlls. the kernel ids 0x0001 and 0x0002 indicate different versions. the corresponding modules in each
+backdoor also are consistently identified with 0x01 and 0x02, respectively, in the second byte. in both
+variants the modules with keystroke log, file system access, and command shell capabilities have the
+consistent identifiers 0x10, 0x11, and 0x13, respectively, in the first byte. this suggests that the first byte
+in the module id identifies the module type whereas the second byte identifies the kernel version. the kernel sends commands to each module using its module id. the commands that each module
+understands are likely consistent from build to build. table 14 and table 15 show examples of commands
+that each module understands. 

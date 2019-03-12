@@ -1,0 +1,699 @@
+uroburos: the snake rootkit
+deresz@ tecamac@ march 12, 2014
+abstract
+this is a technical analysis of a unique, very powerful and covert remote access
+backdoor used in targeted attacks. this rootkit has been designed and coded by
+very skilled and experienced programmers. the techniques used demonstrate their
+excellent knowledge of windows kernel internals. the paper describes the use of
+undocumented and clever tricks performed on the running windows kernel such as
+on-the-fly disassembling or patchguard bypassing. it details how the covert communication channels work (although this part requires a lot of further analysis) and how
+the virtual encrypted storage is implemented.
+the document has been created to raise awareness - its goal is to enhance understanding of this (and potentially similar) threats as well as to provide means of
+protection against it. the indicators of compromise (iocs) are provided to scan for
+the presence of this malware in computer systems. initialization
+1.1 injection
+the driver hides its execution by injecting the code into the system process and exiting
+its initial process.
+the execution is manually forked as a system thread in function fork and hide (1d75ah).
+specifically the mechanism is similar to a vfork on unix systems; the parent image is suspended until the child image releases the execution thread. it is composed of three steps.
+(i) the instantiation check verifies that no other rootkit instance is running. this is described in section 1.2r. (ii) section 1.3 details the image copy. it makes the code resident
+in non-paged memory so that it can run as a system thread. (iii) finally, the control is
+transferred to the cloned image, in return the child image is hidden by zeroing its headers,
+see section 1.4. as a result, the rootkit runs in a kernel thread with code in non-paged
+memory. note that this thread has a non existent owning process. this can be used as
+an ioc; owning process of any thread usually does exist.
+1.2 instantiation check
+the presence of another rootkit instance is verified in reinfection check (1d460h). this
+function checks against the presence of the of three events. if one is observed the error
+status object name exists is returned.
+this infection marker was observed to be created by a different version of this toolkit aka agent.btz.
+table 1: indicators of compromise
+location type value comment
+physical memory device \device\rawdisk2 device relate to a second virtual file system that only
+reside in physical memory and not flushed to file system
+registry key \registry\machine\system\currentcontrolset\services\ultra3 rootkit autorun, this ioc can present a false positive; if
+present the executed file need to be checked
+registry key \registry\machine\system\currentcontrolset\services\~root rootkit autorun, this ioc can present a false positive; if
+present the executed file need to be checked
+file system filename \%systemroot%\$ntuninstallq817473$ virtual file system, must be checked querying mfc directly because file api can be hooked
+file system filesize 104857600 the default size of the file backing the virtual file system,
+must be checked querying mfc directly because file api
+can be hooked
+file system filename \%systemroot%\$ntuninstallq817473$ virtual file system, must be checked querying mfc directly because file api can be hooked
+file system filename \%systemroot%\$ntuninstallq817473$ rootkit, must be checked querying mfc directly because
+file api can be hooked
+file system filename \%systemroot%\$ntuninstallq817473$ rootkit, must be checked querying mfc directly because
+file api can be hooked.
+file system volume \\.\hd1\\ volume associated to the virtual file system
+file system volume \\.\hd2\\ volume associated to the virtual file system that only
+resides in memory
+file system partition the partition used as virtual file system by the rootkit has a peculiar setting to make the partition stealthy for most applications.
+those settings can be used as ioc see section 4.2.2
+network named pipe \\.\pipe\isapi_dg named pipe used for internal communications
+network named pipe \\.\pipe\isapi_dg{1-4} named pipes used for internal communications
+network named pipe \\.\pipe\isapi_http named pipe used for internal communications
+network named pipe \\.\pipe\isapi_http{1-3} named pipes used for internal communications
+network named pipe \\.\pipe\services_control named pipe used for internal communications
+network named pipe \\.\pipe\wininet_activate named pipe used for internal communications
+network fingerprint for smtp: in addresses like username@domain with n the length of username, the (n-1)th char of the username has ascii
+code 97+(sum/26) and the (n)th char ascii code is 122-(sum/26) where sum is the sum of the ascii codes of the first 8
+username chars
+network fingerprint for base64 http headers: after base64 decoding, the 9th char of the username has ascii code 97+(sum/26) and the 10th
+char ascii code is 122-(sum/26) where sum is the sum of the ascii codes of the first 8 chars
+network fingerprint for raw data: after base64 decoding, the 9th char of the username has ascii code 97+(sum/26) and the 10th char ascii code
+is 122-(sum/26) where sum is the sum of the ascii codes of the first 8 chars
+only the later event is created in the case no others are observed. it is believed that
+the former ones are infection markers of previous versions of the rootkit. it is worth to
+mention that such infection markers constitute valuable iocs.
+if no infection marker is observed then the above event is created.
+1.3 image copy and relocations
+a fork requires to copy the current driver image. for this, non-paged pool with the tag
+ntfs and a size that fits the rootkit image is allocated. the image is then copied over
+there. the tag ntfs cannot be considered as a relevant ioc as it is associated with
+windows which seems responsible for file management.
+the main issue with such a copy is that the base address of the image changes and all
+static references are invalidated. this is cleanly handled via proper relocations defined
+in the .reloc section; the rootkit embeds a relocation routine described in the remainder
+of this section. usually, malware handles this by writing to the injected memory, it is
+much more pragmatic and sustainable to do it via such an appropriate relocation. indeed,
+relocations are automatically generated by compilers; reusing this for relocation prevents
+forgetting to remap newly created static values across development versions.
+the function pe do relocation (5b270h) partially implements the relocation algorithm
+for portable executables3. it implements most of the relocation types but the mips and
+48bit addresses relocations. this function is detailed in section b.2
+1.4 hiding the child image
+the control is passed to the newly created child image calling its entry point at 1d6d3h.
+upon success, the headers of the child image are zeroed out as on the following listing.
+this makes the carving of the rootkit s portable executable difficult.
+this value is stored encrypted, decryption at 2b550h consists in a byte per byte xor of memory
+8bb88h and 8bbc8h. several other strings are stored the same way, that is xor split into two locations
+with a 40h byte offset.
+see \microsoft portable executable and common object file format specification" section 6.6 for a
+full description
+figure 1: snake advanced assembly manipulation when relocating the code.
+finally the main thread just returns causing the termination of the process. the
+rootkit runs in a kernel thread with code in non-paged memory. this method has a
+limitation: the owning process of this system thread does not exist anymore. this is an
+anomaly that can be used as a relevant ioc. indeed, according to the authors experience
+the owning process of a legitimate system thread usually exists.
+1.5 setup persistence
+todo: describe setup persistence rootkit init (15ca0h)
+1.6 force kernel mode
+the rootkit will interact between user-mode and kernel-mode. such interaction is delicate;
+in particular several system calls behave slightly differently when called from each mode.
+on such calls, the system traps the caller and uses the routine exgetpreviousmode to
+determine whether the parameters are from a user-mode or kernel-mode source.
+managing the situation can become difficult in the current rootkit where user mode
+modules need to be orchestrated via a messaging service. the authors believe this is the
+reason why the rootkit authors wrote wrappers for several system calls forcing kernelmode before their execution.
+for example on windows 2003, the code of exgetpreviousmode is quite simple, it just
+gets and returns the previousmode value
+from this, two directives are built which set the previous mode [fs:124h+0d7h] appropriately: set kernelmode (8e070h) and set usermode (8e074h).
+the tricky part is that the code may change across windows versions. the current rootkit implements an easy solution for this issue: it disassembles exgetpreviousmode, copies each instruction to the generated directive until the last return, and replaces
+mov al, [eax+0d7h] by mov [eax+0d7h] mode where the d7 is dynamically computed
+according to the disassembly process and mode is the requested mode (see figure 1).
+for example, on windows 2003 the rootkit generates the following directives:
+set_kernelmode:
+todo: describe the process for windows 7 and 2008 server
+the disassembly is achieved with the support of udis864
+before actually doing this there is a last tricky part. the instructions of exgetpreviousmode are in pageable memory. this can cause issues while accessing the buffer, and
+we do not want to handle page faults. windows uses mdl5 to describe the physical page
+layout for a virtual memory buffer. this layout can be fixed by calling mmprobeandlockpages which makes the pageable memory non-paged until the mdl is unlocked.
+the directives are created in exgetpreviousmode patch setup (1b3b0h). the system
+module , where exgetpreviousmode resides, was saved in the rootkit context
+at 1d328h using the look module function described in section b.3. the system export for
+exgetpreviousmode is obtained from the custom getprocaddress detailed in section b.4
+and its pages are locked in physical memory. the code is disassembled linearly, copying
+the code to the directive memory and saving second operand values of the last disassembled instruction. when a return instruction is encountered, the preceding instruction is
+replaced with the following opcodes where the last op2 is a double word corresponding to
+the saved second operand value of the instruction proceeding the return instruction.
+c6h 80h last_op2 00h c3h // mov byte ptr [eax+last_op2], 0 ; ret
+a dual code is created for user mode. in user mode, the resulting system call wrappers
+simply call set kernelmode as prologue and set usermode as epilogue.
+2 hooking
+2.1 hooking engine
+the hooking engine is very pragmatic, it relies on a custom interrupt (c3h). when a
+location is to be hooked, the instructions that cover the first four bytes are relocated to
+a handler structure. a callback is also set in this structure and the structure is inserted
+in a table handler table (9a75c) where it is associated to an id.
+the target location is hooked replacing the first four following bytes with push h; int c3h
+where h is a handler identifier.
+2.1.1 creation of the interrupt c3h
+the routine which sets the interrupt payload, gate set (63ba0), has two functional modes.
+mode 0 : set a gate to a routine, the gate and the routine are provided as argument.
+mode 1 : reset gate to original value, the value is provided as argument.
+one of the authors was lucky on this part of the reverse engineering process, recognizing udis86 by
+chance. the library is not really linked, but parts of the source code were included. further information
+about udis86 can be obtain at http:// /.
+memory descriptor list
+saving idt and gdt from all processors. as each processor has its own interrupt
+table, the main issue is to actually execute the code on the target processor. for this,
+the routine launch on cpu (1a6a0h) first locks the execution on the current cpu raising
+irql to dpc level and gets the cpu number via movzx eax, large byte ptr fs:51h
+launched as a dpc on the targeted cpu
+in order to collect the idt and the gdt on each cpu, the code simply uses the later
+function with sidt and sgdt based routines, iterating over all processors via a loop on
+the number of processor: kenumberofprocessors.
+setting the interrupt under mode 0, the selected gate (c3h) payload is registered,
+setting the appropriate flags for code execution:
+2.1.2 self-hooking bypass
+as presented in the previous section, the rootkit includes a system wide hooking primitive. such a hooking can be troublesome for some apis internally used by the rootkit.
+for example, if accessing registry keys are prevented, then the rootkit itself may have difficulties accessing these registry keys, too. this is the assumed reason why five hooking
+bypasses are implemented on the following apis.
+the bypass technique heavily relies on the relocation engine described in section 1.6. the
+disassembly is not done on the real image of ntoskrnl but on a non paged copy. in the
+same manner a non paged copy of the kiservicetable is obtained. one possible reason for
+this is stability and performance. a second reason is stealthiness, read access to ntosimage
+is unlikely to be legitimate
+copying ntoskrnl image. pe load ntoskrnl (62220h) obtains the file path and the
+base address of via the first module in the structure system module information
+accessed querying zwquerysysteminformation on class systemmoduleinformation (1bh).
+this information is passed down to pe load from system file (5c520h) where the portable
+executable format is parsed and mapped into memory according to the process described
+in section b.1 and relocated according to the algorithm described in section b.2. note
+that the iat is not fixed.
+the resulting copy is saved at ntoskrnl local image (9a750h).
+copying the serice table. the function kiservicetable copy 61d40h creates a copy
+of the service table using the local copy of ntoskrnl. for this the service table descriptor
+(sdt) is obtained via the system call keservicedescriptortable, it has the following
+the first entry of the sdt provides the system service descriptor table (ssdt) for
+ntoskrnl, and the first field of the later structure provides the base address of the service
+table in the loaded image of ntoskrnl.
+it appears that this method may fail to obtain an address out of the image bound.
+in this case the code implements fallback cribling the image of ntoskrnl for the following
+instruction.
+mov ds:sdt offset // c7h 05h offset
+each word of the image is compared with 5c7h. on a match, the next double word
+is taken as a kiservicetable candidate. this is confirmed verifying that the last service
+is in the image bound.
+when a sound service table pointer is identified, its counter-part in the local copy of
+the ntoskrnl image is saved at kisevicetable copy (9a74ch).
+starting stub relocation. the idea behind the bypass of exallocatepoolwithtag and
+exfreepoolwithtag consists of relocating the beginning of the function where the hooking
+should be applied if the function is hooked. executing the relocation would then bypass
+the hook. the length of the hook is hardcoded to six bytes, then the relocation only
+applies to the six first bytes.
+the relocation engine relocate code (625e0) is also based on udis86, it takes as input
+the start address and the length of the buffer to disassemble and the relocation offset to
+apply.
+first, the buffer is disassembled linearly from the starting relocation address until the
+number of disassembled bytes is greater or equal to the requested relocation size. if a
+return instruction is encountered during this stage, the function exits with a failure error
+code.
+this disassembled stub is relocated during a second stage. the mechanism transforms
+any relative branch into an absolute branch applying the offset. concerning absolute
+branches, the offset is simply applied. in other terms, sequential instructions are just
+copied as it is, and the following rewriting rules are applied to branching instructions,
+where o is the relocation offset, a an offset, a an absolute address, @ the address of the
+ote: this translation seems buggy; the authors are not sure about the interpretation of this part of the code. the natural would rather be the following, as jnc is
+the negated conditional jump jcc
+trap to debugger on windows xp, the fist byte of the relocated code is set to 8bh.
+on windows 2000, the first byte is set to 55h. the authors do not understand this
+relocation rule.
+when the relocation is terminated, the resulting code is finalized with a push d where
+d is the is the end of the relocated buffer with the relocation offset applied.
+this relocation algorithm is very limited and definitely error prone in some cases like
+backward jumps or jumps to register values. but considering that this is applied to small
+pieces of code, this algorithm should work most of the time.
+this bypassing mechanism seems to be designed for pre-windows xp systems. considering modern patchguard, inline hooking may have been removed making this part of
+the code unnecessary.
+note: the x64 version is simpler, it only does relocation for conditional and unconditional relative jumps, substituting jmp o jmp ptr [rip + 6 + o] where a is an offset,
+o is the relocation offset and o = a + o.
+service gate relocation. almost the same technique is used for zwcreatekey, zwsetvaluekey, zwopenprocess and zwterminateprocess. the main difference is that those
+api functions are redirections to the global service handler. here the bypass consists of
+the relocation of the service routine, bypassing the service manager.
+indeed, those functions have the following form, where service is the requested service
+and manager - the global manager.
+the code first parses the function to obtain the service. this is achieved in get service id
+(61bd0h) where udis86 is used to search for the pattern mov eax,. on the first match,
+the second operand is decoded and saved as the requested service.
+secondly, the service routine is collected from the copy of the kiservicetable and the
+api function address is localized in the copy of the ntoskrnl image.
+loc_61868:
+finally, the starting stub of the routine is relocated using the same code as for exallocatepoolwithtag and exfreepoolwithtag.
+2.2 bypass the patchguard
+this section relies on the 64bit sample.
+the x64 version of patchguard prevents the installation of the hooking mechanism. as
+a result, the x64 version of the rootkit implements a patchguard bypass. the technique is
+based on a kebugcheckex hook similar to the one described in uninformed6as by skape
+(mmiller@ ) and skywing (skywing@ ). the idea is to abuse
+the validation reporting mechanism based on a bug check reported with code 109h.
+http:// 112.2.1 cancel patchguard notification hooking kebugcheck
+the bypass is fully based on the hooking engine previously described with insertion of an
+int c3h and the relocation of the overwritten code. two callbacks are placed, the first
+one in rtlcontextcapture. this callback is actually used to hook kebugcheck, of which
+the code is saved at patchguard initialization and overwritten when signaling an integrity
+issue. this is well described in the following article:
+the mechanism is simple: check if rtlcontextcapture was called by patchguard notification, checking if the return address is in the first 64h bytes of kebugcheck and that
+the bug code is 109h.
+if the irql is passive then the code is in a worker and it is enough to restore the
+worker entry point context so that the worker goes back to processing other work items.
+this is enough to cancel the bug check. we do not have to worry about the context as
+all is stored in it statically.
+before resetting the worker a do nothing dpc is launched. this may be to ensure
+that the worker has something to process.
+2.2.2 replay patchguard dpc hooking kxdispatchinterrupt
+there is an \annoying" case, instead of launching kebugcheck the patchguard seems to
+be able to do a direct call at dispatching level. in this case the worker reset is not an
+alternative.
+in this case the bypass technique relies on a second hook whose target is computed
+by the following dpc. it looks for gs:207 value on the stack an gets the address above it.
+void __stdcall sub_160a0(struct _kdpc *, pvoid, pvoid, pvoid)
+sub_160a0 proc near
+being in a dpc, the previous context to inspect is kidispatchinterrupt and indeed we see that gs:20 is saved on the stack by nt!pschargeprocesscpucycles called
+at nt!kxdispatchinterrupt+0xd6. we can guess that the return address of this call is the
+target of the hook. at this location the cpu context is captured just before dispatching
+the dpc.
+he usage of the structure referenced by gs:20 is not well documented. in we can observe
+that dpc management seems to massively rely on gs:20 for cpu data and dpc queue management.
+the callback of this hook saves the cpu context in a table with one entry per cpu.
+in other terms, this table then contains, for each cpu, the context of the last dpc.
+let s come back to patchguard and kebugcheck. if the irql is at dispatch level,
+the callback restores the context saved in the latter table and returns. this sets the cpu
+in the exact same context as in the last dpc, that is patchguard dpc. at this stage the
+patchguard will again randomly select a notification method and this will loop until a
+notification via a worker is selected where the above callback cancels the notification.
+2.3 hooking payload
+2.3.1 inline hooking
+todo: describe hook inline (631a0h)
+2.3.2 device hooking: iofcalldriver
+iofcalldriver is hooked with payload hook iofcalldriver (164e0h). when this routine
+is called a list of second level payload is traversed, we name this list hookeddeviceslist
+(82920h). this list manipulates io requests including the rootkit internal requests, e.g.
+to the rootkit virtual file system described in section 4.
+this second level handler list is manipulated by hookeddevice inserthandler (16090h)
+and hookeddevice removehandler (16110h) which respectively, insert into and remove,
+members from the list. the members have the following structure
+the payload of hook iofcalldriver (164e0h) has several different behaviors according
+to the device name.
+null, beep, tcpip and nsiproxy. the routine rootkit start (1ce40h) is called. it initiates the rootkit functionalities setting up the messaging system, init commchan
+(15a50h), and installs the following hooks system hooking (1e5f0h). most of them
+are related to the hiding of rootkit components. access control lists seem to be
+maintained; authorized process ids are stored at pid list (8c99ch), a second table
+(8c998h) is used in the access control but its usage is not fully understood. finally,
+a third list process name list (8d94c) maintains process names.
+zwquerykey, zwenumeratekey, zwcreatekey and zwsavekey. hide registry keys named ultra3 or legacy ultra3. note ultra3 is the rootkit service
+name, legacy ultra3 may be related to a former version of the rootkit.
+zwreadfile. hide the content of \%systemroot%\$ntuninstallq817473$
+zwquerysysteminformation. hide rootkit handles.
+zwqueryinformationprocess. lie on data execution prevention status.
+zwclose. launch a rootkit module. the actual module is unknown.
+zwterminateprocess. if the system is shutting down, cleanly shutdown the rootkit,
+stopping modules and communication channels.
+obopenobjectbyname. hide the rootkit s virtual file systems.
+figure 2: snake communication objects resembling the building blocks.
+netbt and afd. install transfer device interface hooking on the tcp device. this functionality is a communication dispatcher or a command listener.
+todo describe hook sub 174c0 on device filesystem\sr (driver \filesystem\ntfs)
+3 communication framework
+the communication framework is an essential part of this rootkit - almost every other
+component is relying on it. it was designed to provide robust remote control over infected
+machine by providing communication channels between user mode components of the
+snake package and the remote operators, with the use of the vfs as a (permanent and
+volatile) storage mechanism.
+3.1 communication objects
+the communication framework relies on communication objects created from a table of object descriptor structures, each composed of a name, type, and several handlers (see
+figure 2)
+commobj_descriptor struc ; (sizeof=0x0c)
+name char *
+type dd
+comm_handlers (pointers to functions)
+there are 11 communication objects divided into four types (names are used as such
+in the rootkit body):
+the number and meaning of object handlers depend on their type, but they usually
+implement the following handler table (names of the handlers added by the authors):
+base objects can be linked together to form a piped structure that we have called communication channel (see figure 3). objects are piped by the use of . (dot), for
+example: or . a given communication object can only
+support objects of certain type to be linked to, for example domc and doms objects
+can only link to an object of type 2.
+the semantics of the different objects are not fully understood at the time of this
+writing. here are the ones which have been fully or partially analyzed:
+encrypted named pipe client)
+encrypted named pipe server)
+each object handles a specific task, for example: the first layer will handle decryption
+and scheduling and the second object handles the data layer; reads, writes to named pipes
+for example. domc and doms are objects that provide respectively a client and a server
+interface for bi-directional primitive objects such as np or .
+figure 3: snake communication channels are built from communication object used as
+building blocks.
+3.2 communication channels
+to use the communication objects, communication channel structures are being used.
+they are created when the objects are being instantiated, and they contain all the data
+necessary to use them such as sub-channels, addresses, unc names, encryption keys
+among others. this structure is of variable size depending on the object type and has a
+pointer to a communication object instance structure (comm obj inst t2) at offset 0x0,
+and parameters of the channel at higher offsets. all the members except the pointer to
+a communication object instance are object dependent. the below describes an example
+of how a hardcoded channel , which implements a simple named pipe client, is
+designed. the leftmost object for this channel is domc , here is the corresponding channel
+in this case at offset 0x8 we see the pointer to another comm channel structure8, which
+is a sub channel to this comm channel. in case of object, the link would lead
+to a sub-channel created from the np object (comm channel np structure at offset 0x8):
+this time at offset 0xc we can see the string representing the unc name of the named
+pipe used by this communication channel, for example \device\namedpipe\isapi_dg,
+and at offset 0x14 a handle to an open named pipe object. another example: enc object
+contains an encryption key at offset 0xc of its communication channel structure (to be
+included in the next versions of the document).
+comm obj inst structure contains, as a first member, a pointer to the handler table
+described above, and a bunch of synchronization primitives, possibly for controlling access
+to the instance by multiple threads. this structure represents an instance of a single
+communication object of type 2:
+each object type has its own initialization function that calls a constructor stored in
+the third handler table field. for example, type 1 objects use the initialization function
+sub 73870. all the created communication channels are inserted into a 64-slot hash table
+actually at offset 0x4 there is a second communication sub-channel created when the subsequent type
+2 object implements a server - accepts connections from multiple sources.
+figure 4: the example architecture of a compromised network. one type of covert
+channels are being used for lan trafic between different snake instances whereas different
+ones are used for internet traffic. note: the authors based this diagram solely on reverse
+engineering and had no insight into a compromised network.
+referenced at 0x8d7f8h via the routine sub 6cd00. each inserted channel is indexed by
+a hash computed on the object address and the type of its leftmost object, possibly for
+performance reasons. if a collision occurs, conflicting channels are inserted on the list
+with the same index.
+3.3 hardcoded channels
+five hardcoded communication channels - named pipe clients, all using object (string hardcoded at 0x8ad08), are initialized upon rootkit start. the named pipe unc
+names used for the np sub-objects of this objects are the following:
+the pointers to five instances of objects are located in a table at 0x8d724.
+these objects are initialized upon driver startup at sub 4ee40 and the i/o communication
+loop sub 4fd80 is launched. the loop will periodically try to initiate communication
+by calling appropriate object handlers on named pipe objects. this loop seems to be
+implementing a tunnel between the named pipe to which a user mode process, that
+implements the server, is connected, and a remote end via a low level ndis traffic that
+can be of type icmp, udp or tcp, which is implemented in sub 4fea0. these mechanisms
+are probably used for local lan communication between different instances of the rootkit
+on the compromised network (see figure 4)
+two levels of processing are implemented in two separate threads using two linked
+lists: one at 0x8d748 and another at 0x8d738. when the ndis traffic is arrived, provided
+the appropriate trigger is satisfied, the tainted traffic will be routed to one of the isapi dg
+pipes, where the userland component will be waiting to capture it (todo: userland
+component analysis needed). other listeners are also initialized: smtp triggered (routed
+to userland via isapi log pipe), and http triggered (routed to userland via isapi http
+pipe). see also 3.8 for the description of these triggers.
+3.4 channels initialized from the queue
+other communication channels are initialized from the bootstrap queue: several instances
+of and . see the bootstrap queue analysis for more information (todo)
+3.5 low level communications(todo)
+the rootkit implements a low-level communication channel using the ether type 0x7ff.
+this ether type is not referenced by rfc. the messages from this channel are handled
+differently via the worker sub 4fea0. the buffer queues are skipped in this case.
+3.6 command listener via tdi hooking
+the transfert device interface, a.k.a. tdi, is hooked on device \device\tcp. the hooking mainly consist in intercepting the traffic tainted by the malware on packet reception.
+thus this code can be considered as a listener for command and control.
+for this context, the malware implements inline hooking, inserting its handlers in the
+tdi processing of irp. the major irps are handled in hook tcp (52ce0). this payload is
+inserted via hookeddevice inserthandler (16090h) presented in section 2.3.2 on the device
+hooking mechanism.
+irp mj create. insert the pid to the list of monitored processes and create a packet
+queue.
+irp mj device control. convert into irp mj internal device control
+and transfer the control over the corresponding branch.
+irp mj internal device control. look for the irp minor function in
+the handled list of minor functions hook tcp tdi function (8ac88h). on match the
+corresponding handler in hook tcp tdi handler (8ac8ch) is called on the irp, the
+irp s stack location and a reference to a handler that will be called at completion.
+this list of handlers is described below.
+irp mj close. close the packet queue.
+irp mj default. nothing particular occured.
+all major functions handlers are terminated by hook tcp finalize (16140h), which completes the requests.
+the following list describes the handlers for each minor function, i.e. the tdi events,
+processed by the rootkit.
+tdi associate address (52fa0h). get the reference associated to the object
+in the irp parameters and populate the reference in an internal list located at
+irp device list (8d788h). in other terms, this handle maintains a list of file references corresponding to the different tcp connections.
+tdi dissociate address (54050h). remove the entry from irp device list
+(8d788h), this is clean-up.
+tdi connect (540b0h). reassemble the message and set post processing hook tcp process message
+(542a0). the post processing shows 5 message types: :reset, :cancel, :timeout, :unreach, :success and an unknown type where a value is printed.
+those messages are logged via the function log message (54600h) and then committed to a queue located at tcp hook message queue (8d7d0h)
+tdi disconnect (546e0h) push irp auxiliarybuffer in a chained list for post
+processing.
+tdi send (548b0h) if the current process name is a browser, the following event is
+created \\basenamedobjects\\wininet_activate. this event is then pulsed and
+closed. there are no other reference to this event in the malware code. possibilities
+include handling via a module or obsolete code.
+tdi receive (43d50h) set the tainted traffic interception routine, tainted traffic interception 0
+(43de0h), as a final handler called at irp completion. the authors assume that this
+final handler will be called when tdi terminates the handling of the current tcp
+packet.
+tdi set event handler (54770h) look for the event code in the list hook tcp tdi event
+(8acc8h) then register the associated handler from hook tcp tdi handler (8accch) in
+io stack location.parameters
+the following list describes the tdi event handlers defined by the malware.
+clienteventconnect (55210h) log the connection via the routines logger 2 (54600h)
+and logger commit (56eb0h), retrieve the internal tcp hook stuct corresponding to
+the connection and set the transport address in this entry.
+clienteventreceive (554e0h) and clientevenchainedreceive (55700h) call the
+traffic interception routine, tainted traffic interception (55a00h), on the received
+data.
+clienteventreceiveexpedited (556b0h) and clienteventchainedreceiveexpedited (55700h)
+call the handler tdi request kernel set event.eventhandler on the received data.
+clienteventchainedreceiveexpedited (55440h) release the internal tpc hook struct
+and call the tdi request kernel set event.eventhandler on the disconnection data.
+3.7 tainted traffic processing
+the rootkit is designed to watch for door knocking on a server where internet-facing
+services are being used. the trigger can be delivered hidden in different places of different
+network protocols (see 3.8) depending on rootkit s configuration and victim s server type
+(http - 3 different possibilities, smtp, tcp, ip, icmp, dns, ethernet), but they
+all have one thing in common - the trigger mechanism. there are actually two trigger
+mechanisms: the deadbeaf-style check and the checksum. the deadbeaf-style
+also contains the checksum calculation as one of its calculation stages.
+3.7.1 the checksum
+the checksum is being calculated on 8 characters at a given offset and is compared with the
+following 2 characters, so the trigger signature is 10 characters long in total. characters
+must be ascii-printable (>32 and <128). the ord of the 8 characters are summed up
+(sum) and are being compared as follows:
+signature[9] == sum / 26 + 65
+signature[10] == 122 - sum % 26
+if the match occurs, the traffic is processed as tainted. example usage: user part of
+an e-mail address, see 3.8: \mail server".
+3.7.2 deadbeaf-style
+similar to checksum but some more processing is involved, as this encoding can also carry
+a data message in addition to being only a signature.
+the signature contains the 10 bytes of checksum but it is being followed by a base64-
+encoded content. first, the checksum signature is being calculated as described above,
+then the base64-decoded content is being base64-decoded. the base64-decoded content
+is then being xor-ed with the raw buffer starting from offset 0x0, so at the first byte of
+the signature. first dword of such a decrypted buffer is being compared with the value
+located at 0x7945c (hardcoded to 0xdeadbeaf but was observed to being changed to
+an arbitrary value during the boostrap queue loading). if there is a match, the traffic is
+considered tainted. for some covert channels the payload can also carry a data message.
+a data portion of the message is located at offset 0xa, directly after the 10-byte signature
+(after de-xoring). example usage of this trigger: the value of an http header, see 3.8:
+\web server or web proxy".
+the checks for tainted traffic are perform on raw tcp stream (sub 49620), http and
+smtp (see also 3.8). from this handling a queue of work item is built via sub 49f80.
+todo: describe tainted traffic interception 0 (43de0h).
+3.8 network footprint
+it is likely that a communication mechanism is in fact a sort of proxy to pass traffic from
+the external world to named pipes where user land component can be attached. also,
+named pipes can be potentially used to route internal ( lateral ) traffic, e.g. across the
+segments on the infected lan. most of these channels are created in a way that ids
+signatures would be difficult to construct, for others a prototype is proposed below. traffic inspection is split into two groups. first group is hooked via tcp traffic signature
+matching performed at sub 49580 and obtained by hooking \device\tcp.
+warning: the below signatures are prototypes - and have not been tested
+1. tcp. can be installed on a server with any kind of service. signature matching:
+deadbeaf-style at offset 0x0. encrypted and encoded signature is 22-byte long
+consisting of alphanumeric characters 0x2b-0x7a. plain snort signature would be
+difficult to create. traffic is passed to at isapi http named pipe (frag
+object cuts data into smaller pieces before sending it to the named pipe, currently
+the reason is unknown).
+2. web server - data passed in http get request url parameters can be installed
+on a web server. signature check type: checksum. it is contained between "?" and
+first "&" in the url. it is 10 bytes, 8 arbitrary bytes and 2 bytes of checksum (this
+checks are also a part of deadbeaf-style signature). ids signature is difficult to
+create in this case. traffic is passed to np at isapi log named pipe.
+3. web server or web proxy - data passed in http headers. can be installed on a proxy
+server. signature is a deadbeaf-style signature contained after ":" in the first
+http-header (just after the request line). connection is logged to np at isapi log
+named pipe by sending the following string: $ip address + newline (including the
+dollar sign, ip address replaced by textual form of ip address of the remote end),
+then the rest of the data is getting decoded using the deadbeaf-style decoding.
+the decoded data is being sent to or enc. at isapi http[n] where
+n is encoded in a first dword in the decoded buffer (see sub 6c000). plain snort
+signature would be difficult to create. the example traffic with trigger could be the
+following:
+4. web server special - data passed in http request local file part of url. this
+is triggered by comparing the local file part of the url with a string defined at
+0x8d680 (initialized by the rootkit but zeroed on my memory dump). pipe name
+where the traffic is passed to, is also computed at runtime (type np ). it is possible
+that the rootkit with specific configurations writes an arbitrary value here.
+5. mail server. signature check type: checksum. the signature is located after rcpt
+to: and ends by @ (so this is the user part of a recipient e-mail address). the
+example traffic with trigger could be the following:
+building snort signature would be questionable. the whole traffic is passed to np at isapi log. first the ip of the remote end is logged as $ip address + newline, then
+all lines of the smtp message body are passed to the pipe. the user land component will then receive this transmission and interpret it. there are few commands
+encoded by a first character of the sent buffer that are parsed in sub 200081e2 in
+the main userland module:
+second group is packed-based matching obtained by registering an ndis protocol
+(mechanism described in previous subsections), checks performed at sub 4f1b0. these
+can be processed by object and send to isapi dg (depending on the configuration
+state it could possibly be different).
+1. raw ethernet. traffic is identified by a custom ethertype 0x7ff (whereas the ip
+protocol is identified by 0x800)
+2. raw icmp. deadbeaf signature is checked at offset 0x8 of icmp packet.
+alert icmp any any -> any any (msg:"snake icmp"; \
+offset: 0x8 ; pcre:"/^[+-z]{22}/";)
+3. raw tcp. deadbeaf signature at offset 0x0 of the tcp stream.
+4. raw udp. must be port 53, deadbeaf signature at offset 0x0 of udp data, so
+this can be handy to be installed on a dns server:
+alert udp any any -> any 53 (msg:"snake udp 53"; \
+pcre:"/^[+-z]{22}/";)
+5. raw ip. deadbeaf signature at offset 0x0 of ip packet data:
+alert ip any any -> any any (msg:"snake ip"; \
+pcre:"/^[+-z]{22}/";)
+interesting typo is contained in one of the smtp messages. "transmittion" is a
+mistake that an english native speaker would rather not do.
+4 virtual file systems
+the rootkit uses two virtual file systems. one is persistent over reboot and ntfs formatted. the other one volatile and fat formated; its content is never flushed to a real
+file system, as a result its content is only accessible on a live infected machine. both are
+encrypted with a cast like algorithm. the filesystem clusters are decrypted on access
+via cache management. as a result the file systems do no appear in clear text even in the
+physical memory (see figure 5).
+4.1 description
+the virtual file system is set-up in vfs init (32230h). as initialization, a chained list
+vfs io (8e3a0h) is initialized and associated to a lock vfs io lock (8e384). this list is
+handled via exfinterlockedinserttaillist and exfinterlockedremoveheadlist so that the
+code can run at any irql. then an event vfs up (8e3a8h) is create to indicate the status
+of the virtual file system service.
+two files system are setup, the first one is persistent over reboot and backed by a file
+on the filesystem. the second one is volatile and only resides in memory, it is lost on
+rootkit restart or reboot.
+figure 5: snake virtual file system architecture
+4.2 persistent file system
+the persistent file system is setup in two steps: (i) setup a memory section backed by
+a file, (ii) provide access to the section via a device hooked with encryption/decryption
+primitive on access, (iii) mount the device as an ntfs filesystem. this operation is
+detailed below.
+4.2.1 setup a section backed by a file.
+the first called routine vfs map raw (339e0h) map in memory the file that will back the
+virtual file system. this file is located at the following path.
+\\systemroot\\$ntuninstallq817473$\ the file is created with the following options meaning that the file is not a directory, it is not cached, all operation are performed synchronously and no read ahead can
+be achieved. in other terms the file is accessed cluster per cluster and all changes are
+committed immediately with no caching mechanism. this configuration has limited performance but it is very reliable.
+the second noticeable parameter is the allocation size of 640000h (104857600d) which
+can be considered as an indicator of compromise.
+then this file is mapped to a memory section. the section has read/write permission
+and it is sec commit and sec nocache, meaning that the section is backed by
+the previously created file via the operating system paging mechanism with no caching.
+in other terms all modification to the section are directly mirrored to the backing file.
+finally this section is mapped to virtual memory via zwmapviewofsection.
+4.2.2 bind the section with a device.
+a device named ndevicenrawdisk1 is created and hooked via the generic device hooking
+engine described in section 2.3.2. the handler is located at 327c0h and we name it
+vfs resident handler.
+the handler behave differently according to the irp function.
+irp mj create, irp mj close: the io status of the irp is set to 1. then
+the request is completed.
+irp mj read, irp mj write: the irp auxiliarybuffer is inserted in the vfs
+io list: vfs io (8e3a0h).
+irp mj device control: several behaviors are observed according to the control code.
+ioctl disk get drive geometry 70000h: the following structure
+is filled. partition_information_ex;
+it indicates that the partition starts at offset 0x200 and the size is stored at
+8e388h for the first persistent partition and at 8e390h for the volatile partition.
+the partition number is 0, it is not modifiable and the type is mbr. this is
+in contrary to the standard partition setup - the partition number should be
+1-based and partitions are usually modifiable. the mbr type is 0 meaning
+unused, it is not bootable and not recognized. finally a gpt attribute is
+set: gpt attribute platform required. typically this flag is set
+for oem partitions and it prevents to perform any operations.
+this structure setting is extremely unusual. the configuration makes the partition invisible for most of applications. on the other hand, this can definitely
+be used as an indicator of compromise.
+ioctl disk get partition info 74004h: the partition is kept stealth;
+the returned information is coherent with the one returned for control code
+70048h. the the output structure is the following.
+ttempt to extract the filesystem via a utility on the device failed at first time
+because raw access to the physical device is blocked after the file system is mounted.
+however, after a small modification in the driver file that lets the driver install the encrypted volume but prevents mounting it, we could successfully dump the virtual file
+system. modified the execution of the rooktit by pausing it just after the call to setup
+virtual storage at 0x15aab. then it was possible to dump the encrypted disk by using
+the following command:
+dd=\\?\device\rawdisk1 of=disk.img
+there is also a way to access files on the vfs the same way snake operators are doing
+it; the vfs is used by the user mode components of snake and by any other tool including . to access it from user mode it is sufficient to operate a volume name in the
+he input and output to the vfs are handled by the routine located at 0x33500 which
+encrypt and decrypt data on the fly per chunks of 0x200 bytes. this routine uses
+mmmaplockedpagesspecifycache to serve the decrypted data. the hook for encrypted
+io is installed via hooking iofcalldriver api (see 2.3.2). each time there is an operation
+to be performed on the encrypted disk, the hook will divert it to the decryption routine
+first. the operation is performed at low level and is completely transparent to other
+kernel components and the user processes.
+cryptography the cryptographic algorithm used to access the vfs is a cipher derived
+from cast composed of a key scheduler located at 0x31300 and a cipher primitive located
+at 0x37e0. the 128bit cryptographic key used to access the vfs is located at 0x8bb40.
+0008bb40: a1 d2 10 b7 6d 5e da 0f a1 65 af ef 79 c3 66 fa
+rawdisk1 the vfs rawdisk1 mapped from is believed to be mounted as
+nnhd1. when decrypted, appears as an ntfs volume containing binaries,
+configuration files and encrypted files but also queue and .
+figure 6: snake messaging framework
+rawdisk2 the vfs rawdisk2 is mounted as nnhd2. the header is filled with the
+following buffer which is a file system header of a fat partition.
+after the initialization the rootkit opens and reads its configuration resources. this is
+contained in the queue file located on hd1 (see the fragment of the directory listing
+command at 4.5.1). this queue file is divided into slots called messages (see figure
+6). a message consists of 64-byte header (todo - describe the header) and the body.
+most of the messages are encrypted and must be decrypted by the routine located at
+sub 20410. each message is identified by the message id. some message ids are precisely
+defined, others are defined by range which describes their meaning (for example, msg
+0x229 contains an encryption key to decrypt subsequent messages, messages 0x65-0x6f
+contain communication objects to be created). queue file is also being accessed by the
+userland modules (todo). messages can be of type integer or string. there are many
+message id ranges that are being read from the bootstrap queue by snake kernel, so far
+the following have been identified: in the kernel part:
+replacement. it is deliver as a dword in textual form (0x41414141) and is then
+converted to integer. read in at sub 49960.
+trigger
+stored in a table at 0x8d5c8 by sub 37c60
+name of the pipe. it will create a communication object enc. with the named
+pipe isapi http1. in an example queue the following objects are created:
+e.g. 0x70 contains parameters for object created from 0x65, 0x71 for 0x66 etc. each
+of the base object accepts some configiration parameters, for example np objects
+accepts allow=*everyone , enc objects accepts key=some key userland dlls when they appear. usual targets are: , ,
+browser processes
+defined earlier processes. injection is operated from sub 19fc0 (snake module start)
+6 userland components
+snake is a modular framework and it is difficult to analyze it without its userland counterparts that get injected from the queue during rootkit initialization. the authors have
+captured three different user mode components, each of them compiled for the two different architectures: 32 and 64-bit. it is possible that more components exist in the
+wild.
+all user mode components are extracted from the queue file (see 5) and injected
+into the process by the kernel pe injector. the main malicious thread is
+created by the kernel code and its priority is being bumped to 31 which corresponds
+to the highest of real-time priorities in windows. it means that this thread is not
+being pre-empted if it continues to stay in the running state. it also makes the thread
+unstoppable by the debugger. the kernel is waiting for this thread with the timeout set
+to 15 seconds, probably to prevent the freeze of the system in case of the thread entering
+a long loop. the thread must spawn other threads before this timeout, otherwise the
+kenrel will terminate it. 32-bit versions of the modules will be described but the same
+functionality is implemented in their 64-bit counterparts.
+6.1 inj snake - main module
+this is the main userland module of snake rootkit. this module is very large (884
+functions) and performs many tasks. currently identified tasks are the following:
+opening the queue file and reading/writing messages destined for user space
+connecting and operating the other endpoints of named pipe communication channels. it includes decrypting/encrypting and interpreting the traffic that is sent by/to
+the kernel components (see 3.8)
+providing callback functions for all other injected modules (code_result_tbl(),
+snake_modules_command() etc.)
+todo
+6.2 inj services todo
+6.3 rkctl - rootkit control module
+this module seems to provide functions to control the rootkit behavior. todo
+a list of int c3h handlers (todo)
+b supporting functions
+b.1 pe image mapping (todo)
+b.2 relocation algorithm
+the pe relocation algoritm implemented by the rootkit follows the lines of the specification. it uses the fix-up table pointed by the basereloc.virtualaddress field in the pe
+optional header. this table is usually located in the .reloc section. it is broken into blocks
+which define the fixups, each block begins with a 32bit address pointing to the location
+where the fix-ups will be applied followed by the size of the block expressed as a 32bit
+unsigned integer. this 8 byte header is followed by the fix-ups expressed as a bit field
+where the 4 high bits express the relocation type and the 12 low bit express the relocation
+offset. programmatically the relocation table is a table of structures defined as follows.
+the algorithm embedded in the rootkit processes the following fixup types.
+image rel based absolute value 0 do nothing, this is used to pad the
+relocation table
+image rel based high3adj value 0bh this is a 48bit relocation, it occupies 4 more bytes in the relocation table.
+b.3 get module reference
+the function lookup module (438f0h) gets the image references of the module name specified as the first argument. upon success it returns the image base address and the image
+size of the located module. the values are then respectively stored in main struct.ntoskrnl baseaddress
+(8cb80h) and main struct.ntoskrnl imagesize (8cb84h).
+the target module is searched in the module list obtained via a system call zwquerysysteminformation on systemmoduleinformation (16h). this technique is documented at the following address http:// kernel/procaddr. the selection routine implements four cases according to the target module name. the first module in the list is selected. 

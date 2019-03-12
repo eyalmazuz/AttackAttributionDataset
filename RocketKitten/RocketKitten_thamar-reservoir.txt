@@ -1,0 +1,204 @@
+june
+2015
+thamar reservoir
+an iranian cyber-attack campaign
+against targets in the middle east
+clearsky
+tlp:white
+for public distribution foreword
+this report reviews an ongoing cyber-attack campaign dating back to mid-2014. additional sources indicate
+this campaign may date as far back as 2011. we call this campaign thamar reservoir, named after one of
+the targets, thamar e. gindin1, who exposed new information about the attack and is currently assisting with
+the investigation.
+the campaign includes several different attacks with the aim of taking over the target s computer or gain
+access to their email account. we estimate that this access is used for espionage or other nation-state
+interests, and not for monetary gain or hacktivism. in some cases, the victim is not the final target; the
+attackers use the infected computer, email, or stolen credentials as a platform to further attack their
+intended target.
+the attackers are extremely persistent in their attempts to breach their targets. these attempts include: breaching trusted websites to set up fake pages multi-stage malware multiple spear phishing emails based on reconnaissance and information gathering. phone calls to the target. messages on social networks.
+while very successful in their attacks, the attackers are clearly not technically sophisticated. they are not
+new to hacking, but do make various mistakes, such as grammatical errors, exposure of attack infrastructure,
+easy to bypass anti analysis techniques, lack of code obfuscation, and more.
+these mistakes enabled us to learn about their infrastructure and methods. more importantly, we have
+learned of 550 targets, most of them in the middle east, from various fields: research about diplomacy,
+middle east and iran, international relations, and other fields; defense and security; journalism and human
+rights; and more.
+various characteristics of the attacks and their targets bring us to the conclusion that the threat actors are
+iranian. in addition, we note that these attacks share characteristics with previously documented activities: attacks conducted using the gholee malware, which we discovered. attacks reported by trend micro in operation woolen-goldfish. attacks conducted by the ajax security team as documented by fireeye. attacks seen during newscaster as documented by isight.
+for further details and questions, or if you think you are a victim please contact us at:
+info [at] 1 dr. gindin is an expert on iranian linguistics and pre-islamic iran, renowned lecturer and research fellow at the ezri
+center for iran and persian gulf research in the university of haifa.
+http:// modus operandi - investigation of targeted attacks
+this chapter contains an in-depth analysis of a series of attacks against one of the thamar reservoir targets.
+the heavy attack began two days after the target, dr. thamar e. gindin, was interviewed on the idf radio
+station2.
+over the course of two weeks, the threat actor used the following attacks against a single target:
+1. one spear phishing email containing malware.
+2. three separate email messages with links to a fake log-in page, (including two factor authentication),
+one of them hosted on a breached website, the other two on dedicated domains.
+3. two phone calls from the attacker, designed to build rapport for one of the phishing emails.
+4. numerous attempts to take over cloud accounts using their account recovery mechanism.
+5. numerous messages on facebook and by e-mail.
+while we describe this case mostly from the point of view of a single target, we would like to emphasize that
+these scenarios repeated themselves for many other targets.
+part 1 -spear phish #1 - with malware
+in may 2015 a legitimate email was sent asking several researchers to fill out a form that was sent as a word
+document. the attackers obtained this correspondence, presumably by breaching the email account of the
+sender. they created a new gmail account with a username similar to that of the original sender. then, they
+sent the recipients a follow-up message (including the initial correspondence), asking them to fill up the
+attached form again. this time, the attachment was a weaponized microsoft excel file (the file is analyzed in
+the malware analysis chapter of this report).
+in other cases the attackers used the same methods - sending malware or phishing from a cloud email
+service (such as gmail or hotmail) using a username similar to that used by one of the target s
+acquaintances.
+the malicious email was written in the original language of the correspondence - hebrew. but it is clear that
+the attackers do not know hebrew, as they made grammatical errors in the few words they have added to it
+(the rest were copied from the original email). other messages, in english and farsi, were analyzed by
+several specialists3and were determined to have been written by a native iranian persian speaker.
+2 the interview revolved around her own way to being a linguist and an iranist, and promoting her books "the good,
+the bad and the world - a journey to pre-islamic iran" and "the book of esther, unmasked" .
+3three of the targets are iran and the middle east researchers, and two of them are native farsi speakers. going
+through numerous messages they have received, and in one case a phone call - they have determined that the
+writer/speaker is native in iranian persian. below is an example of another case (the email includes the professional signature of the impersonated
+sender):
+part 2 - phone calls to victims
+a week later, the attackers called the target s office number. the office manager, who received the call, later
+said that someone with bad english had asked to schedule an interview. the attackers later called the
+target s personal cell phone, and left a similar message with a callback number in london.
+the attackers called the targets in other cases as well. for example, after breaching the password of a victim
+back in november 2014, the attacker called, pretending to be the assistant of a professor abroad who
+wished to talk to the victim. after several unexplained cut-offs during the call, the attacker said they
+should switch to google hangout, asking for the conversation code the victim had just received to his cell
+phone. the code was actually the second factor authentication for the victim s gmail account. as soon as he
+gave it away - the attackers took over his gmail, facebook and other accounts.
+part 3 - spear phishing #2
+that evening, the target received an email written in farsi, coming from a spoofed persian@ email
+address (the real address of bbc farsi). the message was a follow up on the call that morning, asking to
+schedule the interview for the next day: the headers of the message indicate that it was spoofed, and was actually sent from a server in hungary, .
+the email contained a linked text, , with this url: >
+the url is composed of two parts. the first part is a legitimate address, with the q= parameter.
+the second part is the value of that parameter - a fake google drive log-in page in the attackers controlled
+domain - login- . upon clicking the link, the target is redirected to the address in the q= parameter.
+this is a trick the attackers use to mislead the target - making her think she is about to visit a legitimate
+google website.
+the fake google drive log-in page was customized to the target; her real username was already filled in: the whois information for the domain is similar to those used in legitimate google owned domain, except
+for the d instead of b in the registrant-email value: gmail-aduse@ :
+the attacker sent three follow-up emails to make sure the target had received the first one, from the same
+server in hungary and with the reply-to address saeed.kn2003@ .
+part 4 - breaking into an israeli research institute to set up phising page #3
+the next morning, several targets received an email inviting them to participate in an "iran israel forum of
+an israeli research institute. the email can be seen below (sensitive information has been redacted):
+the headers of the email indicate that they the email was not spoofed, and had been sent from the research
+institute. as can be seen, the email contained various grammatical mistakes. moreover, anyone who knows the institute would notice that parts of the message are inaccurate (this will not be elaborated here in order
+not to expose the institute s identity).
+the words access to forum linked to a page within the real, compromised, website of the institute. the
+page contained more information about the forum , and offered four sign in options, as can be seen in
+the screenshot below:
+clicking one of the sign-in options led to a custom made log-in page, again, with the target s username,
+email, and picture already present: after submitting a password, the victim is taken to the next fake page in which she is asked to submit the
+two factor authentication code she has just received to her phone:
+upon submission, the victim is redirected to a static registration confirmed page.
+interestingly, the log file for the previous pages was hosted publicly on the same virtual folder. the log
+contained the false credentials the target submitted (as she recognized this was a fake)4:
+we reported the breach to the institue, and they investigated and cleaned it off. they informed us that their
+own servers were never breached. rather, a server run by a researcher who was givenn a virtual folder within their domain was. this, of course, did not change the end result - the attackers managed to implant a
+fake page within the instititue domain, and were able to send an email using the same domain. this pattern
+is recurring: the attackrs go after low hanging fruits in order to reach their goal rather than using
+advnaced techincal means.
+part 5 - spear phishing #4
+four days later, the target received the following email from the same fake address as in part 1:
+4 the pass filed intermingled with the ip filed in the original log, file due to bidirectionality issues. the email contained the real textual signature of the sender, and the word toda (thank you, in hebrew), as
+the sender usually writes.
+the hyperlink text in the message appeared to be leading to , but in fact linked to a fake
+address that only looked like a youtube domain.
+the page contained a private youtube video , asking the viewer to sign in in order to watch it:
+after signing in, the page redirected to a specific interview in target s real youtube channel - proving once
+again that the attacks are targeted and based on reconnaissance.
+part 6 - abusing account recovery mechanisms
+during the writing of this article, the attackers continued to attempt to take over various accounts of the
+target. for example, they tried to fool google into giving them access to the target s gmail accounts using
+the google account recovery process5 (a process which in certain cases enables one to regain access to an
+account even if the password and other means of authentication are unavailable).
+the attackers tried similar methods against the target s account on facebook and yahoo, and had also set up
+a fake hotmail account, which was used as the secondary email to which the recovered password should be
+sent.
+part 7 - private messages
+the target has been contacted by various weird characters on facebook and by e-mail. they have been
+asking her various questions that have nothing to do with her professional expertise and tried to contact her
+in various ways. the conversation are conducted in persian.
+we cannot find a direct connection between these facebook characters and the above mentioned attacks.
+however, in addition to them happening close to the attacks, we do know that at least one of the accounts is
+fake.
+one of the fake characters who has engaged in conversation, is using throughout her profile pictures of a
+russian model, and has presented herself as with different, contradicting, background stories in
+conversations with different targets. targets and further incidents
+targets
+so far we have exposed a list of more than 500 targets by name and email.
+the targets come, mostly, from the following fields: both academic researchers and practitioners in the fields of counter-terror, diplomacy, international
+relations, iran and middle east, and other fields, such as physics. security and defence. journalists and human rights activists. other similar fields.
+in some cases the attackers tried to breach the account of a relative or colleague of the real target.
+below is the target distribution by country: further incidents
+we have investigated and can publicly mention the following incident by the same threat actor: a security company had numerous employees targeted with customized phishing pages. the attackers
+managed to infect computers within the company and steal information. in several other cases
+numerous employees from the same organization were targeted. a fake gmail account was set up using the name of the head of a research center. following, several
+of his contacts received targeted phishing email from the fake account. a fake domain has been set up, imitating that of the interdisciplinary center herzliya , an israeli
+college (unrelated to the research institute described above), and has been used in attacks.
+the table below correlates between the threat actor behind the thamar reservoir campaign and the name
+of threat actor or campaign, as given in other reports:
+threat actor / campaign correlations certainty
+gholee6 by clearsky overlapping infrastructure and malware. high
+rocket kitten7, operation
+woolen-goldfish
+by trendmicro
+overlapping infrastructure and malware. high
+ajax security team,
+operation saffron rose8 by
+fireeye
+similar ttps and interests - attacks against universities and
+researchers; use of fake conference pages; use of a domain
+that spoofs the name of the targeted organization.
+medium
+newscaster9 by isight similar ttps - pretending to be a reporter in order to get close to
+approach the victim.
+medium
+the iranian connection
+several characteristics of the attacks have led us to the conclusion that an iranian threat actor is the likely
+culprit. we assume, though do not have direct evidence, that it is being supported by the iranian regime, or
+performed by the regime itself: the context of the attacks and cover stories all revolve around iran. importantly, as determined by
+several professionals - the attackers speak and write in native iranian persian and make mistakes
+characteristic of persian speakers. in one of the hacked accounts, when retrieved, the interface
+language had been changed to persian. the targets and victims match the interests of iran. moreover, rather than stealing money or
+performing high key cyber terror attacks (such as information leaks or deferments), the attackers
+only steal information and use the access to computers for further attacks - indicating espionage, ip
+theft , etc. the ttps match those of attackers and attacks that were attributed to iran by other security
+companies, as mentioned in the previous chapter. some of the domains and ips used by the attackers in the cases we investigated were mentioned and
+attributed to an iranian threat group in an advisory by the financial sector cyber intelligence group,
+and the department of the treasury, cig circular 3510
+malware analysis
+the malicious excel file (mentioned in part 1 - speared email message containing malware ) serve as a
+dropper - it creates two files and runs them. when opening the excel file (.xlsb), the user sees a blank sheet
+and the standard "macros have been disabled message. if enabled by the user, the macro drops {guid}.exe and . the content of the excel sheet is then presented. it is case specific and
+customized to the victim.
+different malware can be downloaded to the infected computer. on an infected computer we have
+analyzed, we found cwoolger keylogger.
+the macro, two files, and cwoolger are analyzed below.
+macro
+the vba macro is similar to that used to drop gholee, as we reported about 8 month ago11. however, in
+current case, a simple downloader was used instead of gholee.
+the vba contains a series of functions built of vba character codes:
+these are constructed into a single variable and then written as a file to disc, creating and running {guid}.exe
+next, is written and executed. contains two lines. the first create a registry key without prompting the user for permission, telling
+the computer to run {guid}.exefrom %userprofile% every time the computer starts, naming it my app . for example:
+the second line deletes . {guid}.exe
+the dropped exe file ( ) is a downloader. it is created in %userprofile%,
+sized 8.5kb, and is recognized by 19 out of 57 antiviruses on virus total12 (the sample was not submitted by
+us).
+it contains simple mechanisms to detect and prevent analysis, such as isdebuggerpresent:
+the malware tries to download files form a remote address, apparently stage two , the actual malware.
+cwoolger keylogger
+we have not been able to get the final malware when running the malicious excel file and dropper in the lab,
+as the server was not responding. however, we have performed forensic analysis of the computer used by a
+target who opened the malicious excel file.
+that computer was infected with cwoolger keylogger. an analysis of this tool can be read in trendmicro s
+paper operation woolen-goldfish 13 in chapter wool3n.h4t s recent activities: cwoolger keylogger .
+below are additional notes about the infection we found: 

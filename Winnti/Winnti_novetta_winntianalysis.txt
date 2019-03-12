@@ -1,0 +1,427 @@
+1
+winnti
+analysis
+as part of operation smn, novetta analyzed recent versions of the winnti malware. the samples,
+compiled from mid- to late 2014, exhibited minimal functional changes over the previous generations
+kaspersky reported in 2013.1 what is of note, however, is the increased scrutiny found within the winnti
+dropper component that attempts to frustrate analysis of the malware.
+based on multiple active compromises by the axiom threat group, novetta was able to capture and
+analyze new winnti malware samples. it should be noted that operators of winnti that were observed
+by novetta leveraged existing axiom-specifc malware infections (hikit) to move laterally and install
+winnti in the furtherance of their objectives. it is with high confdence that we assess the operators
+of winnti in these monitored environments were not the same actors who originally installed and
+leveraged hikit.
+this report will focus on three different aspects of the winnti malware: the start-up sequence of
+winnti from the initial infection to steady state, the basics of the winnti malware, and the command
+and control (c2) communication protocol.
+from installation to execution
+the installation process of winnti by means of the dropper has changed very little since the winnti
+version 1.1 (as defned by kaspersky) droppers of july 2012. the samples novetta obtained from the
+active axiom infection were compiled in mid- to late 2014 and represent what novetta is referring to
+as version 3.0 of the winnti lineage (in order to prevent muddying the versioning scheme kaspersky
+has already established).
+there are four distinct components within the winnti malware s installation to execution cycle: a
+dropper, a service, an engine, and a worker. the installation that novetta observed of winnti on
+a victim s machine requires multiple steps and depends on the dropper, service, and the loader
+component in order to accomplish the steps. after a successful infection, the activation of winnti
+on a victim s machine requires multiple steps as well as coordination between the service, engine,
+and worker components. the complexity of the installation and activation processes is signifcant
+and more involved than typical malware installation and activation procedures. this additional
+complexity ultimately does not seem to serve a signifcant purpose other than to perhaps frustrate
+analysis by defenders.
+1 kaspersky. winnti: more than just a game . http:// - content/uploads/sites/43/vlpdfs/winnti-more-than-just-agame- . 10 april 2014.winnti analysis 2
+installation phase 1: dropper activities
+the dropper is, as the name implies, the component responsible for dropping the winnti malware on
+a victim s machine. the dropper performs the following activities (with version- specifc annotation):
+1. [version 3.0] the dropper verifes the existence of a single parameter on the command line and
+terminates if the parameter is not found. the dropper later uses this parameter as a decryption key.
+2. the dropper loads createprocessa via a call to getprocaddress.
+3. the dropper extracts an embedded data blob, decrypts the data blob, and decompresses the data
+blob into a heap buffer.
+the data blob in step 3 begins with a header structure that describes key attributes of the data blob.
+the format of the header is as follows:
+offset size description
+0x0 8 magic bytes tunnel\0\0 0x8 2 unknown
+0xa 4 size of the blob after decompression
+0xe 4 size of the blob prior to decompression (current size in memory)
+in order to decrypt the data blob, the dropper will iterate over each of the bytes that follows the header
+(up to the value specifed in 0xe offset of the header), xor the bytes by 0x36, and then perform a
+nibble swap, zlib-compressed data immediately follows the header. the dropper will allocate a heap
+buffer (with a size specifed by the value in offset 0xa of the header) and call the zlib in ate function.
+the decompressed data blob contains a second header, and the blob s header consists of the following
+two entries:
+offset size description
+0x0 4 offset of worker component s image (generally 0 and unused)
+0x4 4 offset of server component s image
+4. the dropper uses the value in offset 0x4 of the decompressed data blob s header to determine the
+size of the worker component s size and writes that many bytes of the decompressed data blob,
+starting after the header, to a fle within %temp%. the fle has a random name, but the extension is
+always .tmp.
+5. [version 3.0] the remaining bytes within the decompressed data blob are decrypted using what
+appears to be des encryption and the key the attacker provided via the frst argument on the
+command line.
+6. the dropper generates another randomly named fle within %temp% with the fle extension
+of .tmp with the remaining bytes within the decompressed data blob. this fle becomes the
+service component.winnti analysis 3
+the decryption of the service component is a new feature within the version 3.0 lineage of
+winnti and provides the beneft of preventing defenders from attempting to run the dropper
+for analysis purposes.
+7. [version 3.0] the presence of the mz magic bytes in the frst two bytes of the service component
+are verifed to ensure that the fle was properly decrypted (and by extension, to verify that the
+supplied password was correct). if the mz bytes are not found, the dropper quietly terminates.
+8. [version 3.0] the flenames and paths of the service and worker components are appended to the
+end of the worker component s fle in a structure 520 byte array. the irst 260 bytes contain the
+flename and path of the worker component, and the last 260 bytes contain the flename and path
+of the service component. the entire 520 byte array is encrypted by xor ing each byte with 0x99.
+9. the service component s fle is scanned for the tag coopre. if this tag is located, the dropper
+decrypts the confguration data blob attached to the end of the dropper s executable and
+appends the data to memory immediately followed the coopre magic byte. the dropper will then
+append the flenames and paths of the service and worker components to the end of the worker
+component s fle in a structure 520 byte array. the frst 260 bytes contain the flename and path
+of the worker component, and the last 260 bytes contain the flename and path of the service
+component. the entire 520 byte array is encrypted by xor ing each byte with 0x99.
+10. the dropper instructs the service component to complete the installation by using rundll32 to
+activate the service component s install [pre-version 3.0] or dlgproc [version 3.0] function.
+the service component is self-installing when an attacker (or the dropper) activates the install
+or dlgproc export functions. install or dlgproc requires the full name and path of the dropper
+component. the service component can locate the worker component based on the appended
+flename and path strings located at the end of itself. once the dropper calls createprocessa to
+activate rundll32, the dropper s task is complete, and it quietly terminates. at this point, it is up to
+the service component to continue to install and, eventually, to activate the winnti malware.
+installation phase 2: service activities
+the service component is at its core an unsophisticated scaffold whose job is to activate the engine
+component. the distinction between pre-version 3.0 winnti variants and version 3.0 variants is most
+evident in the versions service components. as a result of the larger difference in procedure between
+the pre-version 3.0 and version 3.0 variants, the discussion on the installation phase 2 sequence will
+focus on only the version 3.0 service component.
+the service component has only two functions: activate the installer functionality of the engine
+component or respond as a service dll and activate the engine component s malware start-up
+routines. both modes of the service component have a common initialization sequence:
+1. dllmain, upon activation, manually loads the engine binary into memory.
+2. the exports from the engine component (install, deletef, and workman) are loaded into a
+memory structure.winnti analysis 4
+2 k. kleissner. uac bypass for windows 7 rtm, sp1/ windows 8 dp, cp all 32-bit for admin with default uac settings . http://download.pureftpd. . accessed 1 december 2014
+the engine component exists as a data blob within the service component. the executable image
+of the engine component contains a stripped-down pe/coff header that is missing several key
+attributes, such as the mz and pe magic bytes as well as the cpu architecture identifer. these missing
+pieces require the service component to manually load the engine component s executable image into
+memory. this includes allocating the appropriate memory, loading the sections appropriately, applying
+location fx-ups, and loading the necessary imports. the advantage of going to this much effort from
+an attacker s perspective is that the engine, which is responsible for loading the worker, never
+touches the disk, thus depriving analysts of a necessary component for analysis when using fle-based
+artifact collection techniques.
+3. the service component determines if the host binary responsible for the service component
+is either (if run as a service) or (if loaded pseudo manually or from
+the dropper).
+4. if neither host executable is found, the install function of the engine is activated. otherwise,
+the dllmain function returns with a success status.
+5. within the dlgproc function, the service will verify the non-null status of the deletef function
+pointer. if the function pointer is non-null, the deletef function (of the engine) is called.
+6. the dlgproc function next verifes that the install function pointer is non-null and, if the
+pointer is indeed non-null, calls the engine s install function after supplying the path of the
+service executable.
+once the service component passes control to the engine component s install function, the service
+component becomes little more than a placeholder. the service component will remain active only so
+long as the install function is active. the engine component then becomes the active component
+and will conclude the installation process.
+installation phase 3: engine activities
+the engine component exists only in memory and is completely dependent on the service component
+remaining active in order to have a process space in which to operate. the installation functionality
+for the version 3.0 winnti malware variants exists within the install export. when activated, the
+install export requires a full flename and path back to the service binary.
+1. the install function checks if the process responsible for calling the install function
+is . if so, the function uses a variant of the sysprep user account control (uac) bypass.2
+2. the current privilege level of the process is verifed to be suitable for installing additional binaries.
+the test consists of determining if the operating system is newer than windows xp and if the
+process has administrative privileges. if these conditions are met, the dropper is called again from .
+the authors went to great pains to ensure that the installation process had a suitable chance of
+performing its function both undetected (by using a uac bypass) and with suitable privileges. the use
+of the sysprep uac bypass and the verifcation of process privileges indicate that the authors were at
+least aware of the changing security environment in later versions of windows and were adapting to
+ensure the successful propagation of their tools on a victim s machine.winnti analysis 5
+3. the confguration information implanted at the end of the service component is extracted
+and decrypted.
+the confguration information for the infection typically exists at the very end of the service
+confguration. the last dword of the fle contains an offset from the end of the fle to the beginning
+of the confguration. the structure of the confguration is as follows: the confguration is encrypted using a rolling xor with the frst byte of the xor being 0x99.
+the xor increments one byte at a time until a wraparound occurs at 0xff.
+4. the fles %sysdir% and %sysdir% are checked to ensure that they do not
+exist and that they are not directories. if either condition is not met, an ini fle named %sysdir%\ is generated with the update section containing file={path to service component
+dll} and the process terminates.
+5. a global event named global\ establishes a poor man s
+mutex, indicating that the installation process is currently ongoing. to give other processes time to
+read the event check, a 12-second delay is introduced before continuing the installation process.
+6. the service component is copied from the %temp% directory to %sysdir% , and the
+worker component is copied from the %temp% directory to %sysdir% .
+7. the timestamps of both and are set to match that of .
+8. the original %temp% instances of the worker and service dlls are deleted.winnti analysis 6
+9. the confguration is appended to the fle using the same rolling xor (starting with
+the value 0x99).
+the bulk of the installation of winnti is now complete. the dropped fles are now in the correct
+location and ready for activation. the fnal steps of the installation establish the persistence model for
+the malware and begin the activation of the malware on the victim s system.
+10. a new service entry is manually added to the registry to ensure the malware will activate upon
+reboot of the victim s machine. the new service is named wind0ws, with a display name of
+automaticallyssl and the description of monitoring of hardwares and automatically
+updates the device drivers.
+11. winexec is used to call the command net start wind0ws.
+12. the installation completes by returning control to the service component, which terminates quietly.
+the service that the engine component installs runs under the executable as a netsvc.
+the engine will directly modify the registry after using the createservicea function to establish the
+basics of the new service. the use of direct registry modifcations to entries under the local machine
+(hklm) hive requires elevated privileges, which may explain why the authors went to such great pains
+to ensure the installation process occurred in a suitable process space.
+activation phase 1: service activities
+activation of the winnti malware begins whenever the service component is activated. typically,
+activation is the result of the registered service (e.g., wind0ws) being activated by either a reboot
+of the victim s machine or by the net start command being issued during the fnal phase of the
+installation process. in either case, the dllmain function is called prior to the servicemainex function
+of the service component being called by windows, thus kicking off the activation of the winnti
+version
+3.0 malware.
+1. the dllmain function, upon activation, manually loads the engine binary into memory.
+2. the exports from the engine component (install, deletef, and workman) are loaded into a
+memory structure.
+3. the service component determines if the host binary responsible for the service component
+is either (if run as a service) or (if loaded pseudo-manually or from
+the dropper).
+4. if neither host executable is found, the install function of the engine is activated. otherwise, the
+dllmain function returns with a success status.
+with the initialization of the service component s dll complete, windows calls the servicemainex
+function to activate the service. the servicemainex function, like the dlgproc function, is extremely
+lightweight in its functionality.
+5. the servicemainex function registers a service handler function to respond to service status
+control requests from windows.
+6. the service is set to the running state.winnti analysis 7
+7. an unnamed event is created.
+8. the engine s workmain function is called with both the path to the host executable (the service
+dll) and the name of the service supplied as parameters.
+9. a sleep of 3 seconds occurs before the function waits indefnitely for the unnamed
+event to become set.
+the servicemainex function does little more than establish a basic scaffold for activating the
+workmain function of the engine component. the service remains active, thus providing a process
+space for the engine, until the unnamed event is set. the unnamed event becomes set only after the
+service receives the service_stop signal from windows.
+after the service component calls the workmain function of the engine component, the engine
+component picks up the baton to complete the next phase of the activation sequence.
+activation phase 2: engine activities
+the engine component s workmain function, much like the service s servicemainex function, provides
+a scaffolding for the next phase of the activation. in this case, that next phase is dependent on the
+worker component.
+1. the workmain function determines if an active activation thread exists within the process. if so, the
+workmain function simply returns to avoid activating two or more concurrent instances of winnti
+under the same process space.
+2. the confguration is extracted from the service component based on the flename and path
+supplied to the workmain function from the servicemainex function. if the confguration extraction
+fails, the flename and path of the service dll is gleaned from the servicedll registry value for
+the service, and the confguration is extracted from that fle.
+3. the path to the worker component (e.g., %sysdir% ) is extracted from the service
+component s fle.
+4. a new thread responsible for the activation of the worker and engine components is generated.
+5. the workmain function returns.
+workmain is a very simple function with a singular purpose: collect the data needed to locate the
+necessary components for activating winnti on the victim s system. with the necessary information
+found, a new thread is generated that allows the service component to decouple from the worker
+component s functionality. had this not occurred, the service component would not be able to
+respond to windows status requests, and the service would have appeared to be hung, causing
+windows to terminate the service.
+the activation thread generated within the workmain function loads the worker component,
+activates the worker component, and provides a thread independent of the service s thread under
+which to execute.
+6. the path to the worker component s fle is verifed to exist. if the worker component s fle does not
+exist, the activation process terminates immediately.winnti analysis 8
+7. the worker component is loaded into memory.
+8. the worker component s work_start function is called.
+the worker component s executable image is encrypted. as part of the loading process, the engine
+must xor each byte of the worker component s fle with the value 0x36 and perform a nibble swap.
+the worker component s executable image suffers from the same malformed pe/coff header that the
+engine component s image exhibits. as a result of the malformed pe/coff header and the encrypted
+fle image, the engine must manually load the worker component s image into memory in exactly the
+same manner that the service component loaded the engine component manually into memory.
+the work_start function is the true beginning of the winnti malware. the work_start function
+performs the various remote administration tool (rat) initialization functions of winnti before
+activating the communication subsystem of winnti. the result of calling the work_start function
+is the completed activation of winnti and placing the system in a steady-state mode of c2 server
+requests and response actions. once the work_start function initializes the winnti malware, a new
+thread is generated to house the winnti rat functionality, allowing the work_start function to return
+control back to the activation thread within the engine component.
+9. upon completion of the work_start function, the activation thread sleeps for 30 seconds before
+entering an infnite loop.
+10. the loop begins by verifying that the global event established during the installation process
+(phase 3, step 5) does not exist. if the event exists, the loop is broken, the event is set, the winnti
+malware shuts down by means of a net stop command, and the service and worker component
+fles are deleted.
+11. the presence of the %sysdir% fle is checked, and if the fle does not exist, control
+returns to the top of the loop (step 10).
+12. the %sysdir% fle is read as an ini fle, the flename specifed by the file variable
+under the update section is read, and the fle is deleted from disk if the fle specifed
+by the file variable exists and is not a directory.
+13. if the worker has a work_end export, the work_end function is called.
+14. the confguration of %sysdir% is loaded into memory.
+15. if %sysdir% exists, the fle is deleted.
+16. the worker component s fle is deleted from disk.
+17. the fle specifed by s file variable is copied to the flename of the worker
+component s fle.
+18. the timestamp of the new worker component fle is set to that of s timestamp.
+19. the fle specifed by s file variable is deleted.
+20. after sleeping for 3 seconds, the new worker component s image is loaded into memory, and
+the new worker component s work_start function is executed.
+21. control returns to the start of the loop (step 10).winnti analysis 9
+the authors of version 3.0 of winnti use the engine s scaffolding to allow for on-the- y worker
+component updating without a need to restart the service. the infnite loop listens for the
+indicator that the engine s install function is performing an installation (with an existing winnti
+installation, this effectively becomes an update). as part of the installation process by the engine
+component s install function, the presence of an existing service and worker component s fles
+is verifed (installation phase 3, step 4), resulting in the generation of the %sysdir% fle. the presence of the fle informs the engine s activation thread that a new worker
+component is available and should be loaded. as a result, the engine cleanly shuts down the existing
+worker component by calling its work_end function, deletes the old worker, and replaces the worker
+component s fle before loading and executing the new worker component. the beauty of this
+approach is that not only does it allow hot patching of the malware but it does so without restarting
+the service, which could indicate an erroneous system event to an astute systems administrator.
+the basics of winnti s worker
+the winnti worker component is an exercise in over engineering. as with the other components
+within the winnti system, such as the service and the engine, the worker component is a scaffold for
+additional functionality. unlike the service and engine components, the scaffolding provided by the
+worker component is substantial and complex, but at its core, the worker component has two primary
+functions: communication interface and plugin management.
+the communication subsystem of the worker module supports three communication protocols,
+but the framework is developed in such a way that adding additional protocols requires little more
+than adding a different communication mode module to the source code at compile time. the
+communication subsystem in the samples analyzed by novetta includes three modes: custom tcp
+protocol (used when confg.dwcommmode is set to 1), encapsulation within http (used when confg.
+dwcommmode is set to 3), and encapsulation within https (used when confg.dwcommmode is set to
+2). to further expand the reach of the http and https modes, the http and https modes can
+utilize a proxy local (or potentially external) to the victim s computer. in order to support a variety
+of different communication protocols and methods, the communication subsystem relies heavily on
+callback functions. for instance, when a communication module (be it the custom tcp protocol, http,
+https, or some other type) initializes, it supplies a series of callback functions to the communication
+subsystem. the callback functions provide hooks to the communication subsystem for handing off
+important communication events.
+figure 1: setting callbacks for the custom tcp protocol communication mode
+figure 1 illustrates the worker component using the connection:setconnectivitycallbacks
+function to register callback functions that handle the following series of events.
+1. when a new connection occurs (nconconnect_callback)
+2. when data is received over the network connection (nconrecvdata_callback)
+3. when the connection terminates by the socket closing (ncondisconnect_callback)
+4. when the other end of the connection disconnects, but has not closed, the connection
+(nconclientdisconnect_callback)winnti analysis 10
+by using callbacks, it is relatively easy for the authors of the winnti malware to add new
+communication protocols without making signifcant changes to the source code. there is, however,
+the question as to why the authors chose to use a callback scheme for this purpose instead of a more
+modern object-oriented approach, such as using derived classes in c++.
+the callbacks within the communication subsystem cloud an important aspect of the nature of
+the communication within winnti: the communication subsystem is largely asynchronous. the
+communication subsystem allocates a thread solely for listening to incoming data, determining to
+which channel the data belongs, queuing the data in a series of network queue structures, and alerting
+the communication subsystem that the nconrecvdata_callback (or equivalent) callback should
+be called to address the incoming data. this allows the sending of data from the communication
+subsystem to decouple the receiving of data from the communication subsystem thereby providing
+asynchronous data streams. the fact that the data streams are decoupled does introduce some
+complexity, as it is up to the higher layers of the data stream to reassemble the data in the appropriate
+form for whatever task to which the data applies. evidence suggests, however, that despite the fact
+that sending and receiving data is asynchronous within the communication subsystem, in practice the
+data follows a standard request-and-reply model in which the winnti malware makes a request over the
+network and then waits for a reply before repeating the sequence.
+by itself, the worker component does very little. it does not have any built-in rat functionality such as
+fle management, remote command shell interaction, network monitoring, or other features common to
+malware that falls within the rat category. similar to the way that poisonivy provides only a framework
+and requires at-runtime modules to perform rat functions, winnti must load a plugin for each desired
+rat (or class of rat) feature. these modules, which internally the authors refer to as plus modules,
+are basic plugins that the worker component is responsible for maintaining.
+it would be a poor design for the malware to request a download of code for each rat function
+that an attacker wishes to use. the amount of extraneous data would be excessive and would make
+the malware s traffc more prone to detection, as plugins are usually a minimum of several tens of
+kilobytes each. the authors of winnti compensate for this by caching plugin modules in memory
+and possibly on disk. whenever a new module is loaded into the victim s machine by virtue of a
+download from the c2 server, the plugin is stored, loaded into memory, and registered with the plugin
+subsystem, which allows the communication subsystem to pass requests to the plugins from that
+point on. optionally, as part of the integration of the plugin into the winnti malware, the attacker can
+request that a copy of the plugin be stored within the %programfile%\microsoft shared\msinfo\
+en-us\ directory, which will allow the worker component to load the plugin automatically whenever
+the winnti malware restarts; however, storing a plugin is not mandatory. it is entirely possible that the
+attacker may specify that the plugin should exist in memory only as long as the malware is active. this
+prevents disk based forensics from detecting the plugins and limits the availability of data for analysis
+to determine what code may have executed on a victim s machine.
+plugins are architecture dependent, but the authors of winnti make no special effort to ensure that
+only 64-bit plugins run on 64-bit variants of winnti or that only 32-bit plugins run on 32-bit variants.
+plugins are dlls with their pe/coff headers manipulated (like the engine and worker components)
+to make them unloadable by standard windows application programming interface (api) functions,
+therefore requiring that the plugin manager manually load the plugins. a plugin information header
+precedes the modifed pe/coff header. the plugin information header (pluginentry) , as seen
+below, contains information defning attributes about the plugin, such as its architecture (64 or 32-
+bit), the size of the plugin s image, the entry point function, the version of the plugin, and, most
+importantly, the identifcation number of the plugin.winnti analysis 11 the identifcation number of the plugin (dwpluginid) is the value that allows the communication
+subsystem to direct incoming requests to the appropriate plugin. the plugin manager itself supports
+only the following three commands from the communication subsystem:
+command id description
+0x12 unknown purpose
+0x14 send a list of plugins currently registered to the c2
+0x15 add a new plugin to the active winnti malware with an option to save the plugin to disk
+if a command coming from the communication subsystem does not match one of the plugin
+manager s commands, the remotelib:callpluslist function is called to redirect the data packet to
+the appropriate plugin or return an error to the c2 server.
+communication scheme
+regardless of the communication model currently active for a winnti instance, the underlying
+communication remains constant. each datagram that originates from or is destined for the c2 server
+has the following predefned header structure: the format of the data that follows the
+packetheader is cmd dependent. the cmd feld allows the communication subsystem to route the
+request to the appropriate plugin by using the plugin manager to match the cmd value with the
+dwpluginid value. the worker component allows a maximum datagram size of 261120 bytes. to
+accommodate data streams larger than the maximum datagram size, the stream can be chunked.winnti analysis 12
+3 ftp:// . 10 may 2012.
+4 http:// . 18 april 2010. 5 niall douglas. nedalloc homepage . http:// /. 5 december 2014.
+6 jean-loup gailly and mark adler. zlib . http:// /. 26 march 2014.
+7 winsim, inc. diskid32 (freeware) . . accessed 1 december 2014.
+8 winsim, inc. about winsim . . accessed 1 december 2014.
+the dwstreamid value is used to reassemble the streams by appending datagrams with the same
+dwstreamid together. the dwpayloadsize feld defnes the number of bytes within the datagram.
+the protocol that the worker component uses to transmit the packetheader and the optional payload
+of the datagrams can and will add additional complexity to the network traffc. the custom tcp
+protocol and the http and https communication modes each deliver the datagrams differently. the
+http and https communication modes will generate post requests to the c2 server (typically to /
+index.htm) with the datagram (compressed using zlib) as the body of the post.
+the custom tcp protocol uses a combination of encryption and compression to transfer the
+datagrams. the custom tcp protocol uses a stacked approach to transforming the data. first,
+the datagram, which makes up the payload of the custom tcp protocol, is typically compressed
+with lzma. the compressed payload is appended to the following header specifc to the custom the magic value is 0xaced1984. the ags value will specify if the datagram is compressed or not.
+the dwxorkey value is initialized to zero. the crc64 value for the datagram (prior to compression)
+is stored in crc64. the size of the compressed payload is recorded in dwcompressedsize while the
+original size of the datagram is stored in dwpacketsize.
+the fnal transformation prior to transmission for the custom tcp protocol involves encrypting the
+entire packet. a 32-bit value is generated (by calling gettickcount) and used as the dword xor
+key. each dword within the packet is then xor d with the key. given that the dwxorkey feld of
+the tcpprotocolheader was initialized to zero and exists on a dword boundary, the xor key is
+recorded within the dwxorkey feld. a successful decryption is determined by xor ing the magic and
+dwxorkey felds to produce the 0xaced1984 value.
+code reuse
+the authors of winnti are clearly proponents of the open-source software movement, as large chunks
+of the worker binary consist of open-source software packages. the authors statically linked in the
+openssl library (version 0.9.8x),3 the lzma compression library,4 the nedalloc memory allocation
+library,5 and the zlib library (version 1.2.7).6 as for the part of the code that generates the unique
+identifer for the victim s computer, the authors of the worker component lifted the code diskid32,7
+which is an open-source utility for reading the manufacturer data from a hard drive. the diskid32
+package is a surprisingly obscure piece of software from a company in texas that writes an industrial
+process simulator that has over 1,000 active users. 8winnti analysis 13
+the basis for the worker component is a library called remotelib. some earlier variants of
+version 3.0 of winnti contain debugging output that references the remotelib library. remotelib
+does not appear to be a publically available piece of software but does appear to be actively
+maintained, as evident by the gradual refnements seen between the 32-bit and 64-bit variants
+of version 3.0 of winnti.
+the compilation of the full openssl library into the worker component solely for implementing https
+results in a signifcant size increase. approximately 60 percent of the worker component is made up of
+openssl functions when only a small fraction (less than 1 percent) of the openssl library is actually
+used by the worker component.
+detection
+detecting winnti via standard ids signatures or network traffc inspection is not a straightforward
+process whenever the malware is confgured to use https or the custom tcp protocol due to the
+use of encryption. however, more advanced network based behavioral analytic capabilities as well as
+host-based indicators do exist that can alert a security team or systems administrator to the presence
+of winnti.
+the version 3.0 variants of winnti attempt to install themselves as a service with the
+following characteristics:
+service name wind0ws
+service
+display name automaticallyssl
+service
+description monitoring of hardwares and automatically updates the device drivers
+from a fle system perspective, it is possible to identify winnti infections by looking for the following

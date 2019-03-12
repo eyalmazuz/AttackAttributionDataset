@@ -1,0 +1,884 @@
+pinpointing
+targets: security
+reimagined exploiting web analytics
+to ensnare victims
+november 20152
+fireeye threat intelligence
+jonathan wrolstad
+barry vengerik3
+1 kaspersky labs, symantec and isight partners have reported on campaigns similar, and possibly
+related to, the activity we describe in this report.
+we have identified suspected nation-state sponsored cyber actors
+engaged in a large-scale reconnaissance effort. this effort uses web
+analytics the technologies to collect, analyze, and report data from
+the web on compromised websites to passively collect information
+from website visitors.1 the individuals behind this activity have
+amassed vast amounts of information on web traffic and visitors
+to over 100 websites sites that the threat actors have selectively
+compromised to gain access to their collective audience.
+web analytics is used every day in much the same way by advertisers,
+marketers and retailers for insight into the most effective ways to
+reach their customers and target audiences. this paper explores the
+dark side of web analytics by demonstrating how the same tools and
+methods that fuel effective content delivery and e-commerce can
+potentially allow malicious actors to identify and target victims with
+pinpoint precision.
+the individuals behind this activity have
+amassed vast amounts of information on
+web traffc and visitors to more than 100
+websites sites that the threat actors have
+selectively compromised to gain access to
+their collective audience.
+introduction
+over
+the
+past
+year,4
+key findings
+threat actors use web
+analytics and open source
+tools to collect information
+about desired victims and
+their computers to track,
+profile, and possibly infect
+them with targeted malware.
+the perpetrators alter
+specific websites to redirect
+visitors to a profiling script
+we call witchcoven.
+this script collects detailed
+information about the user s
+computer and installs a
+persistent tracking tool,
+called a supercookie, which
+becomes part of a unique
+"browser fingerprint" that
+can identify the user s
+computer moving forward.
+we believe the actors
+analyze the collected data
+to identify unique users and
+pair them with information
+about their computer
+to later deploy exploits
+tailored to their particular
+software and computer
+configuration.
+the operation is most
+likely the work of threat
+actors aligned with a
+government based on
+the extensive collection
+of data, the culprits operational restraint, and
+our assessment of their
+probable targets.
+we accept that organizations routinely track our online
+activity. companies monitor our clicks to see what links we
+are drawn to and how much time we spend on a given page.
+marketers track our demographic information to better
+understand us as customers. advertising firms generate
+revenue through referrals as we start our journey on one
+website and click a sponsored link to another. shopping sites
+use cookies so that the shirt we viewed on a shopping website
+weeks ago shows up in an advertisement on our favorite
+news website. organizations also learn about our computer
+systems. scripts working in the background identify the type
+of browser, operating system or mobile device we are using
+so that the website displays properly. however, few of us are
+aware that cyber threat actors may be using those same tools
+to identify and target their next victims.
+every day, each of us visits
+the web and navigates to our
+favorite sites.5
+the operation
+beginning last year, we identified cyber actors integrating free, publicly available tools with custom scripts to monitor the
+online activities of internet users without their
+knowledge,2 just as corporations track the online
+activity of web users around the world. we
+believe these cyber threat actors are building
+profiles of potential victims and learning about
+the vulnerabilities in users computers. these very
+same technologies that marketing firms use to
+track their clients and ensure their websites work
+on different types of web browsers can help cyber
+threat actors better identify their victims and
+tailor future infection attempts.
+the cyber threat actors start by compromising
+large numbers of legitimate websites. the
+websites are not randomly chosen targets of
+opportunity, but specifically selected as part of
+a tactic called a strategic web compromise.3 the
+attackers then modify the underlying html
+code on the website s home page (and often
+several subpages). this modification silently
+redirects visitors to a second website that has
+also been compromised to host a profiling script
+that we call witchcoven. witchcoven
+executes in the background without the user s
+knowledge, capturing the visitor s computer and
+browser configuration (see figure 1 for more
+detail) and placing a highly persistent tracking
+cookie (a supercookie ) on their computer. in all,
+we identified over 100 compromised websites
+redirecting visitors to more than a dozen
+witchcoven profiling servers.
+2 we detected a component of the process the witchcoven profiling script discussed later in the report.
+3 a strategic web compromise (swc), also known as a watering hole attack, is a method of passively ensnaring victims as opposed to conducting an active attack such as a spear-phishing campaign. in
+an swc, threat actors place exploit code on legitimate websites they anticipate their desired victims will visit as part of their normal online activity. if a targeted user travels to the compromised
+website with a vulnerable computer, malware can be installed on their machine.
+4 technical details on the witchcoven profiling script are available in the appendix.
+5 6 http:// /
+when an unsuspecting user visits any of the
+over 100 compromised websites, a small piece
+of inserted code embedded in the site s html
+and invisible to casual visitors quietly redirects
+the user s browser to a second compromised
+website without the user s knowledge. this
+second website hosts the witchcoven
+script,4 which uses profiling techniques to collect
+technical information on the user s computer.
+as of early november 2015, we identified a
+total of 14 websites hosting the witchcoven
+profiling script.
+the script provides the perpetrators with data
+on certain applications installed on the user s
+computer. witchcoven uses a number
+of open source web tools to retrieve this
+information such as the software version. these
+web tools are freely available, and website
+designers commonly use these (or similar) tools
+to enhance a users browsing experience. for
+example, a site may routinely collect information
+about the type and version of visitors web
+browsers to ensure that the site content displays
+correctly for as many visitors as possible.
+we believe these cyber threat
+actors are building profles of
+potential victims and learning
+about the vulnerabilities in
+users computers.
+the following are
+examples of some of the
+web tools embedded
+in the witchcoven
+code and the data they
+collect:
+the detect office module from the
+browser exploitation
+framework,5 an open
+source penetration
+testing tool, determines
+the microsoft office
+version on a computer
+by testing the browser s
+response to various
+activex objects.
+plugindetect6 is a
+javascript-based web
+tool to detect the type
+and version of various
+web-browser plugins,
+such as java, flash,
+reader, and shockwave.6
+legitimate but compromised websites
+contain a script redirecting visitors to
+another website
+the witchcoven script profiles
+the computer, places a supercookie,
+and reads the browser fingerprint
+the threat actors collect the data from the
+witchcoven script and browser fingerprint
+and have several options for follow-on activity
+a person browsing the web visits one
+of the more than 100 websites with malicious
+code placed there by the threat actors
+1 2 3 4
+figure 1 strategic web compromise redirecting to witchcoven profiling script
+witchcoven in action profiling
+computers and tracking users7
+in addition to collecting data about installed applications, browser plugins
+and their versions, the witchcoven script uses another open source tool
+known as evercookie . evercookie is designed to create extremely persistent
+cookies on a user s computer by:
+creating cookies
+in multiple storage
+locations on the
+computer
+recreating deleted
+cookies, as long
+as any one cookie
+remains intact on the
+computer
+attempting
+to propagate
+evercookies between
+browsers on the same
+computer
+for these reasons, evercookies may be referred
+to as supercookies (because they use a broad
+range of storage mechanisms) or zombie cookies (because they may be recreated after deletion).
+in short, the evercookie provides a way to
+consistently identify and track a specific website
+visitor and is nearly impossible for the average
+user to remove. the evercookie and the other data
+gathered by the witchcoven script are sent
+back to the compromised web server using an
+http post request.
+7 a website often uses http
+cookies to track a visitor s
+actions on that site. for
+example, a news website
+might track the user s regional
+preference and an e-commerce
+site might track items in a
+visitor s shopping cart while
+they continue to browse other
+goods. normal http cookies
+are used by a single website
+and typically enhance a user s
+experience on the web.
+third-party cookies are http
+cookies that can be set and
+read by third-party providers
+(such as ad companies or
+analytics services) that place
+content on other websites.
+because these third-party
+providers host content across
+multiple websites, their
+cookies can track users across
+those sites. a provider who
+hosts content on a sports site
+and a shopping site can tell
+if the same user visits both
+sites based on data (such as
+unique identifier) within the
+third-party cookie. over time,
+by noting the types of sites the
+user visits, these companies
+could build a demographic
+profile of the user (age,
+income, geographical
+location, interests), even
+if the user s identity is not
+known. while these cookies
+are not inherently malicious,
+some users view them as
+a privacy concern.
+both regular cookies and
+third-party cookies are
+typically stored in the user s
+web browser; modern
+browsers can be configured
+to periodically delete cached
+cookies or block certain
+types of cookies altogether.
+a supercookie refers to a
+cookie that uses alternate
+methods for storage, such as
+flash cookies. in most cases,
+these cookies are not deleted
+by clearing the browser
+cache, making them much
+harder to find and remove. a
+supercookie with its unique
+identifier can therefore be
+used to persistently track and
+identify a particular user over
+time, even if the user attempts
+to block or delete cookies.
+cookies, third-party cookies,
+and supercookies8
+why would someone be
+gathering this particular
+data in this manner? what
+could be the purpose behind
+this activity?
+although the witchcoven profiling activity may seem insidious or intrusive, so far nothing we have described is overtly
+malicious. no exploit code has been delivered.
+no website visitors have been compromised.
+as we noted above, these types of profiling and
+tracking techniques have legitimate purposes to
+optimize user experience and support marketing,
+demographic and sales analysis. so why did this
+particular activity capture our attention?
+first, while many sites engage in profiling and
+tracking for legitimate purposes, those activities
+are typically conducted using normal third-party
+browser-based cookies and commercial ad
+services and analytics tools. in this case, while
+the individuals behind the activity used publicly
+available tools, those tools had very specific
+purposes. using evercookie in particular implies
+that the actors wanted to ensure that visitors
+could be identified and tracked persistently
+over time, without having to worry about users
+enabling private browsing or deleting persistent
+cookies. this goes beyond normal web analytics.
+second, the legitimate websites that redirected
+visitors to the witchcoven script were
+themselves compromised. this was not part
+of a generic marketing campaign or routine
+web traffic analysis; someone deliberately and
+surreptitiously placed the redirect code on
+more than 100 compromised websites to profile
+visitors to those sites.
+finally as we discuss below while the redirect
+code was widespread, the compromised websites
+themselves were not arbitrary, but fell into
+an overall pattern. this led us to believe that
+the activity was not random, but targeted, and
+targeted at a specific set of users for what we
+believe is a unique purpose.
+these observations led us to ask the questions:
+why would someone be gathering this particular
+data in this manner? what could be the purpose
+behind this activity?
+we believe that the computer profiling data
+gathered by the witchcoven script, combined
+with the evercookie that persistently identifies
+a unique user, can when combined with basic
+browser data available from http logs be used
+by cyber threat actors to identify users of interest
+and narrowly target those individuals with exploits
+specifically tailored to vulnerabilities in their
+computer system.
+a means
+to a
+sinister
+end?9
+how could mostly innocuous information-gathering lead to insidious, personalized attacks? consider the implications of the data available to the witchcoven threat actors.
+in addition to the data explicitly collected by witchcoven
+itself, the threat actors behind this activity would also have access
+to additional data about the user s browser, captured as part of
+normal web traffic in the http logs of the compromised server
+hosting the witchcoven script. this data would likely contain,
+at minimum,8 standard information such as: the threat actors behind this activity
+would also have access to additional
+data about the user s browser, captured
+as part of normal web traffc in the http
+logs of the compromised server hosting
+the witchcoven script.
+assembling
+the pieces
+8 extensive research has been conducted on browser fingerprinting using data available from a user s web browser to uniquely identify individual users. while we have no indication that the
+individuals behind witchcoven are leveraging browser fingerprinting to the full extent possible, the research shows the extent to which innocuous browser data can be used to identify
+individuals with a high degree of accuracy. see, for example, the electronic frontier foundation s panopticlick website ( ) illustrating this issue, and their
+associated whitepaper ( ).
+the user s ip address browser language
+settings (via the acceptlanguage header)
+how a visitor arrived
+at the site (via the
+referer header)
+browser type and
+version (via the useragent header)10
+although we do not know for certain whether
+the threat actors are making use of the log data,
+the data would be readily available to them. if we
+summarize the data available to the attackers (see
+table 1), we see how they could build up a profile
+table 1: data available to threat actors and possible use
+data source possible use
+version of microsoft office witchcoven script identify older, unpatched, or vulnerable
+applications
+version of browser plugins (java, flash,
+etc.)
+witchcoven script identify older, unpatched, or vulnerable
+applications
+evercookie unique identifier evercookie (witchcoven script) identify specific user (even if identity not
+known)
+evercookie date evercookie (witchcoven script) date/time of first visit to any of the
+compromised sites; timestamp can be
+correlated with http logs to identify visitor
+ip address
+referring website witchcoven script and
+http logs
+may help further identify or refine victim
+profile
+ip address http logs source network of potential victim;
+may identify a particular corporation or
+organization of interest
+browser type / version http logs identify older, unpatched, or vulnerable
+browsers; identify browser with which
+another exploit (such as a flash exploit)
+must be compatible
+user s language http logs may help further identify or refine victim
+profile
+of potential victims. the threat actors could
+leverage the same data also used by legitimate
+businesses to perform web analytics to identify
+and profile users for potential malicious activity.11
+while the information above is potentially quite revealing about an individual user, it represents just one profile of one
+random visitor to one website. the threat actors
+behind witchcoven compromised more than
+100 websites, each of which might have thousands
+of unique visitors each day. if, as we suspect, the
+culprits intended to use the data to target specific
+victims, they would need some means to analyze
+all of the data collected by the witchcoven
+profiling script (and presumably the web server
+log files) to identify specific targets for follow-on
+cyber operations.
+we do not know exactly how the threat actors
+are using or processing the data. however,
+given the amount of data they have presumably
+1 determine whether desired types of victims are visiting the compromised sites
+2 determine what other sites desired victims are visiting (to find possible new collection points)
+3 identify specific victims
+finding a
+needle in
+a pile of
+needles
+collected in a year of activity, it is likely that they
+would need to use a large-scale data management
+and analysis system. at a minimum, this would
+involve a database of potential targets; it may
+also involve performing web analytics on the
+collected data to help identify targets of interest.
+to do this, they may use web analytics tools such
+as a customer relationship management (crm)
+database just as many legitimate companies do. a
+crm allows businesses to track sales, customer
+interactions, and online marketing campaigns. the
+threat actors behind this activity could mine the
+collected data based on their targeting criteria,
+searching for potential victims. the refinement
+process might look something like this:12
+figure 2 example of refining the targeting
+intended
+target
+an american
+diplomat assigned
+to europe
+target s real-life profile
+lives in a major european city
+primarily speaks english
+spends time online gathering data
+from european government and
+policy websites
+possible web analytics profile
+supercookie tracking
+shows that target
+has visited other
+infected embassy and
+government websites
+ip address shows
+location / source
+network matches that
+of the intended target
+user s web browser
+has english as its
+language setting13
+employ the data
+to deliver malware
+once specific targets have been identified from the collected information, we believe the actors
+behind this operation could design and deploy
+highly tailored exploits to increase the chances
+of compromising specific targets. we have not
+yet observed any follow-on exploitation within
+our customer base; however, it could be that
+the threat actors targeting is so narrow and
+highly focused that the odds of observing an
+exploit and malware payload delivered to an
+individual victim are extremely low.
+despite the lack of confirmed follow-on
+activity, the information the threat actors
+collect could be used to deploy custom exploits
+tailored to a victim s specific vulnerabilities as
+identified in the witchcoven profiling and
+designed to deliver malware to the victim s
+computer. for example:
+the perpetrators might note that a user is running an outdated version
+of adobe flash, known to be vulnerable to particular exploits. the ability
+to target older, known (but unpatched) vulnerabilities means the actors
+would not have to risk use and exposure of more valuable exploits, such
+as a zero-day exploit.
+the discovery of outdated software versions might also provide
+insights into the general security practices of the potential victim,
+affecting the group s choices for follow-on activity or the use of
+particular malware. the actors could use standard backdoors against
+victims with only moderate defenses, saving sophisticated backdoors
+for more vigilant environments.
+if the user is running fully patched computer software, existing exploits
+will be ineffective and the group will need to develop, procure, or deploy
+a zero-day exploit. this knowledge would allow the group to limit the
+use of zero-day exploits to a small group of high-value targets.
+9 eng, erica and dan caselden. fireeye. operation clandestine wolf adobe flash zero-day in apt3 phishing campaign. 23 june 2015. /
+operation-clandestine-wolf-adobe-flash-zero-day.html
+10 fireeye labs. fireeye. operation russiandoll: adobe & windows zero-day exploits likely leveraged by russia s apt28 in highly-targeted attack. 18 april 2015. /
+threat-research/2015/04/probable_apt28_useo.html
+using victim profiling to smartly tailor
+targeted operations
+the threat actors behind the activity discussed in this report appear
+to use an even more narrowly scoped approach to choose victims
+than we have previously observed. other cyber threat groups have
+also used scripts or other server-side code to profile potential victims
+and narrowly deliver tailored exploits. for example, cyber criminals
+have created websites that contain code that delivers malware only
+to specific site visitors, such as those from a particular geographical
+region (based on ip address) or to every 10th visitor (to limit exposure
+of the malicious activity).
+some of the skilled nation-state threat groups we track use similar
+profiling scripts to ensure effective delivery of exploits and their
+associated payloads.
+n as part of operation clandestine wolf,9 the chinese advanced
+persistent threat (apt) group apt3 used a profiling script
+before deploying a flash zero-day exploit.
+n during operation russian doll,10 the culprits, suspected to be
+the russian group apt28, collected information about potential
+victim systems before deploying two zero-day exploits.
+in these cases, the profiling scripts only delivered the exploit code to
+computers that were actually vulnerable. this technique increases the
+likelihood of success, reduces exposure to security researchers because
+only a few victims receive the exploit and likely delays the discovery of
+the attackers valuable zero-day vulnerabilities.14
+figure 3 potential uses for the collected data
+collected data: how it could be used
+follow-on custom exploitation
+once the cyber threat actors have identified their victims and the exploits likely to be successful, they
+could deploy an additional script that runs after the witchcoven profiling script and is designed to
+compromise a specific victim. as a simple example, this script could check the unique identifier in the
+evercookie of a site visitor and deliver a specific exploit only if the identifier matches a target list. the
+next time a targeted user browses that website, the script s logic would be triggered and an exploit
+would be sent to the user's computer. limiting the delivery to only chosen victims would decrease the
+likelihood of attracting the attention of security researchers and of the exploit script being noticed on
+the web server.
+spear phishing
+the use of supercookies and browser fingerprints can track, profile and possibly identify individual users
+based on unique identifiers. if the perpetrators were able to use additional data to link the identifier
+to an individual, they could use the information gathered to create a well-crafted spear-phishing email
+with an attachment designed to appeal directly to very specific details of the target s interests. the
+attachment could be weaponized with an exploit explicitly chosen to compromise the victim s computer
+configuration, greatly enhancing the likelihood of a successful infection.
+human intelligence operations
+the sponsor of this reconnaissance could use the collected information to build a profile to assist in
+targeting an individual for traditional spying.
+creation of a database of targets
+apt actors have shown an interest in supporting their intelligence collection goals by amassing large
+amounts of personal data, most likely to create databases to keep track of current and future targets of
+interest. the threat actors could use the data collected to create a rich database of potential targets and
+their associated computers.15
+effective,
+efficient
+and
+stealthy
+we assess this activity most likely is the work of a state-sponsored group that aims to collect global reconnaissance data to enable future cyber operations. our assessment is based on:
+scope of
+operations
+the operation collects information from
+compromised websites around the globe.
+data collection on this scale likely requires
+ample resources to analyze the information
+and identify targets. the scale of this
+activity also implies that the threat actors
+are seeking data to satisfy a sizeable list of
+intelligence requirements, typical only of a
+large nation state.
+operational
+restraint
+strategic web compromises are not
+uncommon; the unusual part of this
+operation is the lack of any obvious exploit
+or malware delivery. if the threat actors
+are using the collected data for pinpoint
+targeting, as we surmise, this implies a group
+that wants to limit exposure of its tools
+and maintain a high degree of operational
+security both of which suggest this is
+a long-term operation to fulfill specific
+intelligence requirements.
+probable
+targets
+based on the set of compromised websites,
+the threat actors target individuals who
+may be of high interest to a government
+collecting intelligence.
+as previously noted, we identified more than 100 compromised websites
+hosting the redirect to the witchcoven profiling script. when viewed
+as a whole, the sites were not random; they focused on a diverse but
+relatively narrow set of interests. the compromised websites would attract
+visitors involved in international travel, diplomacy, energy production and
+policy, and international economics, as well as those serving in foreign
+governments all individuals that would likely have information pertinent
+to a state s strategic interests (see figure 4 for the industry breakdown of
+compromised websites).
+this activity most likely
+is the work of a statesponsored group that
+aims to collect global
+reconnaissance data to
+enable future cyber
+operations.16
+12%
+10%
+8%
+7%
+8%
+5%
+5%
+4%
+3%
+3%
+3%
+higher education
+and research
+entertainment
+and culture
+ngo
+international
+law
+embassy
+media
+energy
+construction
+and engineering
+visa
+services
+consumer
+goods
+and retail
+international
+culture
+and exchange
+government
+other
+local
+government
+high
+tech
+figure 4 breakdown of compromised websites hosting the redirect to witchcoven script by industry as of nov. 1, 2015
+government 16% international law 7% construction and engineering 3%
+embassy 13% media 8% local government 3%
+higher education and research 12% consumer goods and retail 5% visa services 3%
+entertainment and culture 10% energy company 5% high tech 2%
+ngo 8% international culture and exchange 4% other 6%
+2%
+6%
+16%
+13%
+other includes business
+services, healthcare,
+management, manufacturing,
+religious institution,
+and tourism.17
+breakdown of the assessed locations of the
+organizations with compromised websites
+belgium
+france
+spain
+uk
+finland
+hungary
+estonia
+serbia
+ukraine
+romania
+south africa
+botswana
+germany
+switzerland
+denmark
+austria
+uruguay
+chile
+bolivia
+ecuador
+jamaica
+armenia
+georgia
+kazakhstan
+turkmenistan
+azerbaijan
+kuwait
+hong kong
+indonesia
+australia
+india
+guineabissau18
+likely intended targets:
+government officials and executives
+in the u.s. and europe
+we believe the compromised websites indicate the threat actors are especially interested in collecting data from
+executives, diplomats, government officials and
+military personnel, particularly those in the u.s.
+and europe. the compromised websites include
+visa services firms and certain embassies in the
+united states, which may attract u.s. government
+officials or executives traveling to russia, the
+middle east and africa. the compromised sites in
+europe probably attract internet users interested
+in european politics, diplomacy, research
+institutes and business ties between europe
+and the united states. in addition, compromised
+sites indicate the actors interest in targeting
+individuals who work in the energy discovery,
+production, and technology industries, particularly
+those involved in natural gas extraction and other
+energy-related activities. based on the focus of
+other compromised sites, additional individuals of
+interest might include:
+n diplomats and business people in the united
+states and spain, as well as vienna and
+brussels, the headquarters of many global
+intergovernmental institutions
+n individuals involved in issues of energy policy
+and climate change, particularly energy
+research and consulting organizations
+n latin american government officials
+n european economists
+n individuals and organizations with a nexus to
+ukraine or the republic of georgia
+focus on eastern europe and russian organizations
+finally, other websites hosting the redirect suggest that those behind this activity
+may have an interest in individuals with a nexus to:
+a major russian
+energy company
+russian cultural
+organizations and
+information resources
+a russian
+embassy website
+ukraine s security
+services and border
+guards
+a media organization
+operating in the
+republic of georgia19
+similar reporting
+kaspersky labs, symantec, and isight partners
+have all reported on widespread campaigns
+similar to the activity we describe in this
+report. in august 2014 kaspersky described
+the epic turla operation,11 while in january
+2015 symantec reported on the waterbug campaign.12 both operations combined strategic
+web compromises (swcs) with profiling scripts
+and malware delivery.13 isight s findings in the
+spring of 201514 characterized an swc operation
+whose targeting directly overlaps with the
+witchcoven activity described in this paper.
+collateral damage:
+snaring unintended victims
+common themes among compromised websites
+suggest the culprits are interested in targeting
+specific types of individuals. however, detections
+of the witchcoven profiling script among
+our customers demonstrate there is a more
+widespread effect. swcs often leave a wake of
+collateral damage, and the culprits inadvertently
+snare unintended victims who happen to
+navigate to their sites.
+we have detected alerts for
+witchcoven from
+customer organizations in
+nearly all industries.
+we have detected alerts for witchcoven from
+customer organizations in nearly all industries.15
+education, government, financial services, energy,
+and the entertainment industries appear to be
+the most affected. figure 5 depicts the share
+of detection alerts for witchcoven among
+fireeye customers by industry from march 18
+to oct. 31, 2015.
+11 kaspersky labs. the epic turla operation: solving some of the mysteries of snake/uroburos. 7 aug 2014. /. accessed 28 oct 2015.
+12 symantec. the waterbug attack group. 16 jan 2015. http:// . accessed 16 sep 2015.
+13 the malware was identified as wipbot and turla, both suspected of being used by russian state-sponsored threat actors.
+14 gertz, bill. state report reveals 130 compromised websites used in travel-related watering hole attacks. flash//critic. 4 april 2015. http:// /. accessed 15 september 2015.
+15 these statistics are from fireeye customers who have opted to share anonymized data with fireeye. the data included in the fireeye dynamic threat intelligence (dti) platform allows the firm to gain
+insights into cyber threat activity by gathering real-time information about the latest cyber threats worldwide. dti uses millions of fireeye sensors to perform more than 50 billion analyses over 400,000
+unique malware samples every day.26%
+16%
+12%
+8%
+7%
+6%
+5% 5% 5%
+4%
+6%
+20
+breakdown of alerts
+by industry
+5
+10
+15
+20
+25
+30
+0
+figure 5 fireeye customers, broken
+down by industry, that were alerted
+on the witchcoven profiling script
+between march 18 and oct. 31, 2015
+other: telecom,
+transportation,
+consumer
+goods and retail,
+aerospace and
+defense, ngos,
+agriculture
+financial services
+education
+government
+energy and utilities
+legal
+healthcare
+entertainment,
+media,
+hospitality
+manufacturing
+services and
+consulting
+high
+tech
+othercustomers often ask for ways to mitigate the risk against the malicious cyber activity we observe. for the activity described in
+this report, mitigation is a challenge because the
+threat actors are collecting information about
+potential targets in the course of a user's normal
+web browsing activity. the collection is done using
+similar scripts, tools and methods that legitimate
+websites use to profile customers and enhance
+the browsing experience.
+while profiling may feel invasive, it does not
+compromise a victim s computer. individuals and
+organizations can take steps such as blocking
+script execution or using third-party cookies,
+mitigation
+enabling privacy-enhanced browsing, or using
+anonymization services (such as the tor browser)
+to help mask their identity. however, these
+measures may be burdensome to implement and,
+while blocking potentially malicious activity, may
+also prevent legitimate site content from loading.
+organizations may be better off focusing on
+detecting or preventing any follow-on attacks
+through best practices, including disabling
+unneeded plugins, ensuring that systems and
+applications are patched, and monitoring hosts
+and networks for suspicious traffic.
+21
+special report pinpointing targets: exploiting web analytics to ensnare victims22
+appendix:
+technical details
+the witchcoven profiling script (example md5: ) is
+written in javascript. the script contains the jquery javascript library that is obfuscated to remove
+variable names. the full script is quite lengthy but is largely comprised of identical or slightly modified
+versions of publicly available scripts, including evercookie, plugindetect and the detect office module
+from the browser exploitation framework project.
+the script gathers the information listed in table 1 and encodes it in a url request to the compromised
+website hosting the witchcoven script.
+table 2: url request variables
+variable name variable data
+sid adobe shockwave version
+fid adobe flash version
+aid adobe reader version
+mid microsoft office version
+jaid oracle java version
+rid http referer
+cid first date the evercookie supercookie was set (in
+epoch time), or the current date if the evercookie
+was never set
+cart_id 55 (static value; may vary across witchcoven
+instances) 2015 fireeye, inc. all rights reserved. fireeye is a registered trademark of
+fireeye, inc. all other brands, products, or service names are or may be trademarks
+or service marks of their respective owners. .en-us.112015
+fireeye, inc. | 1440 mccarthy blvd. milpitas, ca 95035 | 408.321.6300 | 877.fireeye (347.3393) | info@ | www. to download this or other
+fireeye threat intelligence reports,
+visit: https://www. /reports.html

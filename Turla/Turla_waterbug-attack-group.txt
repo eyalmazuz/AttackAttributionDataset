@@ -1,0 +1,410 @@
+security response
+waterbug uses highly-targeted spear-phishing and
+watering-hole attack campaigns to target victims. security response
+version 1.02 january 14, 2016
+waterbug is a cyberespionage group that uses sophisticated malware to systematically
+target government-related entities in a range of countries.
+the group uses highly-targeted spear-phishing and watering-hole attack campaigns to
+target victims. the group has also been noted for its use of zero-day exploits and signing its
+malware with stolen certificates.
+once the group gains a foothold, it shifts focus to long-term persistent monitoring tools
+which can be used to exfiltrate data and provide powerful spying capabilities. symantec
+has tracked the development of one such tool, trojan.turla, and has identified four unique
+variants being used in the wild.
+overviewintroduction
+waterbug has
+successfully
+targeted and
+compromised over
+4,500 computers
+across more than
+100 countries.page 5 introduction
+waterbug is the name given to the actors who use the malware tools trojan.wipbot (also known as tavdig and
+epic turla) and trojan.turla (also known as carbon, uroburos, and snake). believed to have been active since
+at least 2005, it is likely that the group was responsible for the 2008 compromise of us central command that
+reportedly resulted in a clean-up operation that lasted almost 14 months.
+more recently, waterbug used a zero-day exploit against the microsoft windows kernel local
+privilege escalation vulnerability (cve-2013-5065), targeted emails, stolen certificates, and a sophisticated
+watering-hole distribution network known as venom to compromise its victims. waterbug has successfully
+targeted and compromised over 4,500 computers across more than 100 countries. targets include government
+institutions, embassies, and education and research facilities.
+the malware used on victims computers, variants of trojan.turla and trojan.wipbot, are likely developed by or
+for the waterbug group. trojan.turla has four different sub-versions, something that may indicate professional
+development with code shared among multiple teams.
+because of the targets chosen, the use of at least one zero-day exploit, a large network of compromised
+websites, and the advanced nature of the malware used, symantec believes that waterbug is a state-sponsored
+group.
+vectors
+symantec have observed two techniques used by the waterbug group to compromise victims: the use of highly
+targeted emails containing malicious attachments and a set of compromised websites which ultimately deliver a
+malicious payload.
+spear-phishing
+in december 2013, symantec identified several spear-phishing attacks against specific individuals. the
+emails used in the
+attacks contained
+a malicious adobe
+reader attachment.
+the attachment used
+one zero-day exploit
+against the adobe
+acrobat and reader
+toolbutton object useafter-free remote code
+execution vulnerability
+(cve-2013-3346) to
+elevate privileges and a
+second patched exploit
+(cve-2013-5065) to
+drop trojan.wipbot on
+the target s computer.
+this was the first time
+symantec had observed
+this group use a zero-day
+exploit in the wild.
+the majority of the
+emails observed in this
+spear-phishing attack
+figure 1. example targeted email containing malicious pdf that drops trojan.wipbotpage 6 followed a common theme using subjects such as defence attach q1 meetings or sochi 2014 winter olympics.
+attachments were distributed as adobe reader attachments or executable files using an adobe reader icon.
+venom distribution network
+since at least september 2012, symantec has identified 84 websites compromised by the waterbug group. the
+chosen websites receive visitors of potential interest to the attackers this is an example of a watering-hole
+attack. however, unlike traditional watering-hole attacks, where all visitors to a particular website are targeted
+indiscriminately, in the case of the venom network used by the waterbug group, the attackers use a more
+deliberate approach. this is done in a multi-staged fashion by firstly redirecting visitors to another malicious
+server. on the malicious server, a fingerprinting script is executed and this extracts configuration information
+from the user s computer related to installed bowser plugins (adobe reader, silverlight, java, flash etc.). the
+attackers also collect basic system and network information, such operating system version, type, browser
+version, and internet protocol (ip) address.
+at this point, the attackers have enough information to determine if the visitor is of further interest. when an ip
+address of interest is identified, such as one associated with a government institution, they proceed to create
+a rule specific to that ip address. this rule ensures that the next time the visitor arrives on the compromised
+website their computer may be sent a malicious payload instead of just being fingerprinted.
+one of the techniques that the attackers used to install the malicious payload is to attempt the installation
+of a trojanized version of adobe shockwave. this malicious installer contains trojan.wipbot. similarly,
+symantec has also observed packages which have been used to drop both trojan.turla and trojan.wipbot.
+it is believed that trojan.turla is also dropped in tandem with trojan.wipbot in order to provide multiple
+communication channels as a
+failsafe when interacting with
+the compromised computer.
+symantec has also observed the
+attackers using trojan.wipbot
+to download updated versions
+of trojan.turla after initial
+infection.
+once the attackers have gained
+a foothold in the network, they
+use trojan.turla to collect and
+exfiltrate data to a first-tier
+proxy. this tier is comprised of
+legitimate, but compromised,
+websites. in a similar fashion,
+data is relocated from the
+first-tier proxy to a second-tier
+proxy server under the control
+of the attackers. this is done
+to increase the complexity of
+the attacker s infrastructure
+and to make it more difficult to
+identify.
+figure 2.trojanized shockwave installer packagepage 7 compromised websites (watering holes)
+symantec telemetry suggests the venom network consists of 84 compromised domains (websites). these
+compromised websites are located in many different countries and were used in a watering-hole style operation
+in which the attackers monitored and filtered visitors to those websites and focused on the ones of interest for
+further action. the collection of compromised websites acted like a drag net designed to gather potential targets
+of interest.
+symantec s telemetry showed that thousands of computers visited the compromised websites between 2012
+and 2014. figure 3 shows how many visitors visited the compromised websites and as a result, were redirected
+to another malicious server for fingerprinting. this is an indicator of how many computers were caught up in the
+net and were scrutinized by the waterbug attackers. the actual number of computers that became infected with
+wipbot and turla was a much smaller subset.
+during our observations, the number of compromised computers increased over time, with a noticeable spike in
+november, 2013. this spike coincided with an increase in traffic being redirected by the compromised websites
+to the malicious server. this increase in throughput may have come about because of an increase in the number
+of compromised websites in use.
+where are the compromised websites?
+the watering-hole websites used by the waterbug group are located in many different countries. the greatest
+number of compromised websites is found in france (19 percent), germany (17 percent), romania (17 percent),
+and spain (13 percent).
+figure 3. number of redirected computers between september 2012 and may 2014page 8 common vector
+analysis of the compromised
+websites shows that the majority
+of them used a common contentmanagement system (cms) known
+as typo3. moreover, a number of
+compromised websites also resided
+on the same net block linked to a
+number of hosting providers. these
+hosting providers websites promote
+the use of cms-type tools, including
+typo3, as blogging platforms
+included in their hosting packages.
+industry breakdown
+the compromised websites were
+further categorized based on their
+respective industries. the majority
+of compromised websites were
+government related (26 percent).
+the list included embassies,
+ministries of foreign affairs, and
+other government institutions.
+publishing and media websites
+(23 percent) were also used by the
+attackers. in this case, the majority
+of compromised publishing websites
+were local news and broadcasting
+companies.
+despite the range and number of
+websites compromised and set up as
+watering holes, the attackers were
+only interested in a very specific
+subset of the users who actually
+visited these websites.
+in effect, the collection of
+compromised websites acted as a
+net, much like a fishing net trawling
+for fish in the ocean. in this case,
+the net is set up so that unwanted
+catches are allowed to escape
+unscathed but the ones of interest
+were redirected (based on their
+source ip address) to deliver the
+payload of wipbot or turla or both.
+figure 5. compromised sites categorized by industry
+figure 4. top ten countries with compromised websites (watering holes)whether
+compromised
+by a targeted
+email attack or
+by browsing to an
+infected website...
+trojan.turla or
+trojan.wipbot is
+installed onto the
+victim s computer.
+malwarepage 10 malware
+whether compromised by a targeted email attack or by browsing to an infected website on the venom network,
+in both cases either trojan.turla or trojan.wipbot is installed onto the victim s computer.
+trojan.wipbot
+trojan.wipbot was first identified by symantec in december, 2013 being distributed by a highly-targeted
+spear-phishing campaign. later, additional samples, including trojanized shockwave installers signed with a
+stolen certificate, were also observed being distributed by the venom network. trojan.wipbot is a downloader
+with limited back door functionality. trojan.wipbot has the ability to execute arbitrary commands and additional
+downloaded components on the infected computer. this is done through the use of a task file.
+task files consist of several sections. the first section is the command
+number or id, followed by the payload size, the payload itself, and an
+associated configuration script. the payload size is used by trojan.wipbot
+to allocate the correct amount of memory in order to store the binary. the
+payload can be an executable file (.exe or .dll) or a windows batch script. in
+the majority of cases, symantec has observed the attackers downloading
+batch files in order to perform reconnaissance activities on the infected
+network such as the collection of network and domain-specific information
+and login credentials to mount shares and move laterally across the
+network.
+a configuration script is also supplied by the attackers, which specifies the
+location of the file, supplied arguments, and where resultant data should be
+written to. the following example also instructs trojan.wipbot to delete the
+script after execution.
+[config]
+name = arg = /c result = delete = yes
+the collected data is later retrieved by the attackers using additional tools.
+links between trojan.wipbot and trojan.turla
+symantec has confirmed several links tying trojan.wipbot and trojan.turla to the same group through sample
+analysis and telemetry. trojan.wipbot contains an embedded component known as . the header of the component has
+been stripped. the dll itself has an export function which matches those used in trojan.turla samples
+(modulestart, modulestop). in trojan.wipbot, a linear congruential generator (lcg) is used as part of the malware s communication
+protocol, specifically for encryption. generally an lcg is used as part of a pseudo-random number generator
+(prng) in an encryption algorithm. however, in trojan.wipbot s case, it uses the lcg to perform the encryption
+instead. symantec has not observed lcg used for encryption of communications before. remnants of lcg
+code used for encryption are also present in trojan.turla, specifically the same c-constant value and modulus. both trojan.wipbot and trojan.turla also share a similar code structure in terms of decryption algorithms.
+both use an array of characters which are stored directly on the stack followed by a simple xor operation by a
+shared constant. finally, symantec has observed trojan.wipbot downloading trojan.turla onto compromised computers.
+figure 6. example of trojan.wipbot
+task file structurepage 11 trojan.turla
+in 2008, a malware incident was reported to have affected the us central command network. the incident
+was the direct result of an infected removable drive that was connected to a computer on the network, which
+executed an autorun file launching a malicious dll file stored on the drive. this was dubbed the btz incident
+and was considered one of the worst breaches of us military computers in history. the malware, which
+symantec called trojan.minit (also known as agent.btz), had the ability to spread through a network, gather
+sensitive information, and exfiltrate data to a remote command-and-control (c&c) server.
+since then, multiple links have been established between trojan.minit and recent samples of trojan.turla. the
+most infamous link is the use of a shared xor key across these two families. this key has been used by the
+attackers to encrypt log data and has also been used in a number of custom tools used by the waterbug group.
+trojan.turla is an extremely persistent, sophisticated malware, professionally developed with extensible
+capabilities and used exclusively by the waterbug group. trojan.turla is built from a framework that is designed
+for long-term monitoring of targeted individuals or organizations and has been in operation since at least 2005.
+both 32-bit and 64-bit samples have been identified in use in the wild. analysis has determined that trojan.
+turla is essentially an extensible platform which appears to share common components between variants
+through the use of a common framework.
+symantec has identified four unique variants of trojan.turla, all of which use shared components. details on the
+relationships between the variants are discussed in the following section.
+variants
+symantec has identified four unique variants of trojan.turla which have been in development between 2005 and
+2014. comrat is a direct descendant of the agent.btz malware that was in use in 2008. development of this variant
+has continued and recent samples, compiled in 2013, have been identified. the earliest variant of fa (so named because of debug strings linking to project fa64) was compiled in 2005.
+figure 7. variants of trojan.turla identified by symantecpage 12 this variant has seen continuous development from 2009 to 2014. carbon is the most unique of all four variants. carbon is distributed in two forks a driver-based version
+(rootkit) and a driver-less version. early variants of carbon were identified in 2007, 2008, and 2009. the
+majority of carbon s code has received minor incremental updates seen in recent samples identified in 2014.
+the most closely related variant to carbon is sav. sav (also known as uroburos) is a recent variant of trojan.turla which has been in development since at least
+2011 and has received incremental updates through to 2014.
+analysis of these variants shows common code structures, shared components, and a continuous development
+which has run in parallel since at least 2005.
+relationships
+the identified cases of code sharing are usually within specific sub-modules, such as idt hooking, or within
+helper code. an examination of features from the carbon and fa drivers in this section illustrates this. the
+relationship between carbon and sav is more complex and will be described separately.
+carbon and sav
+when carbon was first developed, the driver-based and driver-less forks used a custom communication module
+which supported multiple protocols including transmission control protocol (tcp), named pipes (np), and
+multipoint-to-point (m2p). when sav first appeared in 2011, it was based on the driver-based fork of carbon.
+however, injected components were significantly changed or possibly rewritten. shared features included the
+communication module. this suggests that sav is derived from carbon.
+fa, carbon, and sav
+in june 2007, carbon drivers already included the use of specific error code values which may have originally
+been implemented as part of the communication channel code. fa drivers introduced the use of these error code
+values between august, 2008 and december, 2009 as part of a major refactoring effort.
+additionally, fa and sav also shared a custom packer used exclusively by the waterbug group. by 2009, fa had
+begun using the custom packer for user-mode components. carbon did not use the packer in any of the collected
+samples, whereas sav used the packer for multiple components.
+these relationships indicate that features were developed separately, and later migrated to other projects. this
+sharing may be due to copying parts of source code (possibly entire folders) between independently developed
+projects.page 13 shared features
+the driver-based column indicates rootkit functionality such as that found in carbon and sav. the driver-less
+column indicates the use of user-mode api hooking. an encrypted file system was also found in two of the
+variants, carbon and sav. this is an ntfs file, encrypted using 128-bit cast in cbc mode. in other variants, a
+directory structure was used and encryption was performed using simple byte-by-byte xor encryption (using the
+same key used in agent.btz). code sharing shows trace evidence or remnants of code from earlier versions still
+present in recent samples. one such example is the use of lcg and associated constant values in the decryption
+algorithm.
+conclusion
+waterbug is a capable group that is highly skilled in compromising its targets and has systematically targeted
+governments and embassies since as early as 2005. the continued development of the tools used by waterbug
+suggests that the group has made a significant investment in time and resources. this coupled with the selected
+targets and the advanced nature of the malware used suggests that waterbug is most likely a state-sponsored
+group whose motive is intelligence gathering.
+figure 8. shared features across trojan.turla variantsappendixpage 15 appendix
+injection attack analysis
+the compromised websites use an injected iframe or some obfuscated javascript in order to redirect visitors to
+a malicious host, specifically to a web page (main.php) that is used to perform standard plugin checks or system
+fingerprinting.
+the following is an example of an injected iframe and obfuscated javascript:
+iframe injections
+<div style= visibility: hidden; ><iframe src= http:// /
+main.php width= 2 height= 2 scrolling= no frameborder= 0 ></iframe></
+div>
+obfuscated javascript injections
+plugindetect library
+when main.php is loaded, it runs a number of javascript files from a library known as plugindetect (v0.8.5).
+plugindetect is a legitimate library used to detect browser plugins (the most recent version is 0.8.7). the
+plugindetect library is intended to work with all the major browsers including internet explorer 6 and up, firefox,
+mozilla, netscape, chrome, safari, opera, seamonkey, flock, and others. it is possible to generate custom
+plugindetect scripts which only retrieve version information for specifically chosen plugins as per
+symantec has identified two versions of the main.php script file. the following table provides an overview of the
+information collected for each of the two versions, which perform similar actions:
+table 1. identified versions of main.php
+file name md5 targeted software description
+when main.php is loaded, regardless of the version used, it checks if javascript is supported on the redirected
+browser. if javascript is not available, it generates the parameter, nojs.php?j=no, and provides the address of
+the compromised website that the user was redirected from in the &ref= parameter:
+<noscript><meta http-equiv= refresh content = 0;url=nojs.php?j=no&ref=-- /></noscript>
+however, if javascript is available, main.php proceeds to collect the software version information listed in table
+1. depending on the version of the main.php script used to collect plugin information, it either performs a get
+request or a post request using the following parameters:
+all plugin scripts use the plugindetect library from version 0.8.5 with the exception of main.php
+(md5: ) which uses the plugindetect script version 0.8.6 for silverlight.
+exploits
+the scripts (main.php, , wreq.php etc) contained additional code which is used to exploit internet
+explorer 6, 7, and 8. additional exploits were also identified targeting oracle sun java and adobe flash player
+using the oracle java se remote code execution vulnerability (cve-2012-1723). unfortunately, not all exploits
+could be retrieved for analysis.
+the payload dropped by the java
+exploit was found to be: md5: d7ca9cf72753df7392bfeea834
+bcf992
+the above sample was confirmed as
+trojan.wipbot.
+trojanized applications
+the attacker group also used
+trojanized applications in order to
+trick users into installing a malicious
+payload. in one such example, a
+shockwave player installer bundle was
+found to be trojanized and silently
+installed trojan.wipbot.
+the installer was signed with
+a certificate from sysprint, an
+organization based in switzerland.
+there have been additional reports of
+trojanized microsoft security essential
+packages being used. trojan.turla variants
+custom packer
+packers or executable compressors are common techniques used by malware authors in order to evade antivirus
+(av) detection. the packer used with trojan.turla is unique to the group and has not been observed being used
+with any other malware.
+this custom packer, used exclusively by the waterbug group, was used for packing various components since
+at least 2009. the stub included in the packed driver-based variants includes the same error code value ranges
+as was observed in waterbug-specific communication
+code. this is a strong indication that attackers maintain
+the packer in-house.
+it was found that the fa dropper from 2009
+included a non-packed driver and a packed external
+communication component, but the dropper from 2011
+included a packed driver and a non-packed external
+communication component. however, for sav, the
+dropper, driver, and other components were all packed
+using the custom packer from 2011.
+symantec is aware of five generations of the custom
+packer: custom a was encountered in fa external
+communication component (february-december
+2009) custom b, variant prea was encountered
+in fa dropper (january 2010) custom b, variant a was encountered in fa external
+communication component (june 2010) custom b, variant b was encountered in various sav
+components (june 2011-may 2013) and fa driver
+(december 2012-january 2014) custom b, variant c encountered in sav driver
+(october 2013-march 2014)
+it is worth noting that another, somewhat simpler,
+packer was used for packing the trojan.wipbot dropper
+(custom dotnet used by single sample).
+error code ranges
+many of the waterbug-specific subroutines present
+in various kernel-mode samples use constants from
+range 0x21590001..0x21590258 as error codes. it
+is interesting to note that this range corresponds to
+0xdea6fxxx.
+the following components include code with these
+constants: stub of custom packer present in packed kernel-mode
+binaries fa drivers (except for samples earlier then 2008) carbon drivers sav drivers
+several samples also include a table mapping these error codes to messages. this table is apparently part of a
+source file with the following versioning information:
+$id: t _ 5290 2007-01-26 11:15:03z vlad $
+the table mapping error codes to messages is composed of a number of entries (see table 3).
+with all verified components, error codes seem consistent with the above table. however, use of additional error
+codes within this range were also observed that are not included in this table.
+additional shared features
+additional shared features observed during analysis are detailed below.
+idt hooking
+symantec observed sharing of idt hooking code used in fa, carbon (not present in samples earlier than 2009),
+and sav drivers. all have been observed using interrupts 0x55 or 0xc3 in the following method:
+kd> u nt!ntreadfile
+it is worth noting that higher-level code implemented on top of these hooks differ significantly across variants,
+where sav is considered the most sophisticated.
+fa source code tree
+the fa variant includes debug string information that corresponds to source code files. some full and partial
+paths are also indicated in the strings. it is possible that the source code tree for fa may have contained the
+following directory structure:
+the code tree suggests that there may be common helper code shared, such as rootkit functionality (rk_common,
+common\helpers etc.). it is likely that these components are shared across variants of trojan.turla.
+this is also consistent with the pdb strings extracted from fa variants:
+d:\proj\cn\fa64\sengoku\ _ bin\sengoku\win32 _ debug\sengoku _ agent.btz xor key
+a number of keys are shared across the trojan.turla variants. of particular interest is the following xor key
+known from agent.btz. this key has also been identified in a number of tools used by the waterbug group:
+the above xor key was found in comrat and fa components starting from 2006.
+encrypted file system
+carbon (driver-based) and sav utilize an encrypted file system (efs) to store configuration files, log information,
+tools, and exfiltrated data. these variants use cast-128 bit encryption in cbc mode. a unique initialization key
+(iv) was used across these drivers: note other samples also have remnants of the efs code which is never used.
+detection guidance
+targeted injection attacks
+iframe injection
+upon visiting a compromised domain, the user is redirected to a dynamic dns host which performs
+fingerprinting operations to identify the version information for several browser plugins, as described in the
+technical details of this document.
+pattern three
+wipbot has been observed using the following communication(s) in order to exfiltrate data from a compromised
+computer.

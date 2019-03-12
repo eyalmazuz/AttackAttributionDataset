@@ -1,0 +1,374 @@
+1. overview
+turla is one of the longest-known state-sponsored cyberespionage groups, with well-known victims
+such as the us department of defense in 2008. the group owns a large toolset [1] [2] that is generally
+divided into several categories: the most advanced malware is only deployed on machines that are
+the most interesting to the attackers. their espionage platform is mainly used against windows
+machines, but also against macos and linux machines with various backdoors and a rootkit.
+for years, turla has relied, among other impersonations, on fake flash installers to compromise
+victims. this kind of attack vector does not require highly sophisticated exploits but rather depends
+on tricking the user into installing the fake program.
+in recent months, we have observed a strange, new behavior, leading to compromise by one of turla s
+backdoors. not only is it packaged with the real flash installer, but it also appears to be downloaded
+from . from the endpoint s perspective, the remote ip address belongs to akamai,
+the ofcial content delivery network (cdn) used by adobe to distribute their legitimate flash
+installer. after digging a bit more, we realized that the fake flash installers, including the macos
+installer for turla s backdoor snake whether or not they were downloaded from urls were performing a get request to get. urls to exfltrate some sensitive information
+about the newly compromised machine. again, according to our telemetry, the ip address was
+a legitimate ip address used by adobe. in this whitepaper, we will explain the di erent possibilities
+that could lead to such malicious behavior. to our knowledge, this malware did not utilize any legitimate
+flash player updates nor is it associated with any known adobe product vulnerabilities. we can state
+with confdence that adobe was not compromised. these attackers merely use the adobe brand
+to trick users into downloading the malware.
+we also found that the turla group relied on a web app hosted on google apps script as a command
+and control (c&c) server for javascript-based malware dropped by some versions of the fake flash
+installer. thus, it is clear they are trying to be as stealthy as possible by hiding in the network trafc
+of the targeted organizations.
+by looking at our telemetry, we found evidence that turla installers were exfltrating information
+to get. urls since at least july 2016. the victims are located in territories of the former
+ussr. as for gazer, another malware family developed and distributed by the turla group and previously
+described by eset [2], the targets are mainly consulates and embassies from di erent countries
+in eastern europe or the vicinity. we have also seen a few private companies infected but they do
+not seem to be turla s main targets. thus, it seems this campaign is directed against high-value
+political organizations. finally, some of the victims are also infected with other turla-related
+malware such as comrat or gazer 2. why attribute this campaign to the turla
+group?
+before analyzing the weird connections happening over the network, we will explain why we suspect
+this campaign is the work of the turla group.
+firstly, some fake flash installers in this campaign drop a backdoor known as mosquito, which some
+security companies already detect as turla malware.
+secondly, some of the c&c servers linked to the dropped backdoors are using, or used, satcom
+ip addresses previously associated with turla [3].
+thirdly, this malware shares similarities with other malware families used by the turla group.
+these similarities include the same string obfuscation (string stacking and xor with 0x55)
+and the same api resolution.
+these elements allow us to say with confdence that turla s operators drove this campaign 3. abusing adobe flash and flash-related
+domains
+it is not a new tactic for turla to rely on fake flash installers to try to trick the user to install one
+of their backdoors. for instance, kaspersky lab documented this behavior in 2014 [4]. however,
+this is the frst time, to our knowledge, that the malicious program is downloaded over http
+from legitimate adobe urls and ip addresses. thereby, even the most experienced users could
+be deceived.
+3.1 apparent distribution through since the beginning of august 2016, we have identifed a few attempts to download a turla installer
+from admdownload. urls.
+at frst glance, we imagined it was the typical trick that consists of setting the host feld
+of the http request while the tcp socket is established to the real ip of the c&c server. however,
+after deeper analysis, we realized that the ip address legitimately belongs to akamai, a large
+cdn provider that adobe uses to distribute its legitimate flash installer.
+even if the executable is downloaded from a legitimate url (e.g.: http://admdownload. /
+bin/live/ ), the referer feld appears to have been tampered
+with. we have seen this referer feld set to http://get. / ashplayer/download/
+?installer=flash_player, which is not a url pattern used by adobe and hence returns
+a 404 status code if requested.
+it is important to note that all the download attempts we identifed in our telemetry were made
+through http, not https. this allows a wide range of attacks in the path from the user s machine
+to akamai s servers.
+the next section is a review of various possible scenarios that could explain this. exactly what happened
+is still an open question and we would appreciate any feedback if you have more information.
+3.2 compromise hypotheses
+figure 1 shows the di erent hypotheses that could explain how a user apparently visiting
+the legitimate adobe website over http might be forced to download turla-related malware trac
+interception
+potential
+target
+local man-inthe-middle attack
+1
+compromised
+gateway
+2 isp modifies trac
+3
+adobe site somehow
+compromised
+5
+bgp
+hijacking
+4
+figure 1 possible interception points on the path between the potential victim s
+machine and the adobe servers
+we quickly discarded the hypothesis of a rogue dns server, since the ip address corresponds
+to the servers used by adobe to distribute flash. after discussions with adobe and from their
+investigations, scenario seems unlikely as the attackers did not compromise the adobe
+flash player download website. thus, these are the hypotheses that remain: a man-in-themiddle (mitm) attack from an already-compromised machine in the local network, a compromised
+gateway or proxy of the organization, a mitm attack at the internet service provider (isp) level
+or a border gateway protocol (bgp) hijack to redirect the trafc to turla-controlled servers.
+local mitm
+turla operators could use an already-compromised machine in the network of the victim s
+organization to perform a local mitm attack. using arp spoofng, they could modify the trafc
+on the y by redirecting the trafc of the targeted machine to a compromised machine. even though
+we are not aware of the presence of such tools in the turla arsenal, such a tool is not hard to develop,
+especially given the technical abilities of this group.
+however, we identifed many di erent victims in many di erent organizations. that means the turla
+group would have had to have compromised at least one other computer in each of those organizations,
+and specifcally, a computer on the same subnet as a more preferred target. compromised gateway
+this attack is similar to the previous one but much more interesting for the attackers: they can intercept
+the trafc for the whole organization, without the need to do arp spoofng, as gateways and proxies
+typically see all the incoming and outgoing trafc between the organization s intranet and the internet.
+we are not aware of the existence of a turla tool designed to do this but their rootkit, called uroburos,
+has packet analysis abilities. it can be installed on servers and used as a proxy to distribute tasks
+to infected machines that do not have a public ip address [5]. for a group with the apparent expertise
+and resources turla has available, this uroburos code could easily be modifed to intercept trafc
+on the y and inject malicious payloads or otherwise modify unencrypted content mitm at the isp level
+if the trafc is not intercepted before exiting an organization s internal network, it means it is modifed
+later on the path to the adobe servers. the isps are the main point of access on this path, and eset
+has previously reported on other actors, such as finfisher, using packet injection at the isp level
+to distribute malware in repackaged installers [6].
+all the victims we identifed are located in di erent, former ussr countries and we identifed them using
+at least four different isps, based in these different countries. thus, this scenario would suggest
+that turla operators would have to be able to monitor trafc in several di erent separate countries
+or links where this data transit. bgp hijacking
+if the trafc is not modifed by the isp and does not reach the adobe servers, this means it has been
+re-routed to another server that is controlled by the turla operators. this can be done by conducting
+a bgp hijacking attack. there are several methods that can be employed.
+on one hand, turla operators could use an autonomous system (as) they control to announce
+a prefx belonging to . thus, the trafc routing to from locations near
+the turla-controlled as will be misdirected to their server. an example of such malicious activity
+was analyzed by ripe [7]. however, this would be quickly noticed by adobe or by services performing
+bgp monitoring. moreover, we checked on ripestat and did not notice any suspicious route
+announcements for the adobe ip addresses used in this campaign.
+on the other hand, the turla operators could use their as to announce they have a shorter route
+than any other as might have to the adobe servers. thus, the trafc would also go through their routers
+and could be intercepted and modifed in real time. however, a big part of the trafc to adobe would
+be redirected to the rogue router, so it would be a noisy tactic and the chances are it would have
+been noticed at some point since the campaign started, in august 2016 or earlier.
+wrap-up
+of the fve scenarios presented in figure 1, we considered only four, as we are confdent adobe was
+not compromised. the bgp hijacking and the mitm attack at the isp level are far more complex than
+the others. thus, we believe it is more probable the turla group has a custom tool installed on local
+gateways of the impacted organizations, allowing them to intercept and modify the trafc even
+before it exits the intranet.
+3.3 data exfltration via get. urls
+once the user has downloaded and launched the fake flash installer, the compromise process
+starts. it begins by dropping a turla backdoor on the machine. this could be mosquito, a win32 malware
+described in section 4, a malicious javascript fle communicating with a web app hosted on google
+apps script as described in section 5, or an unknown fle downloaded from a fake adobe url:
+http://get. / ashplayer/download/update/[x32|x64]
+for the last case, as this url does not exist on adobe s server; for the turla group to be able to send
+content through this url, something must be man-in-the-middling trafc on the path between
+the compromised machines and the adobe servers to provide a response to these requests.
+then, a request is performed exfltrating information about the newly-compromised machine.
+this is a get request to http://get. /stats/abffcbebd/q=<base64-encoded data>
+with, according to our telemetry, a legitimate adobe ip address but with a url pattern that is not used
+by adobe and thus returns. as the request is performed through http, the same mitm scenarios
+as discussed in section 3.2 are likely figure 2 code performing request to bogus get. url
+the base64-encoded data contain interesting and sensitive information about the victim machine,
+so it would be surprising that it would actually be sent to an adobe server. figure 3 is an example
+of a decoded report. it sends various information such as a unique id (the last 8 bytes of the fake
+flash installer executable, as shown in figure 4), the username, the list of security products figure 4 unique id at the end of the installer
+interestingly, the installer of snake for macos [8], a backdoor associated with turla, also uses
+the exact same url, as shown in figure 5. the data sent are a bit di erent as they only contain
+the username and device name, although still encoded in base64. however, this behavior
+was not documented by fox-it when they published their analysis.
+figure 5 code performing request to bogus get. url in the snake
+macos installer
+finally, the fake installer drops or downloads, then runs a legitimate flash player application.
+the legitimate installer is either embedded in the fake installer or downloaded from the following 4. analysis of the win32 backdoor
+in this section, we describe the samples we found in the wild, mainly in 2017. we found evidence
+that this campaign has been running for some years, and the 2017 samples are an evolution from
+a backdoor in a fle conventionally named . however, these older samples
+were less obfuscated and there was only the backdoor dll, without the loader found in more recent
+samples. some of these older samples have compilation timestamps that date back to 2009 but
+these are likely to have been forged.
+4.1 installer
+the installer generally comes as a fake flash installer and is bundled with two additional components
+later dropped on the disk. as explained above, we identifed several users who downloaded this fake
+flash installer from a url and ip used by adobe for the distribution of the legitimate flash installer.
+we detailed the di erent hypotheses that could explain this behavior in the previous section.
+crypter
+in recent versions, the installer is always obfuscated with what seems to be a custom crypter.
+figure 6 shows an example of a function obfuscated with this tool.
+figure 6 obfuscated function
+firstly, the crypter makes heavy use of opaque predicates along with arithmetic operations.
+for example, the obfuscated function will compute a number from hardcoded values and then
+check if this number is greater than another hardcoded value. thus, at each execution the control ow will be the same, but emulation is required to determine which path is correct. therefore,
+the code becomes far more complex to analyze for both malware researchers and automated
+algorithms in security software. this may slow down emulation so much that the object won t
+be scanned, due to time constraints and hence software known or shown to be malicious
+(if not obfuscated) won t be detected secondly, after the frst layer is de-obfuscated, a call to the win32 api setupdigetclassdevs
+(0,0,0,0xffffffff) is performed, and the crypter then checks whether the return value equals
+0xe000021a. this function is generally used to request information about the devices of the system.
+however, this specifc flags value (0xffffffff) is not documented, but according to our tests,
+the return value is always 0xe000021a on windows 7 and windows 10 machines. we believe
+this api call and the following check are used to bypass sandboxes and emulators that do not
+implement it correctly.
+thirdly, the real code is divided into several chunks that are decrypted, using a custom function,
+and re-ordered at run time to build a pe in memory. it is then executed in-place by the crypter s
+pe loader function. this pe loader contains several debug strings as shown in figure 7.
+figure 7 debug strings in the pe loader function
+installation
+once decrypted, the installer searches the %appdata% subtree and drops two fles in the deepest
+folder it fnds. when searching for this folder, it avoids any folder that contains avast in its name.
+it then uses the flename of one of the non-hidden fles in this folder, truncated at the extension,
+as the base flename for the fles it will drop. if all the fles in the directory are hidden, or the directory
+is empty, it takes the name of a dll from %windir%\system32. the loader it drops will have a .tlb
+extension and the main backdoor a .pdb extension. interestingly, it does not use writefile to drop
+these two dlls. instead, it creates a file, maps it in memory and calls memmove to copy data.
+it is probably designed to avoid some sandboxes and security products hooks on writefile.
+we have also seen older variants of the installer dropping only one fle, with the .tlb extension.
+in that case, the same fle contains both loader and backdoor functions. dllmain chooses which
+code to execute.
+it writes a simple and unencrypted log fle in %appdata% . the full log fle is created
+in the same directory as the two dlls and has the .tnl extension figure 8 files created by the malware in the random child directory of %appdata%
+then, it establishes persistence by using either a run registry key or com hijacking [9]. if the antivirus
+display name, retrieved using windows management instrumentation (wmi), is total security ,
+it adds [backdoor_path], startroutine in hkcu\software\run\auto_update.
+otherwise, it will replace the registry entry under hkcr\clsid\{d9144dcd-e998-4eca-ab
+6a-dcd83ccba16d}\inprocserver32 or hkcr\clsid\{08244ee6-92f0-47f2-9fc9-929ba
+a2e7235}\inprocserver32 with the path to the loader. these clsids correspond respectively
+to and to . these dlls are launched legitimately by a lot of processes,
+including , the main windows gui. thus, the loader will be called each time is started. finally, it adds an entry in the registry to store the path to the original
+hijacked dll and to the main backdoor, as shown in figure 9. other clsids are hardcoded in the binary but we have not seen any use made of them. the full list
+is available in the iocs section.
+as explained in the previous section, the installer sends some information such as the unique
+id of the sample, the username or the arp table to a url at an adobe domain, get. .
+it will also launch a real adobe flash installer, which is either downloaded from google drive
+or embedded in the fake installer.
+before launching the main backdoor, the installer creates an administrative account helpassistant
+(or helpasistant in some samples) with the password sysq!123. also, the localaccounttoken
+filterpolicy is set to 1, allowing remote administrative actions. we believe this account name
+was used to remain stealthy as this is the name used when a legitimate remote assistance session
+is run [10] 4.2 debugparser (launcher)
+the launcher, named internally, is called when the hijacked com object
+is loaded. it is responsible for launching the main backdoor and for loading the hijacked com object.
+the simplifed pseudo-code of this component is provided in figure 10.
+however, it uses some tricks to load the hijacked library and to return to the correct address.
+the process is described below:
+1. retrieve the original return address after the legitimate call to loadlibrary. at the beginning
+of dllmain, it stores the value of the esp register. then it checks for ff 15 (a call opcode)
+at esp - 6. if it is present, the register holds the original return address.
+figure 11 search the address just after the loadlibrary call
+2. allocate rwx memory containing the following values:
+3. jump to the hook function by modifying the return address of dllmain.
+0 4
+pointer to hooklibrary
+loader
+original return addr
+8
+hinst dll
+12
+pointer to freelibrary 0xcc
+16 24 48
+hook
+function
+figure 12 allocated memory layout16 4. in the hook function:
+a. call a function that is responsible for loading (or any other hijacked library)
+b. call freelibrary on the (backdoor loader) handle
+c. jump to the original return address before the hook.
+because the original dll is loaded, the user is unlikely to notice that the backdoor was launched
+at the same time.
+in the case of older variants, with the loader and backdoor functions in one fle, the dllmain chooses
+which code to execute, as shown in figure 13.
+figure 13 loader and backdoor in the same library17 4.3 commander (main backdoor)
+the main backdoor of this campaign, called commanderdll by its authors, is launched either
+by the loader described above, or directly at startup if the chosen persistence mechanism is the run
+registry entry. in both cases, this library s startroutine export is called while, as shown in figure 14,
+this export is not present in the dll s export table.
+figure 14 dll has no export address table in the .reloc section
+in the dllmain function, an export table is built in order to expose this export:
+1. it creates an image_export_directory structure with startroutine as the name
+of its only export
+2. it copies this structure just after the relocation section, located at the end of the pe s
+in-memory image
+3. it changes the pe header feld containing the relative virtual address (rva) of the export
+table to the address of the newly-created export table
+with these fx-ups, the memory-mapped library has an export called startroutine, as shown
+in figure 15 and figure 16. figure 17 is a screenshot from the hex-rays decompiler showing the code
+for the whole process to add this export.
+figure 15 newly-created export table18 figure 16 name of the new export
+figure 17 routine patching the export table
+setup
+firstly, the commanderdll module deletes the dropper (the fake flash installer) file. the path
+is received from the dropper via a named pipe called \\.\pipe\namedpipe. then, in a new thread,
+it creates a second named pipe, \\.\pipe\ms32loc, and waits until another process connects
+to this pipe, at which point the program exits.
+secondly, it sets up some internal structures and stores confguration values in the registry.
+table 1 describes the di erent registry values stored under hkcu\software\microsoft\[dllname] table 1 backdoor registry values
+key value description
+flags contains c&c server urls
+layout mac address padded with 0x0000
+[dllname]tr32 similar to flags
+[dllname]fgtb temporary data
+[dllname]fga not seen
+all the registry values, except the layout entry, are encrypted using a custom algorithm
+that is described in the next section.
+third, an additional c&c server address is downloaded from a document hosted on google docs
+(https://docs.google[.]com/uc?authuser=0&id=0b_wy-tu90pbjtdllrenwnknma0k&export=download).
+it is also encrypted using the same algorithm described below.
+encryption
+this backdoor relies on a custom encryption algorithm. each byte of the plaintext is xored with
+a stream generated by a function that looks similar to the blum blum shub algorithm [11]. to encrypt
+or decrypt, a key and a modulus are passed to the encryption function.
+di erent keys and moduli are used in the di erent samples. some are hardcoded while others are
+generated during execution. table 2 describes the di erent keys and moduli used by this malware. log
+the program maintains a comprehensive log fle under the name [dllname].tnl. interestingly,
+it includes the timestamp of each log entry, allowing an easy retrace of the chain of events
+that happened on a compromised machine. this could be very helpful for forensic investigators.
+it is encrypted using the previously-described algorithm. the key is located at o set 0x20
+in the header of the log fle and the modulus is always 0x5dee0b89. figure 18 describes
+the structure of this fle. c&c server communications and backdoor commands
+the backdoor s main loop is responsible for managing the communication with the c&c server
+and executing the commands it sends. at the beginning of each round, it sleeps a random amount
+of time usually around 12 minutes.
+the requests to the c&c server always use the same url scheme: https://[c&c server
+domain]/scripts/m/query.php?id=[base64(encrypted data)]. the user-agent is hardcoded
+in the samples and cannot be changed:
+mozilla/5.0 (windows nt 6.1) applewebkit/537.36 (khtml, like gecko) chrome/
+41.0.2228.0 safari/537.36
+this is the default value used by google chrome 41. the structure of the id parameter is described
+in figure 20 figure 20 structure of the requests to the c&c server get request with data
+in the id parameter
+the previous example is the case for which the id get parameter contains the data structure.
+however, data can also be put inside a cookie (with a null name) or in a post request.
+figure 21 describes the various possibilities.
+in all cases, the encryption key is the frst dword of the url id structure. this key, in combination
+with the modulus 0x7dfdc101, can decrypt the url id structure, the post data and the cookie
+value. then, the payload of the data structure is decrypted.
+data in get
+parameter
+data lenght
+request to the c&c
+post get
+random
+data in cookie
+figure 21 selection of the request
+the initial request contains general information about the compromised machine, such as the result
+of the commands ipconfg, set, whoami and tasklist.
+then, the c&c server replies with one of several batches of instructions. the structure of this reply
+is described in . the packet is fully encrypted (except the frst four bytes), with the same algorithm,
+derived from blum blum shub, described in section 4.3 using the first dword for the key
+and 0x7dfdc101 for the modulus. each batch of instructions is encrypted separately using
+0x3eb13 for the key and 0x7dfdc101 for the modulus with first 4 bytes
+figure 22 structure of the c&c reply packet
+the backdoor can execute certain predefned actions hardcoded in the binary. table 3 is a summary
+of the available commands.
+table 3 description of the backdoor commands
+command id description
+0x3001 download fle to the compromised machine. if there is .dll or .exe
+in the flename, run it using loadlibrary or createprocess.
+0x3002 launch a process (or load a library if there is .dll in the flename)
+0x3003 delete a fle using deletefilew.
+0x3004 exfltrate a fle (max size sent = 104,857,600 bytes). the c&c server
+can also ask to delete the fles and to ush data in the registry flags.
+0x3005 store data to the registry flags. the size of data should be 240 bytes.
+0x3006 execute /c [command]. the result is read using a pipe and sent back to the c&c.
+in some of the samples we have analyzed, the backdoor is also able to launch powershell scripts 5. analysis of the javascript backdoor
+some of the fake flash installers deliver two javascript backdoors instead of mosquito, the win32
+backdoor. these fles are dropped on the disk in the folder %appdata%\microsoft\. they are named and the frst one contacts a web app hosted on google apps script with the following url
+(https://script.google[.]com/macros/s/akfycbwf_vs5whqlhmi4eqoljetisjmgllbo
+69n_2n_k2ktbqwxlk3w/exec) and expects a base64-encoded reply. then, it executes the decoded
+content using eval. we don t know what the exact purpose of this additional backdoor is, but
+it may be used to download additional malware or to execute malicious javascript code directly.
+to establish persistence, it adds a shell value under hkcu\software\microsoft\windows
+nt\currentversion\winlogon\
+the second javascript fle reads %programdata% and executes its content using
+the eval function. to establish persistence, it adds a local_update_check value
+in hklm\software\microsoft\windows\currentversion\run24 6. conclusion
+this campaign shows that turla s operators have many ideas to trick the user and to hide
+their malicious trafc as legitimate. even an experienced user can be fooled by downloading
+a malicious fle that is apparently from , since the url and the ip address correspond
+to adobe s legitimate infrastructure. however, the usage of https would significantly reduce
+the e ectiveness of these kinds of attacks, as it is harder to intercept and modify encrypted trafc
+on the path between a machine and a remote server. similarly, a check of the fle signature should
+quickly raise suspicion, as the fles used in this campaign are not signed whereas installers
+from adobe are.
+it also shows that turla is still interested in consulates and embassies located in eastern europe
+and they put a lot of e ort into keeping their remote access to these important sources of information.
+for any inquiries, or to make sample submissions related to the subject, contact us at: threatintel@eset.com25

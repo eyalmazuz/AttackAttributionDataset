@@ -1,0 +1,136 @@
+may 2015 reimagined
+hiding in plain sight:
+fireeye and microsoft expose
+obfuscation tactic
+fireeye threat intelligence and the microsoft threat intelligence center investigated a command-and-control (cnc) obfuscation
+tactic used on microsoft s technet, a web portal for
+it professionals. technet s security was in no way
+compromised by this tactic, which is likely possible
+on other message boards and forums.
+fireeye threat intelligence assesses that apt17,
+a china-based threat group, was behind the
+attempt. other groups have used legitimate
+websites to host cnc ip address in the past.
+apt17 was embedding the encoded cnc ip
+address for the blackcoffee malware in
+legitimate microsoft technet profiles pages and
+forum threads, a method some in the information
+security community call a dead drop resolver. encoding the ip address makes it more difficult
+to identify the true cnc address for network
+security professionals.
+few security companies have publicly discussed
+this tactic. after discovering the blackcoffee
+activity, the fireeye-microsoft team encoded
+a sinkhole ip address into the profile pages and
+forum threads and locked the accounts to prevent
+the threat actors from making any changes. this
+collaborative approach allowed the team to
+observe the malware and its victims. though the
+security community has not yet broadly discussed
+this technique, fireeye has observed other threat
+groups adopting these measures and expect
+this trend to continue on other community sites.
+today, fireeye released indicators of compromise
+(iocs) for blackcoffee and microsoft released
+signatures for its anti-malware products.
+fireeye has observed the chinabased apt17 disguising their traffic
+apt17, also known as deputydog, is a chinabased threat group that fireeye intelligence has
+observed conducting network intrusions against
+u.s. government entities, the defense industry, law
+firms, information technology companies, mining
+companies, and non-government organizations.
+blackcoffee s functionality includes uploading
+and downloading files; creating a reverse shell;
+enumerating files and processes; renaming, moving,
+and deleting files; terminating processes; and
+expanding its functionality by adding new backdoor
+commands. fireeye has monitored apt17 s use of
+blackcoffee variants since 2013 to masquerade
+malicious communication as normal web traffic by
+disguising the cnc communication as queries to
+web search engines.
+threat actors cnc: from obviously
+malicious to thoughtfully
+obfuscated
+the use of blackcoffee demonstrates threat
+actors evolving use of public websites to hide
+in plain sight. in the past, threat actors would
+modify easily compromised websites to host cnc
+commands and configuration, as observed in the
+china-based apt1 s webcnc suite of backdoors.
+now, threat actors are using well-known
+websites that they do not need to compromise to host cnc ip addresses. they simply use the
+website for legitimate purposes, such as posting
+forum threads or creating profile pages.
+apt17 went further to obfuscate their cnc ip
+address and employed a multi-layered approach
+for the malware to finally beacon the true cnc
+ip. they used legitimate infrastructure the
+ability to post or create comments on forums and
+profile pages to embed a string that the malware
+would decode to find and communicate with the
+true cnc ip address. this additional obfuscation
+puts yet another layer between apt17 and the
+security professionals attempting to chase them
+down.
+how blackcoffee works
+this blackcoffee variant contains one or
+more urls that link to the biography sections of
+attacker-created profiles as well as forum threads
+that contain comments from those same profiles.
+a url is randomly selected and the malware
+searches at that location for an encoded ip
+address located between two tags, @micr0s0ft and c0rp0rati0n .
+using microsoft technet, a web portal for it professionals,
+apt17 posted in forum threads and created profle pages to
+host encoded cnc ip addresses that would direct a variant
+of the blackcoffee backdoor to their cnc server.
+figure 1: the encoded ip address
+actual command
+and control
+traffic is sent
+to the decoded
+cnc ip
+apt17 s malicious use of technet
+the malware then communicates directly with the retrieved and decoded
+ip address to receive commands and send stolen information. if the cnc
+server is discovered or shut down, the threat actors can update the encoded
+ip address on technet to maintain control of the victims machines.
+blackcoffee supports an initial set of fifteen commands, including
+creating a reverse shell, uploading and downloading files, and enumerating
+files and processes. the attackers can also extend blackcoffee s
+functionality through additional commands sent as shellcode.
+expect more threat groups to employ legitimate
+websites in operations
+we have already observed threat actors adopting similar techniques and
+moving some cnc activity to legitimate websites that they do not need to
+compromise. in the same vein, some threat actors have already begun using
+social media sites such as twitter and facebook for malware distribution and
+cnc. apt17 s tactic using a dead drop resolver and embedding encoded
+ip addresses as opposed to displaying it in plain text can delay detection,
+discourage it staff from discovering the actual cnc ip address, and prevent
+discovery of the cnc ip via binary analysis. fireeye expects that threat groups
+are already using this technique, with their own unique variations, and others
+will adopt similar measures to hide in plain sight.
+apt17 encodes an ip address a technet forum thread modified by blackcoffee:
+on a newly created technet
+profile or encodes the ip
+address on a forum thread
+using one of their profiles
+blackcoffee checks the altered
+technet page for encoded tag
+containing address of cnc server
+encoded command and control server
+ip is sent back to blackcoffee on
+the victim s computer
+blackcoffee is capable
+of uploading, downloading,
+renaming, moving, or deleting
+files, terminating processes, or
+adding new backdoor commands
+the victim s network
+security monitors see
+traffic from technet
+cnc server
+victim infected with
+blackcoffeeto download this or other

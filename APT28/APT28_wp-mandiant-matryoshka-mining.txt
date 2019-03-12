@@ -1,0 +1,677 @@
+
+consultants at mandiant, a fireeye company, have helped evaluate and enhance the cyber security programs of
+customers of all sizes across a range of industries around the world. this paper draws on the combined experience of
+our consultants over the course of hundreds of these service engagements. while we have withheld some identifying
+details for the privacy of our clients, the stories are real. the insights, advice, and examples presented here represent
+more than a decade of work helping clients reduce risk and improve their security posture. lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining introduction this article provides a multi-faceted analysis of the exploit payload referenced in the
+fireeye operation russiandoll1 blog post. the information herein is intended for
+malware triage analysts, reverse engineers, and exploit analysts with a full understanding
+of x86 and basic experience with ida, and provides tools and background information to
+recognize and analyze other, future exploits. this article goes on to discuss how red team
+analysts can apply these principles to carve out exploit functionality or augment exploits
+to produce tools that will enhance operational effectiveness. h erein, we will study the exploit for if you don t have a copy of this
+particular binary, you can follow along with an
+open-source proof of concept (varying in its
+details, but having similar functionality)3 . we ll first walk through the payload and see how
+to loosely identify what it does once it has gained
+kernel privilege . then, we ll discuss how to get
+higher-resolution answers from reverse
+engineering by using windbg to confirm
+assumptions, manipulate control flow, and
+observe exploit behavior . building on this and
+other published sources, we ll assemble a
+technically detailed exploit analysis by examining
+the relevant portions of win32k .sys . finally, we ll
+close by discussing how to extract and augment
+this exploit to load encrypted, unsigned drivers
+into the windows 7 x64 kernel address space . lay of the land static analysis
+with ida we will first survey the lay of the land by static
+analysis with ida . if you re new to ida, check out
+skull security s 2010 blog about using ida to
+dissect the energizer trojan4 . for a more in-depth
+treatment, practical malware analysis5 is very
+instructive . finally, msdn offers a useful review
+of the x64 processor architecture6 . our first lead has been given to us: an exploit in
+this sample gains system privileges by abusing
+the createwindowex api . so, we drop it into ida
+and follow the p-type xref for createwindowexw
+and see that createwindowexw is referenced by
+a call instruction in the startaddress thread
+routine . figure 1 shows the relevant call setup for
+createwindowex . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 1:
+createwindowex
+call setup for
+lpclassname microsoft s documentation for createwindowex7 indicates that the function will create an instance of
+the window class whose name is specified in its second argument, lpclassname, which in this case we can
+trace back to the string test figure 2 shows the relevant setup for the call to registerclass . from here, we can also see that the window
+procedure is the callback sub_14001230 . the
+window procedure is of particular interest
+because it is normally executed after createwindowex is called, so we examine it .
+figure 3 shows the first significant block of code
+in the window procedure, containing a pair of
+unknown local variables, an unknown global
+variable, and an unknown function pointer . 7 https://msdn .microsoft .com/en-us/library/windows/desktop/ms632680(v=vs .85) .aspx lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 3:
+createwindowex
+call setup for
+lpclassname we find the initialization of dword_140012afc by following the lone write xref to it . figure 4 shows that
+dword_140012afc receives the return value of getcurrentprocessid . hence, we rename dword_140012afc to currentpid and move on to pursuing qword_140012ad8 .
+figure 5 shows the sole write xref to this function pointer, with its value coming from getprocaddress . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 3:
+createwindowex
+call setup for
+lpclassname we can see that the lpprocname argument to
+getprocaddress is pslookupprocessbyprocessid ; according to
+msdn8, pslookupprocessbyprocessid is exported
+by ntoskrnl .exe, making it a kernel routine . this lookup is preceded by a call to a subroutine
+that uses the undocumented
+ntquerysysteminformation function to obtain
+module information for ntoskrnl .exe9 . the
+malware then calls loadlibraryexa to load
+ntoskrnl .exe, calls getprocaddress to find pslookupprocessbyprocessid, and calculates the
+kernel address of the routine . we now know that the window procedure
+supplies the malware s pid to
+pslookupprocessbyprocessid to obtain a
+pointer to its own executive process (_
+eprocess) block . figure 6 shows the window
+procedure code with the
+pslookupprocessbyprocessid procedure
+address and the malware s _eprocess block
+both labeled . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 6:
+window procedure
+obtaining malware s
+_eprocess block figure 7 shows the subsequent code block, which also calls pslookupprocessbyprocessid, this time
+providing the hard-coded constant 4 for system . seven instructions later, we see that the malware
+steals the process token from the system
+process . figure 8 shows data being copied from
+the offset within dword_140012af8 (which contains 0x208) in the system process s
+_eprocess block into the malware s . as we will
+see later, this is the address of the privileged
+token used by the system thread . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 8:
+window procedure
+copying data from
+system _eprocess
+block figure 9:
+strings from malware
+sample including
+pslookupprocess
+byprocessid what if there was no helpful lead? what would
+tip off a triage analyst to the presence of a kernel
+escalation of privilege? one sign is an unpacked
+binary containing strings referencing native api functions10 . figure 9 shows the strings from the
+operation russiandoll payload, which include
+the kernel function we found,
+pslookupprocessbyprocessid . looking this function up on msdn showed that it is
+exported by ntoskrnl .exe, making it a kernel function .
+a reference to such a function constitutes a lead that
+should be followed . this same technique has been
+observed in local privilege escalation exploits going back a long time, such as ms11-04611 . you can
+confirm your suspicions about this function by using
+a kernel debugger to set a process-specific
+breakpoint on nt!pslookupprocessbyprocessid so
+that you can examine the call stack, which is what we
+will do next . 10 https://en .wikipedia .org/wiki/native_api
+11 https://www .exploit-db .com/docs/18712 .pdf 8 lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining beneath the surface dynamic
+analysis with windbg to observe the activity of a kernel privilege
+escalation exploit, our best bet is a kernel debugger
+such as windbg . windbg can invasively debug
+user-space malware and provides powerful tools to
+observe its activity in kernel space . msdn provides
+extensive software and setup information regarding
+windbg12, 13, 14, 15 . you might also consider using
+virtualkd16 to quickly connect to vmware guests . warning do not install or run malware without
+first setting up a safe environment. recall from the previous section that the
+malware copies data from offset 208h within the
+system process s _eprocess block to the
+malware s _eprocess block . to confirm our
+suspicion that 208h is the offset of the access
+token within the _eprocess block, we can use
+windbg s dt command: dt nt!_eprocess figure 10 shows output from windbg that
+corroborates our identification of the token
+stealing routine within the malware . figure 10:
+abbreviated listing
+of _eprocess type
+in windbg lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 11:
+low-integrity
+process check as
+seen in ida figure 12:
+pspinsertprocess
+breakpoint activated
+by malware
+execution there at offset 0x208 is the token . after the
+malware copies the token from the system process,
+the kernel s security reference monitor gives the
+malware the royal treatment: system-level access . observing the escalation of privilege in action,
+however, takes a little more work . static analysis
+reveals that the malware calls getsidsubauthority and checks whether it is running at the
+security_mandatory_low_rid (1000h)
+integrity level, a procedure that is documented by
+microsoft17 . the malware only executes its exploit
+if it detects that it is running in a low-integrity
+process . figure 11 shows the call to
+getsidsubauthority and the comparison against
+security_mandatory_low_rid . to induce the malware to escalate privilege, we ll
+halt it before it slips past this check, lie to it about
+its access level, and catch it calling
+pslookupprocessbyprocessid . to catch the
+malware before it gets too far, we use an
+instrumented breakpoint to trigger before the
+process manager adds each process to the process
+list . we can also get some additional mileage out of the dt command to read the imagefilename
+member of the _eprocess block: bp nt!pspinsertprocess dt nt!_eprocess @
+rcx imagefilename we can then run the malware . figure 12 shows
+activating the pspinsertprocess breakpoint . to let nt!pspinsertprocess do its job, we continue (with gu: go up ) until nt!pspinsertprocess returns to
+nt!ntcreateuserprocess, at which point our malware s process object has been added to the process list .
+figure 13 shows the abbreviated output of the !process command . we could then copy the address of the process
+object and supply it to the /i ( invasive ) switch of
+the .process command, causing windbg to invasively debug the malware . figure 14 shows this
+two-step procedure which requires us to issue the
+g command to allow a process context switch . we next set a user-space breakpoint on
+advapi32!getsidsubauthority, specifying the bp
+command s /p ( process ) switch to break only
+when the malware calls this function: figure 15 shows this breakpoint activating within
+a function whose job it is to jump to the real
+getsidsubauthority function . we run until getsidsubauthority returns into the malware s code, and disassemble the code at the
+instruction pointer . figure 16 shows that this lands us in the malware s low-integrity check . stepping through the low-integrity check, we see that we are about to compare the value of the register
+ecx with the hard-coded constant 1000h . but as figure 17 shows, rcx instead contains 2000h . to make the malware execute its exploit, we tell it that it is running in a low-integrity process by writing
+the value 1000h to ecx: lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining we then set a process-specific breakpoint to trigger
+when the malware executes the kernel function
+nt!pslookupprocessbyprocessid . figure 18 shows
+rcx being manipulated, the process-specific breakpoint being set on
+pslookupprocessbyprocessid, and the new
+breakpoint being activated by the malware privilege
+escalation code after execution is resumed . to confirm the privilege escalation, we examine the stack trace . figure 19 shows the stack trace, which
+confirms that we caught the privilege escalation . figure 18:
+inducing and
+halting on privilege
+escalation figure 19:
+annotated stack
+trace of kernel
+privilege escalation as can be seen above, the malware sample s
+module name, 54656d7ae9f6b89413d5b20704b
+43b10, appears in both user space and kernel
+space . this is how the malware manages to copy the access token from the system thread s
+eprocess block into its own as we observed by
+reverse engineering . escalation: achieved . 13 lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining what if the malware executed the
+getsidsubauthority call before the conclusion of
+the two-step invasive debugging procedure? a
+more reliable (but more time-intensive) approach
+to gain control is to locate the file offset of an
+instruction where you want to break, take note of the original byte value in that location, and patch it
+with the single-byte opcode for the icebp18
+instruction, f1h . at runtime, this will get the kernel
+debugger s attention, at which point you can fix the
+instruction and move on . figure 20 shows the
+process of rewinding the instruction pointer by one
+byte and restoring the original opcode . in the course of analysis, this process may need to
+be repeated many times, as well as the process of
+altering the result of getsidsubauthority to
+shepherd the malware into escalating privilege . in order to automate this repetitive procedure and
+focus on the analysis, you could use a windbg
+script, such as the following .
+lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining listing 1:
+windbg script to
+halt exploit run operation russiandoll payload until its wndproc is executed, dumping @rcx (hwnd) as win32k!tagwnd. requires that payload has been interrupted and windbg process context is in payload due to an icebp patch at file offset 2a57h. after confirming that the reverse engineering analysis was correct, the most interesting question
+becomes: how does the exploit work? in the next section, we explore this in technical detail . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining digging deeper analysis of a exploit trendmicro has published an analysis of cve-
+2015-170119 . no doubt this is based on a much
+more technical analysis that touches on the
+intricacies of many windows internals . here, we
+observe the exploit s interaction with win32k .sys
+to synthesize a more technically elaborate
+analysis of the vulnerability . this process will
+allow us to identify the concept of operations of
+this exploit in greater detail, and will build
+experience necessary to independently analyze
+win32k .sys exploits without the aid of any other
+published analysis in future cases . exploit analysis hinges on familiarizing oneself not
+only with the malicious sample at hand, but also
+the vulnerable software itself, which is the context
+in which an exploit does its work . in many cases,
+this can entail extensive reverse engineering .
+fortunately, we will see that win32k .sys
+exploitation is a well-documented topic . in
+addition to the literature, there are sometimes
+publicly available resources disclosing old
+windows nt source code, although these can be
+subject to takedowns20 . in lieu of source code, the
+reactos project21 can serve as a useful model of
+many windows nt kernel internals and
+definitions . additionally, alex ionescu s native
+development kit (ndk)22 provides some
+definitions that can be useful for stand-alone
+development, such as proof of concept work . to get started with our analysis, we note that
+trendmicro s analysis alludes to a server side
+window proc flag . literature can be found dating
+back several years23 as well as more recently24
+discussing the role of the server-side window
+procedure flag within the window object . win32k .
+sys defines a structure called tagwnd which
+contains information about each window object
+derived from a given window class . within the
+tagwnd object are the bserversidewindowproc
+flag and the lpfnwndproc function pointer, which we will use as anchors for our analysis of cve-
+2015-1701 . these and other members can be
+explored within an active kernel debugging or
+crash analysis session of windbg with the dt
+command, such as: dt win32k!tagwnd so, we understand that this exploit works by
+causing win32k .sys to set the
+bserversidewindowproc flag within a tagwnd
+object while a user-specified function address is
+resident in the lpfnwndproc member of the same
+window object; this results in the user-specified
+address being executed with kernel privilege . but
+how exactly does this happen? recall that in figure 19, we saw
+win32k!xxxcreatewindowex in the call stack at
+the time when the exploit achieved kernel
+execution . we can begin by finding the address of
+the tagwnd structure and watching accesses to
+its bserversidewindowproc flag (byte at offset
+2ah) and lpfnwndproc (pointer at offset 90h)
+members to identify how the flag and window
+procedure arrive at the values they do . win32k .
+sys uses a special function,
+win32k!hmallocobject, to create window
+objects, which is how we can identify the new
+window as it is created . within
+xxxcreatewindowex, there is a single call to
+hmallocateobject, hence breaking on this
+address should yield the address of the new
+window object within the register rax after the
+hmallocobject call returns . since bserversidewindowproc is a member of a
+bitfield, we choose to break on a one-byte write to
+the exact byte that it occupies at pwnd+2ah .
+figure 21 shows windbg breaking on write
+access to the byte location of
+bserversidewindowproc upon the first access by
+the setorclrwf routine . this call stack provides
+useful information later in the analysis . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 21:
+first bitfield access
+in same byte as
+bserversidewindowproc the setorclrwf function generically sets or
+clears window flags . pausing to analyze
+setorclrwf, we find that the third argument
+dictates which flag is set, and 0x204 is the unique
+value for this argument that will induce setorclrwf set the bserversidewindowproc
+flag . knowing this, the second access to
+pwnd+0x2ah is notable because setorclrwf is
+provided with the value 0x204 . figure 22 shows
+the specific flags being set with setorclrwf . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining from the call stack (see figure 21), we can see
+that the malware calls setwindowlongptr, which
+is responsible for ultimately causing
+bserversidewindowproc to become set (see
+figure 22) . the argument that the exploit provides
+to setwindowlongptr is 0xfffffffc, which is a
+dword representation of -4 . microsoft's
+documentation for setwindowlongptr25 defines
+the symbol gwlp_wndproc as -4, stating that
+it "sets a new address for the window procedure ."
+further analysis shows that the malware uses this
+to set its window procedure to the default window
+procedure . because win32k .sys defines the
+default window procedure,
+xxxsetwindowdatalong sets
+bserversidewindowproc to indicate that it trusts
+this procedure to be executed in the kernel . it would make sense to repeatedly use the gu
+command in windbg to unwind the stack and see
+how the malware s function is invoked, however
+this can lead to some confusion due to the way
+64-bit user-mode callbacks behave on windows
+and what information is available to windbg to
+interpret system state . at this point, we go back to
+the sample and see that the function that calls
+setwindowlongptr was written to a location
+within the process environment block (peb)
+member named kernelcallbacktable . figure 23
+shows a location within the kernel callback table
+being calculated and saved in register rbx before
+its value is exchanged with the address of the
+malware s malicious callback . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining we can learn the name of the function whose
+address was overwritten by inspecting the
+callback table and looking for the malicious
+function in the callback table, then comparing this with a normal callback table . figure 24 shows how
+windbg can be used to find the offset of the
+callback table from the peb . using the offset 58h, we can use the dps ( display
+words and symbols ) command in windbg to
+examine the relevant callbacks . judging by the
+presence of null pointers and the nomenclature
+of symbol names within the table, we can infer
+that there are 105 (69h) callbacks in the table . to
+dump them, we can issue the following command: dps poi($peb+58h) l69h figure 25 shows an excerpt of the resulting list of
+functions, all of which are within user32 .dll except
+for the one located at offset 0x36, which instead is
+in the malware s address space . figure 26 shows a parallel excerpt of the callback table in a normal 64-bit process, revealing that the
+overridden callback in the malware is known as _clientcopyimage26 . 26 note that if you choose to compare against a 32-bit process on a 64-bit machine, you will see wow64 equivalents for these callbacks; in this case, disregard the whcb prefix and focus on the rest of the api name . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 26:
+kernel callback table
+for 64-bit svchost .exe we can quickly search through win32k .sys for
+symbols named like clientcopyimage with
+windbg, as follows: doing so, we find only one symbol with a name
+similar to clientcopyimage, namely
+xxxclientcopyimage . ida pro shows three
+references to this function, any of which could be
+a call site we need to investigate: a quick approach to triaging these for
+investigation is to set a breakpoint on each of
+them, along with the malicious callback, to see
+which breakpoint is hit immediately prior to the
+callback . figure 27 shows that this reveals
+xxxcreateclasssmicon as the function
+responsible for calling the malware s
+clientcopyimage callback . 20 lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining figure 28 shows an excerpt from xxxclientcopyimage, which adds 18h to 1eh and passes the resulting
+constant, 36h, to the keusermodecallback function . keusermodecallback ultimately uses this
+argument as an index into the callback table in the
+peb, resulting finally in the call to the hooked
+clientcopyimage callback located 36h bytes off
+the base of the callback table . meanwhile, the call
+stack at xxxcreateclasssmicon+0x8d reveals that
+xxxcreatewindowex was the caller of
+xxxcreateclasssmicon . at this point, we ve watched
+bserversidewindowproc and worked backwards
+to assemble three key facts about the exploit s
+interaction with win32k .sys: the exploit hooks the _clientcopyimage
+callback before xxxcreatewindowex
+begins its work xxxcreatewindowex calls
+xxxcreatewindowsmicon, which in turn
+transitions back to user mode and calls the
+hooked _clientcopyimage function within the malicious _clientcopyimage hook, the exploit calls setwindowlongptr, which
+changes the malware s window procedure to a
+server-side (kernel) default window procedure the final question is, how does the malicious
+window procedure ever get executed once the
+exploit has told win32k .sys to set point its window
+procedure to one of the kernel's default routines?
+we can learn this by monitoring changes to
+lpfnwndproc within the window object . using the same technique as before of breaking
+on hmallocobject within xxxcreatewindowex,
+we can locate the window object and break on
+write accesses to its window procedure,
+lpfnwndproc . when we do, we note that the first
+access is the one we already knew about, which is
+caused by the malware s _clientcopyimage
+callback . the second write to lpfnwndproc
+answers our question . figure 29 shows
+xxxcreatewindowex writing to lpfnwndproc . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining the answer is that prior to this point in the
+window creation process, xxxcreatewindowex
+has yet to execute the normal code path in which it
+assigns a window procedure to the new window object . figure 30 shows the location of this
+overwrite, which occurs directly after the call to
+xxxcreateclasssmicon within
+xxxcreatewindowex . here, the result of lpfnwndproc for the new window .
+mapclientneutertoclientpfn s job is to compare
+the window procedure that the application
+originally registered in its window class against
+numerous standard window procedures and
+finally return either the appropriate standard
+window procedure, or the unique function
+registered by the user-space application if no
+match is found . xxxcreatewindowex then copies
+this value into lpfnwndproc . the problem is that
+this is not accompanied by any evaluation of
+whether the bserversidewindowproc flag should
+be set or cleared . because there is no such check,
+and because xxxcreatewindowex indirectly
+called a user-controlled pointer that can be
+hooked by a malicious application,
+xxxcreatewindowex is vulnerable to a kernel
+escalation of privilege that will execute arbitrary
+user-specified code . in the absence of any public analysis or
+knowledge of what we are looking at, how do we
+come to these conclusions independently? the techniques described in this article provide a
+path toward identification of some classes of
+exploits, particularly those that attack the kernel .
+in this case, we identified kernel symbol names
+within the malware . following the references to
+these names yielded function pointers that we
+used as breakpoint locations in a kernel debugger
+to confirm that kernel execution was achieved .
+when the breakpoint was not hit, we identified
+conditions (the low_integrity rid value)
+that needed to be manipulated to coerce the
+malware into launching its exploit . in the case of
+a previously unseen and uncategorized malware
+sample, the stack trace at this point can provide a
+starting list of potentially vulnerable functions to
+examine . after tracing the malware and the
+vulnerable software, it should be possible to
+draw a conclusion about which code was
+exploited . as for how it was exploited, this can
+sometimes require deeper insight into the
+vulnerable codebase, which can be gained
+through source code (if available), literature
+review, and reverse engineering . 22 lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining other exploits may not execute arbitrary code .
+literature and source code may be unavailable .
+different leads may warrant different analysis
+strategies based on tracing backward from
+observations to identify what code is being
+influenced and how . the specifics of analyzing a
+particular exploit will vary, but it is hoped that the
+techniques employed above can help you build
+hypotheses, confirm them, and move on to the
+subsequent step of your analysis . striking gold building red team
+tools if you are a red team operator, you may be asked
+to safely extract an exploit from a malware sample
+in order to escalate privileges or circumvent
+controls in a particular scenario . there is evidence
+to suggest that the developers of the operation
+russiandoll payload have borrowed source code
+from many public references . several techniques
+and code snippets found in the russiandoll
+payload can be found on the internet, including: getting information about modules loaded in the kernel9 copying the system access token to one s own process11
+evaluating the integrity level of one s process17 red team operators can likewise apply code
+reuse to augment exploits such as this into even
+more powerful capabilities . depending on the
+sophistication of the controls and processes in
+your client s organization, this can be a valuable
+way to advance the goals of your operation while
+improving the detection, prevention, and
+response capabilities of that group . for example,
+two-factor authentication in conjunction with
+effective antivirus can increase the difficulty of
+monitoring keystrokes or clipboard activity to
+gain unauthorized access to sensitive resources .
+in such cases, red teams may benefit from a
+kernel-privileged tool that can evade antivirus
+and collect the information necessary to achieve
+the red team goal . here, we outline the challenges of extracting an exploit from malware
+and building a tool that can download, decrypt,
+and load an unsigned kernel driver without ever
+having to write it to disk . warning do not test kernel software on a
+machine where you are not willing to lose all your files
+due to a programming error. the first tasks required to repurpose an exploit
+found in the wild have already been described
+above . step one is to acquire a sample and observe
+it in operation in a safe environment to verify that
+the exploit was successful (as in the section beneath the surface dynamic analysis with
+windbg ) . the second step is to understand the
+minimum functionality necessary to duplicate the
+exploit . because the exploit code can be
+intertwined with extraneous malware
+functionality, the process of identifying the vital
+elements is made much easier by finding or
+producing an analysis of the vulnerability itself (as
+in the section digging deeper analysis of a
+win32k .sys exploit ) . once the core code of the
+exploit has been identified, it is possible to
+reproduce its functionality in source code . in the case of the russiandoll payload, the functional
+elements of the exploit are roughly as follows: registering a window class hooking the _clientcopyimage callback creating a window copying the system access token each functional element may comprise several
+pieces . for example, hooking the _clientcopyimage
+callback entails at least four steps: authoring a malicious callback to set the default window procedure
+locating the kernel callback table altering memory protection for the kernel callback table (to permit write access) overwriting the _clientcopyimage pointer with the malicious callback address lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining reproducing each element of the exploit in source
+code may require the hard-coded offsets from the
+malware to be reproduced in the software .
+however, a better way to write an
+understandable, stable, and maintainable proof of
+concept is to understand and define the correct
+structures . understanding takes experience, such
+as knowing (or researching) what it looks like
+when a process accesses its peb . as for
+structures, alex ionescu s ndk21 contains a set of
+definitions that may be useful to this end . once you have reproduced the exploit
+functionality, you can apply the same testing
+methods from verifying the original exploit to
+validate your proof of concept . once validation is
+complete, you should test the proof of concept on
+each release of windows that your team will use it
+against . if the exploit executes or manipulates
+kernel code, then it is wise to also test against
+checked builds of windows27 and to use driver
+verifier28 to ensure that the kernel and vulnerable
+drivers are not left in an unstable state due to
+their exploitation . nobody wants to be known for
+producing exploits that result in blue screens . at this point, with a proof of concept in hand that
+is capable of executing privileged code, it is hard
+not to wonder why the russiandoll authors
+stopped at getting system privileges . why not
+load a kernel rootkit to further avoid detection?
+as it turns out, there are many good reasons not
+to do this . attackers are economically motivated
+to expend the smallest amount of effort possible
+to accomplish each mission . thus, effort might be
+wasted crafting anything more sophisticated
+than what is necessary . additionally,
+implementing increased kernel functionality
+increases the risk of crashing a system during an
+operation, which in turn increases the expense of
+testing and mission assurance . the risk and cost associated with kernel-based
+capabilities can be worthwhile for scenarios
+where kernel privilege offers a unique capability that cannot be duplicated by user-space code,
+or where stealth parameters entail a low-level
+capability . examples that arise from time to time
+in the course of red team operations are hiding
+processes or logging keystrokes without
+interference from antivirus . for this reason, we
+explore what is necessary to develop an
+unsigned driver loader capable of loading
+encrypted, unsigned driver images over the
+wire . beyond its powerful offensive potential,
+this sort of tool also has interesting implications
+in computer security research . building an unsigned driver loader requires only a
+few features on top of the exploit code: parsing pe-coff driver images dynamic linking writing kernel code to be executed from a user address space optionally downloading and/or decrypting the payload this process is made significantly easier by
+obtaining a copy of the windows driver kit29 . a
+windows kernel programming tutorial is outside
+the scope of this article, but one can find a very
+pragmatic introduction in chapter 2 of rootkits:
+subverting the windows kernel 30 . for this project, we lay out four milestones: write a stand-alone driver that can load other drivers
+integrate kernel code with the
+user-space exploit add network code add encryption assuming you already have a test driver, the
+first milestone is to write a driver that can load
+other drivers . you could certainly start
+augmenting the user-space exploit directly, but
+writing a stand-alone driver makes it easier to
+use tools like windbg and driver verifier to
+validate the initial capability . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining in writing a driver loader, you have the option of
+writing code using zwcreatefile and
+zwreadfile31 to read the driver from disk, or
+simply encoding a buffer in your test driver for
+the time being . since we re ultimately planning to
+pull the payload down from the network, there s
+not much point in writing code to read it from
+disk . so, i suggest using xxd32 with the -include
+flag to translate your hello .sys into a c-style
+buffer declaration (vim for windows33
+conveniently includes a port of xxd) . to parse the resulting buffer, you can opt to include
+winnt .h and navigate the pe headers yourself,
+however it is more productive to examine and reuse
+existing code . there are multiple user-space loader
+implementations34 ,35 available that can provide a
+start . these will require you to hammer the pe
+header definitions from winnt .h into compatibility
+with kernel data types, but this is well worth the
+work to avoid reinventing the wheel altogether36 . next, you ll need to identify and import kernel
+functions . figure 31 shows cff explorer37 displaying
+imports for hello .sys: dbgprint and kebugcheckex . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining as long as your payload only references ntoskrnl .exe,
+your loader can use the kernel s
+mmgetsystemroutineaddress routine38 to resolve
+symbols exported by the kernel or hardware
+abstraction layer (hal) . this does not significantly
+constrain the utility of the resulting loader since
+many rootkits can be written using only functions from ntoskrnl .exe . if your payload references other
+modules, you will need to write code to locate each
+module base address and parse the driver to locate
+its exported functions . figure 32 shows import
+resolution for a simple keystroke logger as an
+example of a module that only requires functions
+exported by ntoskrnl .exe . after you ve parsed the headers and populated
+the import table, you re ready to call the entry
+point . to rapidly test and develop without
+rebooting, you ll want to implement an unload
+routine to call childpdo->onunload if one has
+been registered by the payload . before
+integrating your loader with an exploit, test with
+driver verifier and a checked build of windows,
+to detect any subtle errors . once you have tested the stand-alone loader
+driver, you can migrate it to user space . in the
+case of cve-2015-1701, there is proof of
+concept code available on the internet3 . since
+your loader is likely to import more than one or
+two functions, you ll want to refactor the
+ntquerysysteminformation wrapper39 so you
+can conveniently look up arbitrary kernel
+functions from user-space . then, initialize a lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining function pointer for each function imported by
+your stand-alone loader driver, and port the
+driver to user space . consider whether you plan
+to leak the memory you allocated and leave the
+payload permanently resident in memory, or
+create some way for a user-space control
+application to call onunload and cause the
+memory to be cleared and reclaimed . with the heavy lifting done, you can add
+networking code . depending on the egress rules
+and security controls in place at the
+organizations you are assessing, you might
+choose to directly use winsock40 and an
+arbitrary port, or you might choose winhttp41
+or wininet42 and use the https protocol . if you are not using an encrypted protocol to
+transmit your driver, you may wish to add
+encryption . depending upon your development
+schedule, size constraints, and other factors, you
+might choose to either directly integrate
+something like the rijndael aes algorithm43
+(taking care to implement your own cipher mode),
+or build against a full-featured library44 ,45 . note
+that if you opt to build against a full-featured
+library, it is easier to do so at this stage with the
+driver loader already ported to user space, than
+porting the library to the kernel to integrate it
+with the stand-alone driver . this describes the engineering effort required to
+build an unsigned driver loader on top of a kernel
+escalation of privilege exploit . the resulting code
+can be reused by integrating it with any exploit
+that provides execution of arbitrary code in the
+kernel . there are limitations, however . for
+instance, this code cannot load filesystem mini-filters46 because the fltregisterfilter47
+routine requires configuration data from the
+registry . even so, this loader can work with many
+different kernel rootkits . the existence of publicly available code that can
+produce a powerful rootkit loader underscores
+the importance of prompt patching, the
+ineffectiveness of user-space endpoint security
+solutions in some cases, and the potential for
+simulating advanced red team scenarios . the code
+we ve seen used by the russiandoll developers
+(and by myself) is widely available17, easily reused9,
+and often many years old11 . for defenders, this should hit home how feasible it
+is for a moderately sophisticated attacker to
+cobble together a powerful and stealthy capability
+and launch it the same day that an exploit
+becomes available to them . this underscores the
+urgency of closing the loop on patch cycles . for security researchers, this kind of tool
+exemplifies that observing user-space behaviors
+and features is insufficient to evaluate threats . it
+also demonstrates why virtualization and
+whole-system analysis will be key for
+instrumenting and detecting the most advanced
+threats: you can t trust kernel-based security
+software because you can t trust the kernel . finally, as a red teamer, this provides avenues for
+advanced attacks . our hypothetical example was
+collecting a two-factor token from a user in a case
+where endpoint security solutions have interfered
+with commonly used tools, but your imagination is
+the only limit on how this can be applied . lessons from operation russiandoll, january 2016 by michael baileymatryoshka mining conclusion in this analysis, we shared tools and techniques that
+defensive security professionals can use to conduct
+enhanced analysis of malware, and discussed the
+steps necessary for red team analysts to synthesize
+powerful offensive tools based on malware used by
+advanced persistent threat actors . as defensive
+security controls raise the bar to attack, attackers
+will employ increasingly sophisticated techniques to complete their mission . understanding the
+mechanics and impact of these threats, then, is the
+next step in systematically discovering and
+deflecting the coming wave of advanced attacks . we would like to thank yu wang of the fireeye
+exploit analysis team for his notes on cve-2015-
+1701, which accelerated the timeline for
+assembling a coherent analysis approach . 

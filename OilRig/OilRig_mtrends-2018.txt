@@ -1,0 +1,49 @@
+apt34
+november 14, 2017 since at least 2014, an iranian threat group tracked by
+fireeye as apt34 has conducted reconnaissance aligned
+with the strategic interests of iran. the group conducts
+operations primarily in the middle east, targeting financial,
+government, energy, chemical, telecommunications and
+other industries. repeated targeting of middle eastern
+financial, energy and government organizations leads
+fireeye to assess that those sectors are a primary
+concern of apt34. the use of infrastructure tied to
+iranian operations, timing and alignment with the national
+interests of iran also lead fireeye to assess that apt34
+acts on behalf of the iranian government.
+apt34 uses a mix of public and non-public tools
+(fig. 2) and often uses compromised accounts to conduct
+spear-phishing operations. in july 2017, fireeye observed
+apt34 targeting an organization in the middle east using
+the powruner powershell-based backdoor and the
+downloader bondupdater, which includes a domain
+generation algorithm (dga) for command and control.
+powruner was delivered using a malicious rtf file
+that exploited cve-2017-0199. in november 2017, apt34
+leveraged the microsoft office vulnerability cve-2017-
+11882 to deploy powruner and bondupdater less
+than a week after microsoft issued a patch.
+figure 2. apt34 ttps in relation to the attack life cycle.
+initial compromise establish foothold escalate privileges internal reconnaissance complete mission
+maintain presence move laterally spear-phishing leverage social
+media to share links
+to malicious files accessed unauthenticated
+mysql database
+administration web
+application brute force attack
+against owa to access
+exchange control
+panel webshells rdp vpn access ssh tunnels to cs servers created shortcuts in
+startup folder plink powruner psexec wmi rdp powershell scripts wscript plink elvendoor powbat helminth ismagent webshells including
+seasharpee mimikatz key logger keypunch lazagne brute force password
+attacks modified outlook web
+app logon pages on
+exchange servers softperfect
+network scanner powershell scripts native os commands goldirony candyking powershell scripts
+used for data
+exfiltration via dns exfiltration via rdp compress data into
+rar files, stage them
+to an internet accessible
+server, then download
+the files exported email boxes
+(pst files)

@@ -1,0 +1,58 @@
+onionduke: apt attacks via the tor network - f-secure weblog :
+news from the lab
+recently, research was published identifying a tor exit node, located in russia, that was consistently and
+maliciously modifying any uncompressed windows executables downloaded through it. naturally this
+piqued our interest, so we decided to peer down the rabbit hole. suffice to say, the hole was a lot deeper
+than we expected! in fact, it went all the way back to the notorious russian apt family miniduke, known
+to have been used in targeted attacks against nato and european government agencies. the malware
+used in this case is, however, not a version of miniduke. it is instead a separate, distinct family of malware
+that we have since taken to calling onionduke. but lets start from the beginning.
+when a user attempts to download an executable via the malicious tor exit node, what they actually
+receive is an executable "wrapper" that embeds both the original executable and a second, malicious
+executable. by using a separate wrapper, the malicious actors are able to bypass any integrity checks the
+original binary might contain. upon execution, the wrapper will proceed to write to disk and execute the
+original executable, thereby tricking the user into believing that everything went fine. however, the
+wrapper will also write to disk and execute the second executable. in all the cases we have observed, this
+malicious executable has been the same binary (sha1: ,
+detected as trojan-dropper:w32/onionduke.a). this executable is a dropper containing a pe
+resource that pretends to be an embedded gif image file. in reality, the resource is actually an encrypted
+dynamically linked library (dll) file. the dropper will proceed to decrypt this dll, write it to disk and
+execute it. a flowchart of the infection process
+once executed, the dll file (sha1: , detected as ) will decrypt an embedded configuration (shown below) and attempt to
+connect to hardcoded c&c urls specified in the configuration data. from these c&cs the malware may
+receive instructions to download and execute additional malicious components. it should be noted, that
+we believe all five domains contacted by the malware are innocent websites compromised by the malware
+operators, not dedicated malicious servers. a screenshot of the embedded configuration data
+through our research, we have also been able to identify multiple other components of the onionduke
+malware family. we have, for instance, observed components dedicated to stealing login credentials from
+the victim machine and components dedicated to gathering further information on the compromised
+system like the presence of antivirus software or a firewall. some of these components have been observed
+being downloaded and executed by the original backdoor process but for other components, we have yet to
+identify the infection vector. most of these components don't embed their own c&c information but
+rather communicate with their controllers through the original backdoor process.
+one component, however, is an interesting exception. this dll file (sha1 , detected as backdoor:w32/onionduke.a) contains
+among its configuration data a different hardcoded c&c domain, and also evidence
+suggesting that this component may abuse twitter as an additional c&c channel. what makes the domain interesting, is it was originally registered in 2011 with the alias of "john kasai".
+within a two-week window, "john kasai" also registered the following domains: , , , , , , , , , , and .
+this is significant because the domains and have previously been
+identified as c&c domains used by miniduke. this strongly suggests that although onionduke and
+miniduke are two separate families of malware, the actors behind them are connected through the use of
+shared infrastructure. a visualization of the infrastructure shared between onionduke and miniduke
+based on compilation timestamps and discovery dates of samples we have observed, we believe the
+onionduke operators have been infecting downloaded executables at least since the end of october 2013.
+we also have evidence suggesting that, at least since february of 2014, onionduke has not only been
+spread by modifying downloaded executables but also by infecting executables in .torrent files containing
+pirated software. however, it would seem that the onionduke family is much older, both based on older
+compilation timestamps and also on the fact that some of the embedded configuration data make
+reference to an apparent version number of 4 suggesting that at least three earlier versions of the family
+exist.
+during our research, we have also uncovered strong evidence suggesting that onionduke has been used in
+targeted attacks against european government agencies, although we have so far been unable to identify
+the infection vector(s). interestingly, this would suggest two very different targeting strategies. on one
+hand is the "shooting a fly with a cannon" mass-infection strategy through modified binaries and, on the
+other, the more surgical targeting traditionally associated with apt operations.
+in any case, although much is still shrouded in mystery and speculation, one thing is certain. while using
+tor may help you stay anonymous, it does at the same time paint a huge target on your back. it's never a
+good idea to download binaries via tor (or anything else) without encryption. the problem with tor is that you have no idea who is maintaining the exit node you are using and what their motives are. vpns
+(such as our freedome vpn) will encrypt your connection all the way through the tor network, so the
+maintainers of tor exit nodes will not see your traffic and can't tamper with it. 

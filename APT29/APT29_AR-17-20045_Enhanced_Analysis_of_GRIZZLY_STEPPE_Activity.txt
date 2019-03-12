@@ -1,0 +1,130 @@
+an al y s i s r e p o r t
+disclaimer: this report is provided as is for informational purposes only. the department of homeland
+security (dhs) does not provide any warranties of any kind regarding any information contained within. dhs
+does not endorse any commercial product or service referenced in this advisory or otherwise. this document is
+distributed as tlp:white: subject to standard copyright rules, tlp:white information may be distributed
+without restriction. for more information on the traffic light protocol, see - . reference number: ar-17-20045 february 10, 2017
+recommended reading about grizzly steppe
+dhs recommends reading multiple bodies of work concerning grizzly steppe. while dhs
+does not endorse any particular company or their findings, we believe the breadth of literature
+created by multiple sources enhances the overall understanding of the threat. dhs encourages
+analysts to review these resources to determine the level of threat posed to their local network
+environments.
+dhs resources
+jar-16-20296 provides technical details regarding the tools and infrastructure used by the
+russian civilian and military intelligence services (ris) to compromise and exploit networks
+and endpoints associated with the u.s. election, as well as a range of u.s. government, political,
+and private sector entities. jar-16-20296 remains a useful resource for understanding apt28
+and apt29 use of the cyber kill chain and exploit targets. additionally, jar-16-20296 discusses
+some of the differences in activity between apt28 and apt29. this ar primarily focuses on
+apt28 and apt29 activity from 2015 through 2016.
+dhs malware initial findings report (mifr)-10105049 update 2 was updated january 27,
+2017 to provide additional analysis of the artifacts identified in jar 16-20296. the artifacts
+analyzed in this report include 17 php files, 3 executables and 1 rtf file. the php files are web
+shells designed to provide a remote user an interface for various remote operations. the rtf file
+is a malicious document designed to install and execute a malicious executable. however, dhs
+recommends that analysts read the mifr in full to develop a better understanding of how the
+grizzly steppe malware executes on a system, which, in turn, downloads additional
+malware and attempts to extract cached passwords. the remaining two executables are remote
+access tools (rats) that collect host information, including digital certificates and private keys,
+and provide an actor with remote access to the infected system.
+open source
+several cyber security and threat research firms have written extensively about grizzly
+steppe. dhs encourages network defenders, threat analysts, and general audiences to review
+publicly available information to develop a better understanding of the tactics, techniques, and
+procedures (ttps) of apt28 and apt29 and to potentially mitigate against grizzly steppe
+activity.
+the below examples do not constitute an exhaustive list. the u.s. government does not endorse
+or support any particular product or vendor.utilizing cyber kill chain for analysis
+dhs analysts leverage the cyber kill chain model to analyze, discuss, and dissect malicious
+cyber activity. the phases of the cyber kill chain are reconnaissance, weaponization,
+delivery, exploitation, installation, command and control, and actions on the objective. this
+section will provide a high-level overview of grizzly steppe activity within this framework.
+reconnaissance
+grizzly steppe actors use various reconnaissance methods to determine the best attack
+vector for compromising their targets. these methods include network vulnerability scanning,
+credential harvesting, and using doppelganger (also known as typo-squatting ) domains to
+target victim organizations. the doppelganger domains can be used for reconnaissance when
+users incorrectly type in the web address in a browser or as part of delivery as a url in the body
+of a phishing emails. dhs recommends that network defenders review and monitor their
+networks for traffic to sites that look similar to their own domains. this can be an indicator of
+compromise that should trigger further research to determine whether a breach has occurred.
+often, these doppelganger sites are registered to suspicious ip addresses. for example, a site
+pretending to be an organization s user log in resolving to a tor node ip address may be
+considered suspicious and should be researched by the organization s security operations center
+(soc) for signs of users navigating to that site. because these doppelganger sites normally
+mimic the targeted victim s domain, they were not included in jar-16-20296.
+before the 2016 u.s. election, dhs observed network scanning activity that is known as
+reconnaissance. the ips identified performed vulnerability scans attempting to identify websites
+that are vulnerable to cross-site scripting (xss) or structured query language (sql) injection
+attacks. when grizzly steppe actors identify a vulnerable site, they can then attempt to
+exploit the identified vulnerabilities to gain access to the targeted network. network perimeter
+scans are often a precursor to network attacks and dhs recommends that security analysts
+identify the types of scans carried out against their perimeters. this information can aid security
+analysts in identifying and patching vulnerabilities in their systems.
+another common method used by grizzly steppe is to host credential-harvesting pages as
+seen in step 4 and step 5 of the grizzly steppe attack lifecycle graphic. this technique
+includes hosting a temporary website in publicly available infrastructure (i.e., neutral space) that
+users are directed to via spear-phishing emails. users are tricked into entering their credentials in
+these temporary sites, and grizzly steppe actors gain legitimate credentials for users on the
+targeted network.weaponization
+grizzly steppe actors have excelled at embedding malicious code into a number of file
+types as part of their weaponization efforts. in 2014, it was reported that grizzly steppe
+actors were wrapping legitimate executable files with malware (named onionduke ) to
+increase the chance of bypassing security controls. since weaponization actions occur within the
+adversary space, there is little that can be detected by security analysts during this phase. apt28
+and apt29 weaponization methods have included: code injects in websites as watering hole attacks
+malicious macros in microsoft office files
+malicious rich text format (rtf) files with embedded malicious flash code delivery
+as described in jar-16-20296 and numerous publicly available resources, grizzly steppe
+actors traditionally use spear-phishing emails to deliver malicious attachments or urls that lead
+to malicious payloads. dhs recommends that network defenders conduct analysis of their
+systems to identify potentially malicious emails involving variations on grizzly steppe
+themes. inbound emails subjects should be reviewed for the following commonly employed
+titles, text, and themes:
+efax, e-fax, efax #100345 (random sequence of numbers)
+pdf, pfd, secure pdf
+topics from current events (e.g., european parliament statement on )
+fake microsoft outlook web access (owa) log-in emails
+invites for cyber threat events additionally, grizzly steppe actors have infected pirated software in torrent services and
+leveraged tor exit nodes to deliver to malware since at least 2014. these actors are capable of
+compromising legitimate domains and services to host and deliver malware in an attempt to
+obscure their delivery methods. dhs notes that the majority of tor traffic is not grizzly
+steppe activity. the existence of a tor ip in a network log only indicates that network
+administrators should review the related traffic to determine if it is legitimate activity for that
+specific environment.
+exploitation
+grizzly steppe actors have developed malware to exploit a number of common
+vulnerability and exposures (cves). dhs assesses that these actors commonly target microsoft
+office exploits due to the high likelihood of having this software installed on the targeted hosts.while not all-encompassing, the following cves have been targeted by grizzly steppe
+actors in past attacks.cve-2016-7855: adobe flash player use-after-free vulnerability
+installation
+grizzly steppe actors have leveraged several different types of implants in the past.
+analysts can research these implants by reviewing open-source reporting on malware families
+including sofacy, and onion duke. recently, dhs analyzed 17 php files, 3 executables, and 1
+rtf file attributed to grizzly steppe actors and the findings are located in mifr10105049-update2 (updated on 1/26/2017). the php files are web shells designed to provide a
+user interface for various remote operations. the rtf file is a malicious document designed to
+install and execute a malicious executable. dhs recommends that security analysts review their
+systems for unauthorized web shells.
+command and control
+grizzly steppe actors leverage their installed malware through command and control (c2)
+infrastructure, which they traditionally develop via compromised sites and publicly available
+infrastructure, such as tor. c2 iocs are traditionally the ip addresses or domains that are
+leveraged to send and receive commands to and from malware implants.
+actions on the objective
+grizzly steppe actors have leveraged their malware in multiple campaigns with various end
+goals. grizzly steppe actors are capable of utilizing their malware to conduct extensive data
+exfiltration of sensitive files, emails, and user credentials. security operation center (soc)
+analysts may be able to detect actions on the objective before data exfiltration occurs by looking
+for signs of files and user credential movement within their network.detection and response
+the appendixes of this analysis report provide detailed host and network signatures to aid in
+detecting and mitigating grizzly steppe activity. this information is broken out by actor
+and implant version whenever possible. mifr-10105049 update2 provides additional yara
+rules and iocs associated with apt28 and apt29 actors. contact information
+recipients of this report are encouraged to contribute any additional information that they may
+have related to this threat. for any questions related to this report, please contact nccic at:
+phone: +1-703-235-8832
+email: ncciccustomerservice@ feedback
+dhs strives to make this report a valuable tool for our partners and welcome feedback on how
+this publication could be improved. you can help by answering a few short questions about this
+report at the following url: - 

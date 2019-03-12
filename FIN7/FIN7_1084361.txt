@@ -1,0 +1,60 @@
+how fin7 attacked and stole data
+sophisticated social engineering: phishing & calling
+fin7 typically initiated its cyberattacks by
+delivering a phishing email to a company
+employee. each email included an attached file,
+often an innocuous-appearing microsoft word
+document, with embedded malware. the text
+within the email simulated a legitimate businessrelated message in order to lead the recipient
+employee to open the attachment and unwittingly
+activate the malware that would infect the
+computer. for example, when targeting a hotel
+chain, the sender of the phishing email might claim to be interested in making a reservation with
+details enclosed in the attachment. when targeting a restaurant, the phishing email might refer to
+placing a large catering order or voice a complaint about prior service or food quality, further
+described in an attachment. examples of phishing emails deployed by fin7 are below.
+in many cases, fin7 would accompany the phishing emails with a telephone call to the
+victim company employee about the same topic, which was intended to legitimize the phishing
+email. the caller often directed the employee to the recently sent phishing email to further
+entice the employee to open the attached file and activate the malware.
+network intrusion: control & data exfiltration
+once infected, the compromised victim computer
+connected to one of fin7 s command and control servers
+located throughout the world. through a specially
+designed control panel, fin7 could download a wide array
+of additional malware to the victim computer, remotely
+send commands and receive data, and move laterally
+through the company s network. among other tools,
+fin7 incorporated and adapted the notorious carbanak
+malware, which was used by other cybercriminals in a
+massive transnational attack on the banking industry.
+fin7 s malware allowed its members to conduct surveillance on company employees, including
+taking screen shots and even video recordings of desktop activity, enabling them to secretly steal
+credentials and other network information. fin7 then used its unauthorized access to the
+victim s computer system to locate and extract various information and property of value, such
+as financial information and caches of customer payment card data.
+fin7 most commonly focused on fast-food and casual dining restaurants, hotels, casinos,
+and businesses with a high frequency of point-of-sale transactions, including businesses with
+dozens of locations operating in western washington. with these and other victims, fin7sought to steal credit, debit, and in some cases gift card data, used during legitimate customer
+purchases.
+selling stolen cards
+since 2015, fin7 successfully stole data for more than 16
+million payment cards, many of which have been offered for
+sale through online underground marketplaces for stolen data.
+the purchasers could then use the stolen card numbers to make
+unauthorized charges on accounts belonging to unsuspecting
+cardholders. investigators have observed typical retail
+purchases as well as the purchase of gift cards.
+who is fin7?
+fin7 is one of the most sophisticated and
+aggressive malware schemes in recent times,
+consisting of dozens of talented hackers located
+overseas. fin7 uses an arsenal of constantly
+evolving malware tools and hacking techniques,
+and controls infected computers through a
+complex web of servers located throughout the
+world. the masterminds behind the criminal
+enterprise created a fake computer security
+business called combi security, which they used to recruit new members and to add a thin veil
+of legitimacy to the hacking scheme. however, there was nothing legitimate about the scores of
+attacks fin7 launched against over 100 unsuspecting victims.

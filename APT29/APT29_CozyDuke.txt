@@ -1,0 +1,307 @@
+cozy duke
+tlp: white
+contents this whitepaper provides an overview of cozyduke,
+a set of tools used by one or more malicious actors
+for performing targeted attacks against high profile
+organizations, such as governmental organizations
+and other entities that work closely with these
+institutions.
+the cozyduke toolset, which we believe has been
+under active development since at least 2011,
+consists of tools for infecting targeted hosts,
+establishing and maintaining backdoor access to the
+hosts, gathering information from them and gaining
+further access to other hosts inside the victim
+organization.
+based on command and control (c&c) server
+information found being used by cozyduke tools,
+we believe the cozyduke toolset is used by at least
+one malicious actor who also uses, or at the least
+shares, infrastructure with actors using the known
+threats, miniduke and onionduke. f-secure labs
+security response
+malware analysis
+whitepaper introduction target details the cozyduke toolset we have reason to believe cozyduke is being used to
+target governmental organizations and entities that work
+closely with such bodies. cozyduke, as referred to in this document, is a set of tools
+used by one or more malicious actors for performing
+targeted attacks against high profile organizations. the
+core of the cozyduke toolset is a modular attack platform
+consisting of a main component augmented by a set of
+additional modules implementing further functionality.
+the cozyduke toolset also includes multiple kinds
+of droppers for infecting hosts with cozyduke or for
+executing additional tools from the cozyduke toolset.
+finally, the cozyduke toolset includes tools and scripts some custom-written, others based on openly available
+tools that are used for purposes such as gathering
+further information from infected hosts or for infecting
+additional hosts in the same target organization. attack overview
+infection vector
+we have observed cozyduke being spread via email,
+which usually contain a link to a compromised website
+hosting a zip file (although in at least one case, the file was
+hosted on dropbox). these files contain an executable
+that, upon execution, will write to disk and execute
+cozyduke, while at the same time presenting the user
+with a decoy to divert attention. the decoy is usually an
+uninteresting pdf, but we have also observed a flash
+video of monkeys being presented as the decoy. timeline
+we believe the current cozyduke activity started at
+the end of january 2015. most of the samples we have
+observed were compiled beginning from the end of
+january. however, based on comparisons of recent
+cozyduke samples against older samples we have
+obtained dating back as far as the end of 2011, we believe
+cozyduke has been under active development since at
+least 2011. attribution & links
+we have strong evidence suggesting the group using
+cozyduke is the same as - or at the least shares command
+and control infrastructure with - the group or groups
+using miniduke and onionduke. firstly, a cozyduke
+sample from february of 2012 attempts to contact
+a c&c server at . this domain has
+previously been associated with known miniduke c&c
+infrastructure. this same infrastructure has also been seen
+in use by onionduke. secondly, we also have reason to
+believe cozyduke has, in some instances, downloaded
+and executed droppers for dll files reminiscent of
+onionduke. specifically, the dlls dropped have used file
+and export names also used by onionduke. additionally,
+the strings in the dlls have been encrypted using the
+same algorithm used by onionduke. this link is, however,
+not as conclusive as the infrastructure overlap. figure 1: c&c infrastructure connections
+between cozyduke, miniduke and onionduke cozyduke miniduke postmaster@ onionduke john kasai technical details
+initial infection cozyduke main dropper infection with cozyduke begins with the victim receiving
+an email containing a link to a zip file. this zip file will
+contain a single executable, usually a self-extracting rar
+archive. upon execution, it will write two files to disk.
+the first file is a decoy. the decoy has usually been a pdf
+document but flash videos have also been observed in
+some cases. the second file extracted from the archive is
+a cozyduke dropper. this dropper will then proceed to
+write to disk the main cozyduke components as well as an
+encrypted configuration file used by cozyduke. the main cozyduke dropper, used for infecting hosts
+with cozyduke, begins by checking whether the victim
+has an anti-virus product installed. should an installed
+product be found, it will be compared to a predetermined
+list of product names. if the installed product matches
+a name on the list, the dropper will immediately exit.
+newer versions of the dropper will perform additional
+checks to ensure the dropper is not being executed inside
+a virtual machine or a known malware analysis sandbox
+environment. should either of these checks fail, the
+dropper will likewise exit immediately. figure 2: the cozyduke infection flow
+zip file malicious link
+downloads
+zip file the first resource, 0x000a, contains as its payload a
+microsoft cabinet archive. this archive contains the
+cozyduke components that the dropper will later install
+on the victim system. the second resource, 0x000b,
+contains as its payload an xml file with instructions for the
+dropper on where to install the dropped components and
+what to name them. extracts
+self-extracting
+rar extracts cozyduke main dropper cozyduke
+encrypted
+configuration components
+file next, the dropper will find and decrypt encrypted data
+stored as two pe resources embedded in the executable.
+these resources are named with the hexadecimal
+identifiers 0x000a and 0x000b. both resources are
+structured similarily. they begin with a four-byte value
+specifying the length of the included decryption key.
+this decryption key immediately follows the length field.
+finally, the rest of the resource is the encrypted payload.
+the encryption used is a simple xor with a rotating key. extracts decoy document the dropper will then proceed to write the cozyduke
+components to the specified location. the dropper
+will additionally copy the system file to the
+install location for cozyduke. this file will also use a name
+specified in the droppers configuration file. finally, the
+dropper will use the copy of to load and
+execute the cozyduke main component. cozyduke main component
+overview
+the main component of cozyduke is a dll file
+responsible for orchestrating all of cozyduke s activity on
+a victim machine. the main component is executed by
+the cozyduke dropper using a copy of . the
+entrypoint function varies, but is always specified in the
+dropper configuration.
+the most important functionalities offered by the main
+component are establishment of persistence, gathering
+of basic system information, communication with the c&c
+server and the execution of additional tasks, modules or
+executables as commanded by the c&c server. persistence
+cozyduke may use multiple techniques for establishing
+persistence; the following is one technique used. firstly,
+cozyduke may set itself to be executed at system startup
+by adding a registry value under any of the following
+the name of the registry value will usually be the
+filename, (without the extension) of the cozyduke main
+component.
+cozyduke may also register itself as a windows service
+or scheduled task. additionally, cozyduke may
+utilize a technique known as com-object hijacking
+[1]
+to establish persistence. to achieve this, cozyduke
+will hijack the registry entries for the com object sharedtaskscheduler . cozyduke will modify the
+registry entries in such a way that any loading of the
+sharedtaskscheduler com object will first load a special
+cozyduke module that will ensure cozyduke stays active
+on the victim host. configuration data
+the configuration data for cozyduke is stored as a
+separate rc4-encrypted file that is written to disk by the
+cozyduke dropper during initial infection. the name of
+the encrypted configuration file on disk has been racss.
+dat in all of the observed cases. the decrypted file is
+formatted as xml with the utf-16le character encoding. in all cozyduke samples from 2015, the configuration
+data has been encrypted with the rc4 key b5 78 62 52 98
+3e 24 d7 3b c6 ee 7c b9 ed 91 62. in cozyduke samples
+from july of 2014, the rc4 key has been embedded in the
+encrypted configuration file. in this case, the encrypted
+configuration file will begin with a 4-byte value specifying
+the length of the included rc4 key. this will be followed
+by the actual key. finally, the rest of the file will be the
+actual configuration data. command and control communication
+cozyduke s main method of communicating with its
+command and control server is using either http or
+https. the method of communication, as well as the
+address to connect to, are specified in cozyduke s
+configuration data. in the cases we have observed, the
+configuration data for any single cozyduke instance has
+included the details of either one or two c&c servers.
+listed above are details of known cozyduke c&c servers.
+we believe all of the ones listed are compromised servers. in addition to its main communication method,
+cozyduke also features the ability to use twitter as a
+backup c&c channel. in cases where cozyduke utilizes
+this functionality, the twitter account to be used will be
+specified in cozyduke s configuration data. we have only
+observed two samples where a backup twitter account
+was actually specified in the configuration data. these
+accounts were @us2515 and @monkey_drive. tasks
+cozyduke s primary purpose is the execution of tasks.
+these tasks usually involve the execution of modules or
+executables providing additional functionality. the main
+difference between the two is that modules are dll files
+loaded in memory by the cozyduke main component,
+whereas executables are pe executable files that
+cozyduke will write to disk and execute.
+for the purpose of managing tasks, the main component
+of cozyduke implements 6 commands that the c&c
+server can specify. these commands are briefly described
+in table 2 (overleaf). reference
+i. gdata; paul rascagneres; com object hijacking: the discreet way of persistence: an analysis of a new persistence mechanism in the wild;
+published 30.10.2014; the following chapter, cozyduke tasks, provides further
+information on the tasks cozyduke has been observed
+executing. cozyduke tasks
+based on samples obtained from our own collections
+and generously shared to us by a trusted source, we
+have been able to identify some of the tasks executed
+recently by cozyduke. these tasks can be divided into
+two categories. the first consists of cozyduke modules
+which are dll files loaded in memory by the main
+component of cozyduke for the purposes of extending
+cozyduke s functionality. the second category consists
+of pe executable files that cozyduke will write to disk
+and execute on the infected host. these executables are
+usually droppers similar to those used to infect a host
+with cozyduke. in this case, however, instead of dropping
+cozyduke, the executables may drop other executables,
+scripts or dlls. once executed by cozyduke, these
+executables function independently of cozyduke s main
+component. modules
+listed below are the modules we have observed being
+used:
+table 3: cozyduke modules
+module type
+command
+execution
+module
+password stealer
+module
+ntlm stealer
+module
+system info
+module
+screenshot
+module purpose
+can be used to execute arbitrary
+commands by invoking c:\ will attempt to harvest stored
+credentials from the victim
+will attempt to harvest credentials
+stored on the victim host that are
+used as part of windows ntlm user
+authentication
+will attempt to gather
+comprehensive information on the
+victim host s configuration
+will take a screenshot of the victim
+host executables
+we have observed executables executed by cozyduke for
+the following purposes: dropping and executing scripts for collecting
+information and credentials from the victim
+organization s active directory environment dropping and executing scripts for further
+penetrating the victim organization with the help
+of commonly available tools such as mimikatz and
+psexec dropping and executing additional malware with
+the same file and export naming conventions
+as onionduke and the same string encryption
+algorithm as onionduke
+these executables will implement their own methods of
+c&c communication and data exfiltration. in many cases,
+the scripts utilized microsoft onedrive accounts for data
+transfer. cozyduke evolution
+the earliest cozyduke sample we have observed so far
+was compiled on the 29th of december, 2011. the sample
+in question was not an actual cozyduke main component,
+but a cozyduke module. the earliest main component
+we observed was compiled on the 29th of february, 2012.
+the main component in question stores its strings and
+configuration in an unencrypted form. additionally, the
+configuration is stored embedded in the binary, not as
+a separate xml file in the manner of newer cozyduke
+versions. even this oldest main component does however
+use xml for other purposes via the open-source pugi-xml
+library.
+the next cozyduke main component we observed
+was compiled on the 30th of november, 2012. by then,
+the authors had switched to encrypting the strings
+and the configuration. however, the configuration
+was still stored embedded in the binary. design-wise,
+this sample is a bit of an outlier. instead of being a dll
+file, the main component is actually an exe that, in
+addition to the configuration, embeds multiple dlls that
+provide additional functionality to the main component.
+apart from the different design, functionally the main
+component is very similar to other cozyduke main
+components. it is possible the authors of cozyduke were
+trying out a new design, but eventually decided to go
+back to the original.
+the next cozyduke main component we observed,
+compiled on the 2nd of july, 2014, is again a dll file.
+by now, the authors of cozyduke had switched from an embedded configuration to the external xmlformatted configuration file seen today. we have yet to
+observe samples from 2013, but we believe cozyduke to
+have been under active development as well during that
+year. between 2012 and 2014, the authors of cozyduke
+appear to have performed significant refactoring of
+the cozyduke codebase, even though functionally the
+differences are smaller. examples of this refactoring
+include for instance the switch from using the pugi-xml
+library to using microsoft s msxml 3.0 for xml-related
+functionality.
+the latest cozyduke main component we observed
+was compiled on the 26th of february, 2015. the core
+functionality of the latest sample is very similar to the
+previous sample from july of 2014, but the authors
+of cozyduke have implemented a lot of additional
+functionality, as the increase in size from 279kb to 820kb
+would also suggest. cozyduke terminology and naming
+based on logging strings, variable naming and pdb strings
+found in cozyduke samples, we observed the following: the internal name for cozyduke is agent the cozyduke main component s functionality
+revolves around the execution of tasks that are
+often associated with modules it is possible that the name agent is not the
+original internal name of cozyduke and that the
+name was changed sometime in 2011 with the
+original project name being agent_nextgen sometime in 2011, cozyduke was identified
+internally as being version 3
+pdb strings found in early cozyduke samples are listed in
+table 4 (below). 

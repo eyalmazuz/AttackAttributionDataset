@@ -1,0 +1,783 @@
+exposing a systematic
+hacking operation with an
+unprecedented web of
+global victims
+april 2017
+in collaboration with
+executive summary
+apt10 as a china-based threat actormotivations behind apt10 s targetingshining a light on apt10 s methodologyconclusion20
+foreword
+this report is an initial public release of research pwc uk and
+bae systems have conducted into new, sustained global
+campaigns by an established threat actor against managed it
+service providers and their clients as well as several directly
+targeted organisations in japan. given the scale of those
+campaigns, the activity identified here is likely to reflect just a
+small portion of the threat actor s operations.
+this report is primarily fact-based. where we have made an
+assessment this has been made clear by phraseology such as we
+assess , and the use of estimative language as outlined in
+appendix a.
+by publicly releasing this research, pwc uk and bae systems
+hope to facilitate broad awareness of the attack techniques used
+so that prevention and detection capabilities can be configured
+accordingly. it is also hoped that rapid progress can be made
+within the broader security community to further develop the
+understanding of the campaign techniques we outline, leading to
+additional public reports from peers across the security
+community.
+as a part of our research and reporting effort, pwc uk and bae
+systems have collaborated with the uk s national cyber security
+centre (ncsc) under its certified incident response (cir)
+scheme to engage and notify managed it service providers,
+known affected organisations and other national bodies.
+supplementary to this report, an annex containing our technical
+analysis will be released.
+executive summary
+since late 2016, pwc uk and bae systems have been assisting victims of a new cyber espionage campaign conducted by a
+china-based threat actor. we assess this threat actor to almost certainly be the same as the threat actor widely known within
+the security community as apt10 . the campaign, which we refer to as operation cloud hopper, has targeted managed it
+service providers (msps), allowing apt10 unprecedented potential access to the intellectual property and sensitive data of
+those msps and their clients globally. a number of japanese organisations have also been directly targeted in a separate,
+simultaneous campaign by the same actor.
+we have identified a number of key findings that are detailed below.
+apt10 has recently unleashed a sustained campaign
+against msps. the compromise of msp networks has
+provided broad and unprecedented access to msp customer
+networks. multiple msps were almost certainly being targeted from
+2016 onwards, and it is likely that apt10 had already
+begun to do so from as early as 2014. msp infrastructure has been used as part of a complex web
+of exfiltration routes spanning multiple victim networks.
+apt10 has significantly increased its scale and capability
+since early 2016, including the addition of new custom
+tools. apt10 ceased its use of the poison ivy malware family
+after a 2013 fireeye report, which comprehensively
+detailed the malware s functionality and features, and its
+use by several china-based threat actors, including apt10. apt10 primarily used plugx malware from 2014 to 2016,
+progressively improving and deploying newer versions,
+while simultaneously standardising their command and
+control function. we have observed a shift towards the use of bespoke
+malware as well as open-source tools, which have been
+customised to improve their functionality. this is highly
+likely to be indicative of an increase in sophistication.
+infrastructure observed in apt10 s most recent campaigns
+links to previous activities undertaken by the threat actor. t he command and control infrastructure used for
+operation cloud hopper is predominantly dynamic-dns
+domains, which are highly interconnected and link to the
+threat actor s previous operations. the number of
+dynamic-dns domains in use by the threat actor has
+significantly increased since 2016, representative of an
+increase in operational tempo. s ome top level domains used in the direct targeting of
+japanese entities share common ip address space with the
+network of dynamic-dns domains that we associate with
+operation cloud hopper.
+apt10 focuses on espionage activity, targeting intellectual
+property and other sensitive data. apt10 is known to have exfiltrated a high volume of data
+from multiple victims, exploiting compromised msp
+networks, and those of their customers, to stealthily move
+this data around the world. the targeted nature of the exfiltration we have observed,
+along with the volume of the data, is reminiscent of the
+previous era of apt campaigns pre-2013.
+pwc uk and bae systems assess apt10 as highly likely to
+be a china-based threat actor. it is a widely held view within the cyber security
+community that apt10 is a china-based threat actor. our analysis of the compile times of malware binaries, the
+registration times of domains attributed to apt10, and the
+majority of its intrusion activity indicates a pattern of work
+in line with china standard time (utc+8). the threat actor s targeting of diplomatic and political
+organisations in response to geopolitical tensions, as well
+as the targeting of specific commercial enterprises, is
+closely aligned with strategic chinese interests.
+apt10 as a china-based threat actor
+apt10 as a china-based threat actor
+pwc uk and bae systems assess it is highly likely that apt10
+is a china-based threat actor with a focus on espionage and
+wide ranging information collection. it has been in operation
+since at least 2009, and has evolved its targeting from an early
+focus on the us defence industrial base (dib)1 and the
+technology and telecommunications sector, to a widespread
+compromise of multiple industries and sectors across the
+globe, most recently with a focus on msps.
+apt10, a name originally coined by fireeye, is also referred to
+as red apollo by pwc uk, cvnx by bae systems, stone
+panda by crowdstrike, and menupass team more broadly in
+the public domain. the threat actor has previously been the
+subject of a range of open source reporting, including most
+notably a report by fireeye comprehensively detailing the
+threat actor s use of the poison ivy malware family2 and blog
+posts by trend micro3 similarly detailing the use of evilgrab
+malware.
+alongside the research and ongoing tracking of apt10 by
+both pwc uk and bae s threat intelligence teams, pwc uk s
+incident response team has been engaged in supporting
+investigations linked to apt10 compromises. this research
+has contributed to the assessments and conclusions we have
+drawn regarding the recent campaign activity by apt10,
+which represents a shift from previous activities linked to the
+threat actor.
+as a result of our analysis of apt10 s activities, we believe that
+it almost certainly benefits from significant staffing and
+logistical resources, which have increased over the last three
+years, with a significant step-change in 2016. due to the scale
+of the threat actor s operations throughout 2016 and 2017, we
+similarly assess it currently comprises multiple teams, each
+responsible for a different section of the day-to-day
+operations, namely domain registration, infrastructure
+management, malware development, target operations, and
+analysis.
+apt10 withdrew from direct targeting using poison ivy in
+2013 and conducted its first known retooling operation,
+upgrading its capabilities and replatforming to use plugx. it is
+highly likely that this is due to the release of the 2013 fireeye
+report.
+our report will detail the most recent campaigns conducted
+by apt10, including the sustained targeting of msps, which
+we have named operation cloud hopper, and the targeting of
+a number of japanese institutions.
+maintenance of defence assets and enable us military requirements to be met. operation cloud hoppertime-based analysis of apt10 s operations
+shown in figure 1 are registration times4, represented in utc,
+for known apt10 top level domains since mid-2016, which
+mark a major uptick in apt10 activity.
+mapping this to utc+8, as in figure 2, shows a standard set
+of chinese business hours, including a two-hour midday
+break. as part of our analysis, we have made a number of
+observations about apt10 and its profile, which supports our
+assessment that apt10 is a china-based threat actor. for
+example, we have identified patterns within the domain
+registrations and file compilation times associated with
+apt10 activity. this is almost certainly indicative of a threat
+actor based in the utc+8 time zone, which aligns to chinese
+standard time (cst).
+shifting this to utc+8 shows a similar timeframe of
+operation to the domain registrations. there are some
+outliers, which are likely attributable to the operational
+nature of this threat actor, such as requirements to work
+outside normal business hours. 4 the bubbles shown on figures 1 through 6 are representative of the number of events observed at that time and date.
+when applying the time shift to the chches malware (newly
+used by apt10) compilation timestamps, we see a different
+pattern as shown in figure 5. while this does not align with
+chinese business hours, it is likely to be either a result of the
+threat actor changing its risk profile by attempting to obscure
+or confuse attribution or a developer s side project that has
+ended up being used on targeted operations. based on other
+technical overlaps, chches is highly likely to be exclusively
+used by apt10. the sum of this analysis aligns with the evidence provided by
+the united states department of justice indictment against
+several individuals associated with apt1,5 another chinabased threat actor, showing a working day starting at 08:00
+utc+8 and finishing at 18:00 utc+8 with a two hour lunch to further this analysis, we have observed the threat actor
+conducting interactive activities primarily between the hours
+of midnight and 10:00 utc, as shown in figure 7. when
+converting this to utc+8 we again see a shift to chinese
+business hours, with operations occurring between 08:00 and
+19:00. it is a realistic probability that the weekend work
+observed in figure 7 may be necessary as part of operational
+requirements. operation cloud hopperidentifying a change in apt10 s
+targeting
+apt10 has, in the past, primarily been known for its
+targeting of government and us defence industrial base
+organisations, with the earliest known date of its activity
+being in december 2009. our research and observations
+suggest that this targeting continues to date.
+during the 2013 2014 period there was a general downturn
+in the threat actor s activities, as was also seen with other
+related groups. it was widely assessed that this was due to
+the public release of information surrounding apt1, which
+exposed its toolset and infrastructure.
+from our analysis and investigations, we have identified
+apt10 as actively operating at least two specific campaigns,
+one targeting msps and their clients, and one directly
+targeting japanese entities.
+msp focused campaign
+apt10 has almost certainly been undertaking a
+global operation of unprecedented size and scale
+targeting a number of msps.
+apt10 has vastly increased the scale and scope of its
+targeting to include multiple sectors, which has likely been
+facilitated by its compromise of msps. such providers are
+responsible for the remote management of customer it and
+end-user systems, thus they generally have unfettered and
+direct access to their clients networks. they may also store
+significant quantities of customer data on their own internal
+infrastructure.
+other threat actors have previously been observed using
+a similar method of a supply chain attack, for example, in
+the compromise of dutch certificate authority diginotar in
+20116 and the compromise of us retailer target in 2013.7
+the command and control (c2) infrastructure chosen by
+apt10 for operation cloud hopper is predominantly
+referenced using dynamic-dns domains. the various
+domains are highly-interconnected through shared ip
+address hosting, even linking back historically to the threat
+actor s much older operations.
+at present, the indicators detailing apt10 s operations
+number into the thousands and cannot be easily visualised.
+the graph in figure 8 overleaf depicts a high-level view of the
+infrastructure used by apt10 throughout 2016. as the
+campaign has progressed into 2017, the number of dynamicdns domains in use by the threat actor has significantly
+increased.
+the graph in figure 9, also shown overleaf, extracts one node
+of the newer c2 from the infrastructure shown in figure 8
+and maps this to the older infrastructure of apt10, as
+disclosed by fireeye in their 2014 siesta campaign blog
+post8. in terms of timing, it is highly likely that a single party
+is responsible for all of these domains, based on our
+observations of infrastructure overlap.
+through our investigations, we have identified multiple
+victims who have been infiltrated by the threat actor. several
+of these provide enterprise services or cloud hosting,
+supporting our assessment that apt10 are almost certainly
+targeting msps. we believe that the observed targeting of
+msps is part of a widescale supply-chain attack.
+msps therefore represent a high-payoff target for espionagefocused threat actors such as apt10. given the level of client
+network access msps have, once apt10 has gained access to
+a msp, it is likely to be relatively straightforward to exploit
+this and move laterally onto the networks of potentially
+thousands of other victims. this, in turn, would provide
+access to a larger amount of intellectual property and
+sensitive data. apt10 has been observed to exfiltrate stolen
+intellectual property via the msps, hence evading local
+network defences.
+countries targeted
+norway
+france
+canada
+finland
+sweden
+uk
+switzerland
+usa
+south korea
+japan
+india
+thailand
+brazil
+south africa
+australia
+japan focused campaign
+in a separate series of operations, apt10 has been
+systematically targeting japanese organisations using
+bespoke malware referred to in the public domain as chches .
+while linked to apt10, via shared infrastructure, this
+campaign exhibits some operational differences suggesting a
+potential sub-division within the threat actor. these
+operations have seen apt10 masquerading as legitimate
+japanese public sector entities (such as the ministry of foreign
+affairs, japan international cooperation agency and the
+liberal democratic party of japan) to gain access to the victim
+organisations.
+targeting of these entities by apt10 is consistent with
+previous targeting by china-based threat actors of a wide
+range of industries and sectors in japan. this includes the
+targeting of commercial companies, and government
+agencies, both of which has resulted in the exfiltration of large
+amounts of data.9
+apt10 s standard compromise methodology begins with a
+spear phishing email sent to the target, usually with an
+executable attachment designed to lure the victim to open it.
+analysis of the filenames associated with some of the latest
+apt10 malware samples, particularly from late 2016,
+highlights the use of japanese language filenames which
+clearly indicates a campaign targeting japanese-speaking
+individuals. further analysis of these files can be found in
+annex b.
+table 1 shows some example file names being used by apt10
+in this campaign.
+table 1: japanese language filenames used by apt10
+japanese filename foundation of russian historical association and composing a unity state history the following is an example of a malicious decoy document referencing mitsubishi heavy industries:
+figure 10: decoy document based on press
+release from japanese firm mitsubishi
+heavy industries detailing the unveiling of
+their new ablaser-duv (deep ultraviolet
+laser)
+operation cloud hoppera notable tactic of this apt10 subset is to register c2 domains that closely resemble legitimate japanese organisations. table 2
+shows a selection of the spoofed domains registered, alongside the email addresses listed at registration and the legitimate
+impersonated domains.
+none of the domains share identical contact information other
+than stating that the respective registrants are based in the
+us. the contact streets, organisations, and names are all
+distinct between domains.
+in the report. this connection is highlighted in the
+infrastructure graph shown in figure 11 below, where some
+chches c2 domains can be seen in the bottom left, while on
+the far right are the older apt10 domains referenced in
+previous reporting.
+some of the domains, that do resolve, share common ip
+address space with the network of dynamic-dns domains that
+we associate with operation cloud hopper as detailed earlier
+figure 11: infrastructure graph linking early plugx domains to recent chches domains
+operation cloud hoppermotivations behind apt10 s targeting
+a short history of china-based hacking
+china-based threat actors have a long history of cyber espionage in the traditional political, military and defensive arena, as
+well as industrial espionage for economic gain. some of the most notable of these events from the past decade are shown below
+figure 12: timeline of china-based hacking activity
+2006-13: apt1 conducted a
+widespread cyber espionage
+campaign against hundreds of
+organisations spanning a number of
+sectors. most victims primarily
+conducted their business in english and
+had a nexus with china s strategic
+priorities.
+2006
+2009: the night dragon campaign
+involved covert cyber attacks on
+global oil, energy and petrochemical
+companies and individuals in kazakhstan,
+taiwan, greece and the us. the attackers
+used a number of vectors including social
+engineering and os vulnerabilities to access
+proprietary operations and nancial
+information
+2007
+2010: technology, nancial and
+defence sectors were targeted by
+operation aurora, a campaign
+attributed to apt17/aurora panda. the
+list of targets included google, who
+suffered the loss of intellectual property
+and attempted access to the gmail
+accounts of human rights activists.
+2009: ghostnet is the alleged
+chinese group responsible for
+running a global campaign starting in
+2009 targeting foreign embassies and
+ministries, ngos, news media institutions
+and tibet-related organisations.
+2010-12: between 2010 and
+2012 organisations in the energy
+and material manufacturing sectors
+were targeted. these included
+westinghouse electric, who had technical
+and design speci cations for pipes, pipe
+supports and routing stolen in 2010.
+additionally, emails of senior
+decision-makers involved in the business
+relationship with a chinese state-owned
+enterprise were taken. in 2012,
+solarworld was compromised with
+attackers stealing sensitive business
+information relating to manufacturing
+metrics, and production line information
+and costs. it is thought to have been
+targeted strategically at a time when
+chinese manufacturers of solar products
+were seeking to enter the us market at
+below fair value prices.
+2013: operation iron tiger is an
+attack campaign attributed to apt31,
+in which us government contractors were
+targeted in the areas of technology,
+telecommunications, energy and
+manufacturing.
+2009: three medical device
+makers (medtronic, boston scienti c,
+st. jude medical) were allegedly
+compromised by chinese actors. although
+the motive is unclear, patient data was not
+thought to be stolen, making industrial
+espionage the most likely intention.
+2014-15: the personal data of over
+20 million people was compromised
+from the us of ce of personnel
+management and attributed to china-based
+actors. this included social security
+numbers as well as security clearance and
+job applications for government positions.
+2013
+2014: the data of 4.5 million
+members of us-based healthcare
+organisation, community health
+systems was potentially accessed
+during a breach attributed to apt18.
+2014-15: several healthcare rms
+were targeted anthem, premera
+blue cross and carefirst all suffered data
+breaches in 2015. these were linked
+to apt19.
+operation cloud hopperapt10 alignment with previous china-based hacking
+espionage attacks associated with china-based threat actors,
+as noted above, have traditionally targeted organisations that
+are of strategic value to chinese businesses and where
+intellectual property obtained from such attacks could
+facilitate domestic growth or advancement.
+there has been significant open source reporting which has
+documented the alignment between apparent information
+collection efforts of china-based threat actors and the
+strategic emerging industries documented in china s five year
+plan (fyp).10 the 13th fyp was released in march 2016 and
+the sectors and organisations known to be targeted by apt10
+are broadly in line with the strategic aims documented in this
+plan. these aims outlined in the fyp will largely dictate the
+growth of businesses in china and are, therefore, likely to also
+form part of chinese companies business strategies.
+the latest fyp describes five principles which underpin
+china s goal of doubling its 2010 gdp by 2020. at the
+forefront of these principles is innovation, largely focused
+around technological innovation, with china expected to
+invest 2.5% of gdp in research and development to attain
+technological advances, which are anticipated to contribute
+60% towards economic growth objectives.11 the areas of
+innovation expected to receive extensive investment include,
+next-generation communications, new energy, new materials,
+aerospace, biological medicine and smart manufacturing.
+in addition to the fyp principle of innovation, china is also
+promoting ten key industries in which it wants to improve
+innovation in manufacturing as part of the made in china
+2025 initiative.12
+figure 13: industries of interest outlined by made in china
+2025 initiative
+agricultural
+machinery
+next
+generation
+information
+technology
+numeric
+control
+tools and
+robotics
+medicine
+and
+medical
+devices
+aerospace
+equipment made in
+china 2025 industries
+ocean
+engineering
+equipment
+and high-tech
+ships
+new
+materials
+power
+equipment
+energy
+saving and
+new energy
+vehicles
+railway
+equipment
+observed apt10 targeting is in line with many of the historic
+compromises we have outlined previously as originating from
+china. this targeting spans industries that align with china s
+13th fyp which would provide valuable information to
+advance the domestic innovation goals held within china.
+given the broad spectrum of priority industries, the
+compromise of msps represents an efficient method of
+information collection. this strategy also provides additional
+obfuscation for the actor as any data exfiltrated is taken back
+through the initial compromised company s systems, creating
+a much more difficult trail to follow.
+operation cloud hoppershining a light on apt10 s methodology1sto m erdata of interest to apt10
+is accessed by the threat
+actor moving laterally
+through systemscustom
+e
+sp
+compressed les lled
+with stolen data are
+moved from the msp
+customer s network
+back onto the msp
+networkmsp
+e
+targ ted
+d ata
+msp customer data
+collected by apt and
+compressed, ready
+for ex ltration from
+the network
+msp customers who
+align to apt10 s
+targeting pro le are
+accessed by the threat
+actor using the msps
+legitimate access
+apt10 ex ltrates stolen
+data back through
+msps to infrastructure
+controlled by the threat
+actor
+m
+apt10
+apt10
+compromises
+managed it
+service providers
+geted ms
+r e x ltr
+this section details changes made to apt10 tools, techniques
+and procedures (ttps) post-2014, following its shift from
+poison ivy to plugx. these ttps have been identified as part
+of our incident response and threat intelligence investigations
+and have been used in both of the recent campaigns we have
+encountered. the examples provided in this section will be
+drawn from both of those campaigns.
+figure 14: decoy document used by apt10 to target the
+japanese education sector
+reconnaissance and targeting
+it is often difficult to identify the early stages of a threat
+actor s preparation for an attack as these initial activities tend
+to occur below the line of visibility. our analysis of the most
+recently used decoy documents by apt10 in its spear phishing
+campaigns, which is the primary delivery method of its
+payloads, indicates the actor performs a significant level of
+research on its targets. in line with commonly used apt actor
+methodologies, the threat actor aligns its decoy documents to
+a topic of interest relevant to the recipient.
+in the example shown in figure 14 to the right, an official
+document hosted on the japan society for the promotion of
+science website was weaponised and deployed as part of a
+spear phishing campaign against a japanese target in the
+education sector.
+apt10 has been known to use research from their
+reconnaissance to obtain company email addresses, and then
+craft a message containing either a malicious attachment or a
+link to a malicious site.
+figure
+15: timelineof
+ofapt10
+apt10 related
+activities
+summary
+activity
+2014
+targets east asian
+manufacturer and
+japanese public
+policy organisations
+2009
+group rst detected
+targeting western
+defence companies
+2009
+q4 2014
+targets european
+organisations
+2013
+legend
+apt10 activity
+other events
+q1 2017
+apt10 sustains
+targeting of
+european
+organisations
+2014
+2016
+august 2013
+fireeye - poison ivy:
+assessing damage
+and extracting
+intelligence
+as part of the same campaign, we have also observed an email
+sent by apt10,13 referencing a scientific research grant
+program, and targeting various japanese education institutes
+including meiji university14 and chuo university.15 the email
+included a zip file containing a link to download a payload
+from one of apt10 s servers, the chches powersploit exploit,
+detailed in annex b.
+initial compromise and lateral
+movement
+once on a target network, the actor rapidly deploys malware
+to establish a foothold, which may include one or more
+systems that provide sustained access to a victim s network.
+as apt10 works to gain further privileges and access, it also
+conducts internal reconnaissance, mapping out the network
+using common windows tools, and in later stages of the
+compromise using open source pentesting tools, detailed in
+annex b.
+this reconnaissance is run in parallel with the actor ensuring
+that it has access to legitimate credentials. we have observed
+that in cases where apt10 has infiltrated a target via an msp,
+it continues to use the msps credentials. in order to gain any
+further credentials, apt10 will usually deploy credential theft
+tools such as mimikatz or pwdump, sometimes using dll load
+order hijacking, to use against a domain controller, explained
+further in annex b. regular communications checks are then
+executed in order to maintain this level of access. in most
+cases, these stolen msp credentials have provided
+administrator or domain administrator privileges.
+we have observed the threat actor copying malware over to
+systems in a compromised environment, which did not have
+march 2014
+trend micro &
+fireeye release
+reports on links
+between apt1 and
+apt10
+2017
+q4 2016
+targets japanese
+organisations
+any outbound internet access. in one of these instances, the
+threat actor spent more than an hour attempting to establish
+an outbound connection using plugx until it realised that the
+host had no internet access, at which point the malware and
+all supporting files were deleted. apt10 achieves persistence
+on its targets primarily by using scheduled tasks or windows
+services in order to ensure the malware remains active
+regardless of system reboots.
+apt10 heavily leverages the shared nature of client-side msp
+infrastructure to move laterally between msps and other
+victims. systems that share access and thus credentials, from
+both a msp and one of its clients serve as a way of hopping
+between the two.
+frastructure
+ms
+p infrastructu
+re
+systems sharing credentials across the client and the
+msp are of particular interest to apt10, and are
+commonly used by the threat actor in order to gain
+access to new areas of the network operation cloud hopperapt10 simultaneously targets both low profile and high value
+systems to gain network persistence and a high level of access
+respectively. for example, in addition to compromising high
+value domain controllers and security servers, the threat actor
+has also been observed identifying and subsequently
+installing malware on low profile systems that provide
+non-critical support functions to the business, and are thus
+less likely to draw the attention of system administrators.
+as part of the long-term access to victim networks, we have
+observed apt10 consistently install updates and new
+malware on compromised systems. in the majority of
+instances apt10 used either a reverse shell or rdp connection
+to install its malware; the actor also uses these methods to
+propagate across the network.
+using these techniques, apt10 pushes data from victim
+networks to other networks they have access to, such as other
+msp or victim networks, then, using similar methods, pulls the data from those networks to locations from which they
+can directly obtain it, such as the threat actor s c2 servers.
+apt10 s ability to bridge networks can therefore be
+summarized as: use of legitimate msp credentials to management systems
+which bridge the msp and multiple msp customer
+networks; use of rdp to interactively access systems in both the msp
+management network and msp customer networks; use of t.vbs to execute command line tools; and, use of pscp and robocopy to transfer data.
+communication checks are usually conducted using native
+windows tools such as , and tc . the
+actor will frequently net use to several machines within
+several seconds, connecting for as little as five seconds, before
+disconnecting. further details are provided in annex b.
+network hopping and
+exfiltration
+once apt10 have a foothold in victim networks, using either
+legitimate msp or local domain credentials, or their sustained
+malware such as plugx, redleaves or quasar rat, they will
+begin to identify systems of interest.
+the operator will either access these systems over rdp, or
+browse folders using remote access trojan (rat)
+functionality, to identify data of interest. this data is then
+staged for exfiltration in multi-part archives, often placed in
+the recycle bin, using either rar or tar. the compression
+tools are often launched via a remote command execution
+script which is regularly named t.vbs and is a customised
+version of an open source wmi command executor which
+pipes the command output back to the operator.
+we have observed these archives being moved outside of the
+victim networks, either back into to the msp environments or
+to external ip addresses in two methods, which are also
+performed via the command line using t.vbs:
+1. mounting the target external network share with net use and subsequently using the legitimate robocopy tool to
+transfer the data; and,
+2. using the legitimate putty secure copy client (pscp),
+sometimes named , to transfer the data
+directly to the third party system.
+apt10 malware
+we classify apt10 s malware into two distinct areas: tactical
+and sustained. the tactical malware, historically evilgrab,
+and now chches (and likely also redleaves), is designed to be
+lightweight and disposable, often being delivered through
+spear phishing. once executed, tactical malware contains the
+capability to profile the network and manoeuvre through it to
+identify a key system of interest. the sustained malware,
+historically poison ivy, plugx and now quasar provides a more
+comprehensive feature set. intended to be deployed on key
+systems, the sustained malware facilitates long-term remote
+access and allows for operators to more easily carry out
+administration tasks.
+since late 2016, we have seen the threat actor develop several
+bespoke malware families, such as chches and redleaves.
+additionally, it has taken the open source malware, quasar,
+and extended its capabilities, ensuring the incrementation of
+the internal version number as it does so.
+we have also observed apt10 use dll search order hijacking
+and sideloading, to execute some modified versions of
+open-source tools. for example, pwc uk has observed apt10
+compiling dlls out of tools, such as mimikatz and pwdump6,
+and using legitimate, signed software, such as windows
+defender to load the malicious payloads.
+in annex b we provide detailed analysis of several of the
+threat actor s tools as well as the common windows tools we
+have observed being used.
+timeline
+alongside apt10 s ttps, we have observed a retooling cycle.
+given the pace of technological change and the wide range of
+freely available online tools and scripts, it is not unusual for
+an actor to re-evaluate its capabilities and to benchmark
+multiple offerings against each other. we have observed a
+decline in the deployment of some of apt10 s traditional core
+tool set, and witnessed an increase in the development and
+deployment of additional new tools which combine in-house
+development and open source projects. we assess that this is
+highly likely due to the public release of apt10 malware by
+cyber security vendors.
+during our analysis of victim networks, we were able to
+observe apt10 once again initiate a retooling cycle in late
+2016. we observed the deployment and testing of multiple
+versions of quasar malware,16 and the introduction of the
+bespoke malware families chches and redleaves.
+we assess it is highly likely that due to the frequent public
+release of information linking plugx with china-based threat
+actors, continual long-term use had become unsustainable,
+introducing an additional operational overhead that is easily
+attributable to china-based threat actors.
+throughout our investigations, we have observed multiple
+deployments of the plugx malware from 2014 to at least 2016.
+this, along with the downturn in the use of poison ivy,
+supports the notion that a major retooling operation took
+place post 2014. additional analysis of the infrastructure
+associated with each distinct version of plugx also shows an
+increase in maturity over time. earlier plugx versions were
+configured with legacy domains and ip addresses, which were
+originally isolated and more obvious, whereas more recent
+versions have demonstrated a standardised convention for
+domain names and ip selection.
+16 operation cloud hopperconclusion
+apt10 is a constantly evolving, highly
+persistent china-based threat actor that
+has an ambitious and unprecedented
+collection programme against a broad
+spectrum of sectors, enabled by its
+strategic targeting.
+since exposure of its operations in 2013, apt10 has made a
+number of significant changes intended to thwart detection of
+its campaigns. pwc uk and bae systems, working closely
+with industry and government, have uncovered a new,
+unparallelled campaign which we refer to as operation cloud
+hopper. this operation has targeted managed it service
+providers, the compromise of which provides apt10 with
+potential access to thousands of further victims. an additional
+campaign has also been observed targeting japanese entities.
+apt10 s malware toolbox shows a clear evolution from
+malware commonly associated with china-based threat actors
+towards bespoke in-house malware that has been used in
+more recent campaigns; this is indicative of apt10 s
+increasing sophistication, which is highly likely to continue.
+the threat actor s known working hours align to chinese
+standard time (cst) and its targeting corresponds to that of
+other known china-based threat actors, which supports our
+assessment that these campaigns are conducted by apt10.
+this campaign serves to highlight the importance of
+organisations having a comprehensive view of their threat
+profile, including that of their supply chain s. more broadly,
+it should also encourage organisations to fully assess the
+risk posed by their third party relationships, and prompt
+them to take appropriate steps to assure and manage these.
+a detailed technical annex supplements this main report,
+which provides further information about the tools and
+techniques used by apt10 and contains indicators of
+compromise relating to all of this threat actor s known
+campaigns. these have already been provided to the national
+cyber security centre for dissemination through their usual
+channels.

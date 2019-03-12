@@ -1,0 +1,338 @@
+timeline of 0-day vulnerabilities exploited by the sednit group in 2015.
+main attack methods and malware used by the sednit group since 2014,
+and how they are related
+downdelph major events
+downdelph deployments, with the purpose and name of each file
+decoy document used in case 7 (september 2015)
+downdelph communication workflow
+downdelph request to download main configuration file
+beginning of infected hard drive layout
+mbr opening code, as seen in a decompiler
+startup process of a windows 7 machine infected by the bootkit
+hook code in resources section (.rsrc)
+user mode bootkit component attempts to set an exported boolean variable
+in downdelph, after having loaded it
+hook code for zwsetinformationfile to hide files
+preoperation callback for irp_mj_create
+(the creation or opening of files and directories)
+kernel mode apc registration, fn_apcnormalroutine being the shellcode
+address in the target process
+executive summary
+the sednit group also known as apt28, fancy bear and sofacy is a group of attackers
+operating since 2004 if not earlier and whose main objective is to steal confidential information
+from specific targets.
+this is the third part of our whitepaper en route with sednit , which covers the sednit group
+activities since 2014. here, we describe a special downloader named downdelph.
+the key points described in this third installment are the following: downdelph was used only seven times over the past two years, according to our telemetry data: we believe this to be a deliberate strategy formulated in order to avoid attracting
+attention downdelph has been deployed on a few occasions with a never-previously-documented windows bootkit, which shares some code with the infamous blackenergy malware downdelph has been deployed on a few occasions with a previously undocumented windows rootkit for any inquiries related to this whitepaper, contact us at: threatintel@ 5 introduction
+readers who have already read the first parts of our sednit trilogy might want to skip the following section
+and go directly to the specific introduction of this third part. the sednit group
+the sednit group variously also known as apt28, fancy bear, sofacy, pawn storm, strontium
+and tsar team is a group of attackers operating since 2004 if not earlier, whose main objective
+is to steal confidential information from specific targets. over the past two years, this group s activity
+has increased significantly, with numerous attacks against government departments and embassies
+all over the world.
+among their most notable presumed targets are the american democratic national committee [1],
+the german parliament [2] and the french television network tv5monde [3]. moreover, the sednit
+group has a special interest in eastern europe, where it regularly targets individuals and organizations
+involved in geopolitics.
+one of the striking characteristics of the sednit group is its ability to come up with brand-new 0-day [4]
+vulnerabilities regularly. in 2015, the group exploited no fewer than six 0-day vulnerabilities, as shown
+in figure 1. timeline of 0-day vulnerabilities exploited by the sednit group in 2015. this high number of 0-day exploits suggests significant resources available to the sednit group,
+either because the group members have the skills and time to find and weaponize these vulnerabilities,
+or because they have the budget to purchase the exploits.
+also, over the years the sednit group has developed a large software ecosystem to perform its espionage
+activities. the diversity of this ecosystem is quite remarkable; it includes dozens of custom programs,
+with many of them being technically advanced, like the xagent and sedreco modular backdoors
+(described in the second part of this whitepaper), or the downdelph bootkit and rootkit (described
+in the third part of this whitepaper).
+we present the results of eset s two-year pursuit of the sednit group, during which we uncovered
+and analyzed many of their operations. we split our publication into three independent parts: part 1: approaching the target describes the kinds of targets the sednit group is after, and the
+methods used to attack them. it also contains a detailed analysis of the group s most-used
+reconnaissance malware. part 2: observing the comings and goings describes the espionage toolkit deployed on some
+target computers, plus a custom network tool used to pivot within the compromised
+organizations. part 3: a mysterious downloader describes a surprising operation run by the sednit group,
+during which a lightweight delphi downloader was deployed with advanced persistence
+methods, including both a bootkit and a rootkit. each of these parts comes with the related indicators of compromise. the third part of the trilogy
+figure 2 shows the main components that the sednit group has used over the last two years,
+with their interrelationships. it should not be considered as a complete representation of their arsenal,
+which also includes numerous small, custom tools. and how they are related we divide sednit s software into three categories: the first-stage software serves for reconnaissance
+of a newly compromised host, then comes the second-stage software intended to spy on machines
+deemed interesting, while the pivot software finally allows the operators to reach other computers.
+in this third part, we describe the first-stage software named downdelph, outlined in figure 2.
+this software was deployed only seven times by the sednit operators, according to our telemetry
+data. interestingly, some of these deployments were made with advanced persistence methods:
+a windows bootkit and a windows rootkit. all the components shown in figure 2 are described in this whitepaper,
+with the exception of usbstealer, a tool to exfiltrate data from air-gapped
+machines that we have already described at welivesecurity [5]. recent
+versions have been documented by kaspersky labs [6] as well. readers who have already read the first parts of our sednit trilogy may skip the following sections
+and go directly to downdelph s analysis. attribution
+one might expect this reference whitepaper to add new information about attribution. a lot has
+been said to link the sednit group to some russian entities [7], and we do not intend to add anything
+to this discussion.
+performing attribution in a serious, scientific manner is a hard problem that is out of scope
+of eset s mission. as security researchers, what we call the sednit group is merely a set of software
+and the related network infrastructure, which we can hardly correlate with any specific organization.
+nevertheless, our intensive investigation of the sednit group has allowed us to collect numerous
+indicators of the language spoken by its developers and operators, as well as their areas of interest,
+as we will explain in this whitepaper. publication strategy
+before entering the core content of this whitepaper, we would like to discuss our publication
+strategy. indeed, as security researchers, two questions we always find difficult to answer when
+we write about an espionage group are when to publish? , and how to make our publication useful
+to those tasked with defending against such attacks? .
+there were several detailed reports on the sednit group published in 2014, like the operation pawn
+storm report from trend micro [8] and the apt28 report from fireeye [9]. but since then the public
+information regarding this group has mainly came in the form of blog posts describing specific
+components or attacks. in other words, no public attempts have been made to present
+the big picture on the sednit group since 2014.
+meanwhile, the sednit group s activity has significantly increased, and its arsenal differs
+from those described in previous whitepapers.
+therefore, our intention here is to provide a detailed picture of the sednit group s activities
+over the past two years. of course, we have only partial visibility into those activities, but we believe
+that we possess enough information to draw a representative picture, which should in particular
+help defenders to handle sednit compromises.
+we tried to follow a few principles in order to make our whitepaper useful to the various types
+of readers: keep it readable: while we provide detailed technical descriptions, we have tried to make them readable, without sacrificing precision. for this reason we decided to split our whitepaper
+into three independent parts, in order to make such a large amount of information easily
+digestible. we also have refrained from mixing indicators of compromise with the text. help the defenders: we provide indicators of compromise (ioc) to help detect current sednit infections, and we group them in the ioc section and on eset s github account [10]. hence,
+the reader interested only in these iocs can go straight to them, and find more context
+in the whitepaper afterwards. reference previous work: a high profile group such as sednit is tracked by numerous entities. as with any research work, our investigation stands on the shoulders of the previous
+publications. we have referenced them appropriately, to the best of our knowledge. document also what we do not understand: we still have numerous open questions regarding sednit, and we highlight them in our text. we hope this will encourage fellow
+malware researchers to help complete the puzzle. we did our best to follow these principles, but there may be cases where we missed our aim.
+we encourage readers to provide feedback at threatintel@ , and we will update
+the whitepaper accordingly. downdelph is a first-stage component deployed only in very rare
+cases by the sednit operators. over the past two years this low-
+profile approach has been combined with advanced persistence
+methods a bootkit and a rootkit probably in order to spy
+on special targets for long periods of time. downdelph was used
+to deploy xagent and sedreco on infected machines. known period of activity
+november 2013 to september 2015. known deployment methods targeted phishing emails distinguishing characteristics downdelph was deployed with a windows bootkit infecting
+the master boot record (mbr). to the best of our knowledge,
+the bootkit has not been previously documented. interestingly,
+this bootkit shares some code with some earlier samples
+of the infamous blackenergy malware [11]. downdelph was deployed with a windows rootkit named
+hidedrv by its developers. to the best of our knowledge,
+the rootkit has not been previously documented. one downdelph c&c server, , was active for nearly two years, from november 2013 to august 2015,
+and is currently sinkholed by kaspersky labs. the dates presented in this timeline refer to when we believe downdelph was deployed with
+a specific persistence method, possibly against several different targets, and are based on eset s
+oldest observed
+downdelph deploy-
+ment. persistence is
+ensured by a bootkit
+bootkit
+infecting the master
+boot record (mbr) of
+the hard drive (labeled
+case 1 in figure 3). three downdelph
+deployments. persis-
+tence is ensured by a
+kernel mode rootkit
+kernel mode rootkit
+installed as a windows
+service (cases 2, 3 and 4). downdelph deploy-
+ment. persistence is
+bootkit
+ensured by a bootkit
+infecting the mbr
+of the hard drive (case 5). most recently observed
+downdelph deploy-
+ment. persistence is
+ensured by registering
+an auto-start entry in
+the windows registry
+(case 7). downdelph deploy-
+ment. persistence is
+ensured by registering
+an auto-start entry in
+the windows registry
+(case 6). as shown in the timeline, downdelph operators abandoned more complex
+persistence methods over time, probably due to new security features intro-
+duced in windows. deployment
+as mentioned in the timeline, we were able to find only seven deployments of downdelph.
+such deployments start with a dropper, which contains downdelph and some additional binaries,
+as depicted in figure 4.
+in cases 3 to 6, the deployed binaries used a user account control (uac) bypass technique, as mentioned
+in figure 4. two different uac bypass techniques were employed; the first one relying on a custom redirectexe shim database [13], while the second one is based on a dll load order hijacking of the
+windows executable , which possesses the property to auto-elevate its privileges [14].
+in case 7, the dropper was deployed through a targeted phishing email. we do not have any evidence
+of this deployment method for the other cases. in this particular case, the dropper opens a decoy
+document when executed, to reinforce the illusion the email was legitimate. figure 5 shows this
+decoy document, an invitation to a conference organized by the slovak foreign policy association
+in november 2015 regarding russia-ukraine relations [15]. core behavior
+downdelph s core logic is implemented in one delphi class, named tmydownloader by its developers,
+and remained the same in all samples we analyzed. roughly summarized, downdelph first downloads
+a main configuration file, which allows extending the list of c&c servers, and then fetches a payload
+from each of these c&c servers. the whole process is pictured in figure 6, and is detailed thereafter for the most recent downdelph
+sample known (case 7 in figure 4). extend c&c servers list
+first, downdelph downloads a main configuration file named from the initial
+c&c server, whose address is hardcoded in the binary. the network request is an http post with
+a uri containing the file name to fetch encoded with a custom algorithm, as pictured in figure 7. the encoding algorithm was designed to make writing signatures on down-
+delph network requests difficult. to do so, pseudo-randomly generated
+characters are inserted between each original character during the encoding,
+such that the same input text will be encoded differently each time. the response from the server is an rc4-encrypted configuration file following the ini format [16],
+and composed of a single section named [options], which contains the key-value pairs described
+in table 1. value
+comma-separated list of additional c&c server addresses (can be null)
+defines whether server configuration files described below will
+be rc4-encrypted or not time to wait before contacting c&c servers again cryptographic key to replace the default key (can be null) if the servers key is not empty, downdelph adds the c&c server addresses to its list of servers
+to contact to download payloads. the rc4 algorithm uses by default a 50-byte hardcoded value, to which
+the last two bytes of the input text are appended to form the key, before
+decrypting. this 50-byte value is present in other sednit components,
+such as seduploader and xagent. payload download
+for each known c&c server the initial one and the additional ones possibly provided
+in downdelph performs three steps leading to the download of a payload.
+first, it sends a machine id, which was previously generated from the hard drive serial number.
+second, it downloads a configuration file named describing the payload to fetch
+from this particular c&c server (if any). the network request follows a format similar to the one
+shown in figure 7. the possible key-value pairs of the received file are described in table 2. value
+time to wait before contacting c&c servers again (if present, overrides
+value provided in )
+defines whether or not the payload will be rc4-encrypted cryptographic key to replace the default key (if present, overrides value provided
+in )
+name of the payload to fetch location in which to save the payload on the local machine, or alternatively
+shell to indicate the payload is a shellcode to execute in memory
+defines whether the payload will be executed, or simply dropped on the machine command line to run the payload (for example for a dll payload)
+parameters to pass to the payload defines whether or not the payload will be deleted from the local machine
+after being executed time to wait before trying to delete the file finally, if the previous configuration file is non-empty, downdelph downloads a payload from
+this c&c server, and processes it according to the configuration.
+once all c&c servers have been contacted, downdelph sleeps for a certain amount of time (defined
+by the sleep key in its configuration), and then re-starts the whole workflow from the beginning,
+including downloading the main configuration file from the initial c&c server.
+we do not have in-the-wild examples of downdelph configuration files. nevertheless, we know
+that in a few cases this component eventually downloaded sedreco and xagent. persistence mechanisms
+in most of the deployments we analyzed, downdelph was dropped with a companion binary taking
+charge of its persistence, as pictured in figure 4. this section describes the two most interesting
+persistence methods employed, respectively with a bootkit and a rootkit, leaving aside the classic
+and more common windows registry modification methods. bootkit
+interestingly, we observed downdelph deployment with a bootkit on two occasions, cases 1 and 5
+in figure 4. as defined in eset s virusradar [17], a bootkit is a type of rootkit that infects the master
+boot record or volume boot record (vbr) on a hard disk drive in order to ensure that its code will be run
+each time the computer boots. [ ] .
+in recent years, bootkits have become popular as a way to load unsigned malicious windows drivers,
+which is normally prevented by the os in 64-bit versions of windows. but in the present case the bootkit
+serves as a stealthy persistence method for the user-mode downloader downdelph although
+for this purpose an unsigned driver will indeed be loaded, as we will describe later. persistence through
+a bootkit makes detection harder, as its code is executed before the operating system is fully loaded.
+the bootkit in question has the ability to infect microsoft windows versions from windows xp
+to windows 7, on both 32-bit and 64-bit architectures. to the best of our knowledge the bootkit used
+by downdelph has never been documented, even though it belongs to the well-known category
+of bootkits infecting the master boot record (mbr) first sector of the hard drive to take control
+of the startup process.
+we will now describe the various components installed on the machine during the infection
+by the bootkit, and then how those components cooperate during startup to eventually
+execute downdelph. installation process
+the bootkit installation process varies depending on the windows version, and whether
+the machine is 32-bit or 64-bit. in all cases the bootkit installer starts by overwriting the hard
+drive s first sectors a sector being the basic hard drive storage unit, resulting in a new hard drive
+layout as shown in figure 8 and described in the following.
+beginning of infected hard drive layout first things first: the mbr is overwritten with a custom version, while an encrypted copy
+of the original mbr code is stored in the second sector. starting in the third sector comes the core
+bootkit code, encrypted with a simple xor-based algorithm. this core code will be slightly different
+depending on the operating system versions, as the hooks described later put in place at startup
+will vary. finally comes an rc4-encrypted windows driver, which depending on the architecture will
+be a 32-bit or 64-bit binary. once this device access is established, the installer simply calls the windows api function writefile
+to overwrite the hard drive s first sectors. it should be noted that this method requires administrative
+rights on the system.
+second, the installer stores a dll in the newly created windows registry key hklm\system\
+currentcontrolset\control\lsa\core packages. as we will explain later, this binary
+is the user mode component of the bootkit. additionally, downdelph itself is stored in the same
+registry path, but in the key named impersonation packages.
+these two files are stored in windows registry following a custom-encrypted data format that
+is also used for the bootkit code initially contained in the installer. more precisely, the data are
+aplib-compressed [19], then rc4-encrypted, and begin with the following header: startup process
+once installed, the bootkit takes control of the machine during the next system startup. the startup
+process is detailed in figure 10 for windows 7, where only the steps involving the bootkit are shown. bootkit mbr original mbr
+roughly summarized, a bootkit s objective is to survive windows startup and eventually to execute
+a payload once the operating system is fully running. such survival is made difficult by the strong
+modifications of the machine state at each step of the startup process (for example by reorganizing
+memory or switching the cpu mode). hence, starting from the initially infected mbr, the bootkit
+ensures at each step that it will regain control at the next step, mainly by setting hooks.
+while the bootkit workflow described in figure 10 bears some similarities with other known mbr-
+infected bootkits (see bootkits: past, present & future [20] for some examples), there are certain
+particularities that we would like to point out: the bootkit mbr decrypts the bootkit code and the bootkit driver initially stored from the third sector (see figure 8) into a memory buffer. on the system we used for analysis,
+the buffer was located at physical memory address 0x97c00. this memory area therefore
+contains the bulk of the bootkit code, and the hooks in bootmgr, and acpi.
+sys re-route the execution flow to this buffer. it is more common for bootkits to copy
+their code at each step into a new memory area, in order to survive memory re-organization
+during startup. this is the first use of the genuine windows driver in a bootkit, to the best
+of our knowledge. more precisely, the entry-point of this driver is patched to redirect
+to a small snippet of code written in its resources section, as shown in figure 11. this code receives as an input parameter the memory address of the windows kernel ntoskrnl.
+exe, where the bootkit stores some crucial data in unused pe header fields. using these data,
+it first restores the first five bytes of the original entry-point, and then redirects to bootkit
+code stored at physical memory address 0x97c00, mapped in the virtual memory space using the
+windows api mmmapiospace [21]. this bootkit code will decrypt and execute the bootkit driver. the modifications to the driver bypass windows bootloader
+integrity checks, because those checks are done on the hard-drive version
+of the file, not on the in-memory version. the bootkit driver injects the bootkit user-mode component into the process by patching its entry-point before it is executed. the user mode component then
+loads downdelph and, interestingly, it tries to set an exported global boolean variable named
+m_bloadedbybootkit in downdelph to true, as shown in figure 12. figure 12. user mode bootkit component attempts to set an exported boolean variable in downdelph, after having loaded it as this global variable is absent in all downdelph binaries, we speculate that the bootkit was
+originally intended to be used with a different payload, and was repurposed by sednit s operators.
+moreover, the user-mode component of the bootkit exports two functions named entry and ep_data.
+those two export names are also present in early samples of the infamous blackenergy malware [11].
+also, we found several cases of code sharing between the bootkit components and the same
+blackenergy samples. these hints lead us to speculate that the developers may be related. kernel mode rootkit
+another interesting downdelph persistence method we analyzed relies on a windows driver,
+used during deployments in february 2014. once loaded at startup as a windows service, this driver
+executes and hides downdelph, effectively acting as a rootkit [22]. we were able to dig up only four
+samples of this rootkit: three 32-bit versions, corresponding to cases 2, 3 and 4 in figure 3,
+and an additional 64-bit version for which we do not have any context.
+roughly summarized, the rootkit hides certain operating system artifacts (files, registry keys, folders)
+whose location matches a rule in a set of so-called hide rules. those rules are set by the dropper
+and stored in the windows registry, making the rootkit a flexible tool able to hide any given artifacts.
+interestingly, numerous debug messages were left by the developers in the rootkit, which allow
+those hide rules in particular to be clearly seen. for example, here are the rules used with
+one sample, as output in debug logs during execution:
+we can observe here the three types of artifacts possibly hidden by the rootkit: some specific files, whose paths are given in the file rules. in this case, two such rules are present and respectively serve to hide the downdelph file ([ )
+and the rootkit itself ([ ). some specific windows registry keys, whose paths are given in the registry rules. in this case, three such rules are present, to hide registry keys related to the rootkit s windows
+service, and also to hide the configuration itself, which is stored in this particular place. some specific folders, whose paths are given in the folder rules. in this case, one such rule is present, to hide the downdelph folder ([ ]\mypathcom). finally, the inject dll rule contains the path of a dll that the rootkit will inject into
+the process. in this case, it points to downdelph. the debug messages all start with hidedrv, which is apparently the name
+the developers gave to this rootkit. the developers also forgot to remove
+some program database (pdb) [23] file paths from the samples:
+to summarize, the rootkit is configured to hide downdelph and itself from the user, and also
+to inject downdelph into . we are now going to describe how those two operations
+are implemented. hiding artifacts
+we have identified two different implementations of the concealment mechanism, depending
+on the samples. the first one installs hooks in the system service descriptor table (ssdt) [24],
+while the second one relies on the windows filter manager [25]. ssdt hooking
+the ssdt is an internal windows table containing addresses of core kernel routines, in such
+a way that hooking them allows the interception of data received by user mode programs.
+this rootkit hooks three ssdt entries, corresponding to the functions zwsetinformationfile,
+zwquerydirectoryfile and zwenumeratekey. these three functions are called by windows processes to access files, directories and registry keys
+respectively. the logic inserted by the rootkit is pretty simple: if the accessed artifact path matches
+one of the hide rules, then the function returns as if the artifact does not exist on the system.
+on the other hand, if the accessed artifact path is not rootkit-protected, the original ssdt function
+is executed. for example, the hook code for zwsetinformationfile to hide files is presented
+in figure 13. with the arrival of 64-bit versions of windows, the ssdt became protected by kernel patch
+protection [26], preventing the insertion of hooks into this table. this probably explains why
+a different implementation of the concealment functionality was introduced in the rootkit,
+as described below. minifilter driver
+the windows filter manager [25] allows registering a driver as a minifilter, so that its code will
+be called on certain i/o operations. such a minifilter driver can register a pre-operation callback
+or a post-operation callback on each i/o operation it registers to filter.
+minifilter drivers are ordered based on a value called altitude : the filter manager executes driver
+callbacks registered for an i/o operation in the descending order of altitude. this ordering allows,
+for example, prioritizing anti-virus minifilters over data-processing minifilters, in order to detect
+malicious files before opening them.
+in our case, the rootkit driver registers itself as a minifilter of altitude 370030. this altitude
+is normally associated with a windows legacy driver named [27], which
+is an example of a minifilter open-sourced by microsoft [28]. thus, the rootkit takes the place
+of in the minifilter stack, and provides callbacks for hiding. 22 en route with sednit the concealment functionality is mainly implemented as a pre-operation callback on the irp_mj_
+create [29] i/o operation, which corresponds to the creation or opening of files and directories.
+the callback code is shown in figure 14. (the creation or opening of files and directories) regarding hiding registry keys, the developers simply re-used the code of another minifilter
+example [30] released by microsoft for that purpose.
+as a final note on this rootkit s concealment mechanisms, we would like to mention that we found
+a 64-bit version of the minifilter-based rootkit made to run on windows 7 (according to its pdb path
+[ ). loading such unsigned driver is normally prevented on this operating
+system, and we do not know if the attackers may have actually loaded it. dll injection
+once the hiding mechanisms have been put in place, the rootkit injects the dll whose path is in the
+inject dll rule (downdelph in our case) into . to do so, it first copies a shellcode
+into , which simply calls windows api loadlibraryw on downdelph path.
+to execute the shellcode, the rootkit then queues a kernel asynchronous procedure call (apc) [31],
+a little-known code injection technique. the code responsible for the injection is pictured in figure 15. address in the target process conclusion and open questions
+deploying a component as simple as downdelph with a bootkit or a rootkit may seem excessive.
+but given the apparent rarity of downdelph deployments over the last two years, we are inclined
+to speculate this is a deliberate strategy.
+by rarely deploying it, sednit operators apparently kept it out of the hands of malware researchers
+for almost two years, which, combined with advanced persistence methods, ensured that they were
+able to maintain the monitoring of selected targets over the long term.
+still, we are certainly missing parts of the picture concerning downdelph, and we hope this report
+will encourage other researchers to contribute further pieces to the puzzle.

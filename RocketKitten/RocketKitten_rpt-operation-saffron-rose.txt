@@ -1,0 +1,606 @@
+operation
+saffron rose
+2013
+authors: nart villeneuve, ned moran,
+thoufque haq and mike scott1 fireeye: operation saffron rose 2013
+c
+in this report, we document the activities of the
+ajax security team, a hacking group believed to be
+operating from iran. members of this group have
+accounts on popular iranian hacker forums such as
+ashiyane[.]org and shabgard[.]org, and they have
+engaged in website defacements under the group
+name ajaxtm since 2010. by 2014, the ajax
+security team had transitioned from performing
+defacements (their last defacement was in
+december 2013) to malware-based espionage,
+using a methodology consistent with other
+advanced persistent threat actors in this region.
+it is unclear if the ajax security team operates in
+isolation or if they are a part of a larger
+coordinated effort. the ajax security team itself
+uses malware tools that do not appear to be
+publicly available. we have seen this group
+leverage varied social engineering tactics as a
+means to lure their targets into infecting
+themselves with malware. although we have not
+observed the use of exploits as a means to infect
+victims, members of the ajax security team have
+previously used publicly available exploit code in
+web site defacement operations.
+in sum, fireeye has recently observed the ajax
+security team conducting multiple cyber
+espionage operations against companies in the
+defense industrial base (dib) within the unites
+states, as well as targeting local iranian users of
+anti-censorship technologies that bypass iran s
+internet filtering system.
+background
+the transition from patriotic hacking to cyber
+espionage is not an uncommon phenomenon. it
+typically follows an increasing politicization within
+the hacking community, particularly around
+geopolitical events. this is followed by increasing
+links between the hacking community and the
+state, particularly military and/or intelligence
+organizations.
+in the late 1990 s and early 2000 s, a similar
+transition occurred within the chinese hacking
+community. during that time period, the chinese
+hacking community engaged in website
+defacements and denial of service attacks in
+conjunction with incidents such as the accidental
+bombing of the chinese embassy in belgrade in
+1999, the collision of a u.s. spy plane and a
+chinese military plane in 2001, and the japanese
+prime minister s controversial visit to the
+yasukuni shrine in 2005.4 around this time a
+significant shift in philosophy began to take place.
+members of the chinese hacking community that
+participated in such attacks soon found that
+transitioning to cyber espionage was more
+rewarding both in terms of developing a more
+advanced skill set as well as in monetary
+remuneration. one group known as ncph
+(network crack program hacker), whose
+founding member wicked/withered rose was a
+patriotic hacker, made the transition to cyber
+espionage by founding a hacker-for-hire group
+we believe we re seeing an evolution and development in iranian-based cyber activity. in
+years past, iranian actors primarily committed politically-motivated website defacement
+and ddos attacks.1 more recently, however, suspected iranian actors have destroyed data
+on thousands of computers with the shamoon virus,2 and they have penetrated the navy
+marine corps intranet (nmci), which is used by the u.s. navy worldwide.3
+1 hp security research. threat intelligence briefing episode 11 . february 2014.
+2 perlroth, n. in cyberattack on saudi firm, u.s. sees iran firing back . october 2012.
+3 gallagher, s. iranians hacked navy network for four months? not a surprise . february 2014.
+4 key. honker union of china to launch network attacks against japan is a rumor . september 2010. that simultaneously developed an association with
+the chinese military.5 the group began developing
+zero-day exploits, rootkits and remote access
+tools (rats) using them in attacks against a
+variety of targets including the u.s. department of
+defense.6 (one of this group s associates, whg , is
+still active and is believed to have developed one
+variant of the plugx/sogu malware.7) the
+rationale behind this transition within the chinese
+hacking community is nicely summed up in a
+message by the honker union of china to its
+members in 2010:
+what benefit can hacking a web page bring our
+country and the people? it is only a form of
+emotional catharsis, please do not launch any
+pointless attacks, the real attack is to fatally
+damage their network or gain access to their
+sensitive information.8
+in iran, the hacking community appears to be
+undergoing a similar transformation. while a
+variety of iranian hacker groups had engaged in
+politically motivated website defacements, the
+emergence of the iranian cyber army in 2009
+demonstrated a concentrated effort to promote
+the iranian government s political narrative
+online .9 they targeted, among others, news
+organizations, opposition websites and social
+media.10 this marked the beginning of a largescale cyber offensive against the perceived
+enemies of the iranian government.
+foreign news and opposition websites are
+routinely blocked in iran, as are the tools that
+allow users in iran to bypass these restrictions.11
+one of the key stakeholders in iran s internet
+censorship program is the iranian revolutionary
+guard corps (irgc), under which the basij
+paramilitary organization operates.
+the basij formed the basij cyber council and
+actively recruits hackers in order to develop both
+defensive and offensive cyber capabilities.12 there
+is increasing evidence to suggest that the hacker
+community in iran is engaged in a transition from
+politically motivated defacements and denial of
+service attacks to cyber espionage activities. this
+model is consistent with the basij s recruitment of
+paramilitary volunteer hackers to engage in less
+complex hacking or infiltration operations leaving
+the more technical operations to entities over
+which they have increasingly direct control.13
+as such, the capabilities of threat actors operating
+from iran have traditionally been considered
+limited.14 however, the shamoon attacks, which
+wiped computers in saudi arabia and qatar,
+indicate an improvement in capabilities.15 and
+unsurprisingly, iran has reportedly increased its
+efforts to improve offensive capabilities after
+being targeted by stuxnet and flame.16
+5 elegant, s. enemies at the firewall . december 2007. dunham, k. & melnick, j. wicked rose and the ncph hacking group .
+wikipedia. network crack program hacker group .
+6 dunham, k. & melnick, j. wicked rose and the ncph hacking group .
+7 blasco, j. the connection between the plugx chinese gang and the latest internet explorer zeroday . september 2012.
+8 key. honker union of china to launch network attacks against japan is a rumor . september 2010.
+9 opennet initiative. after the green movement: internet controls in iran 2009 2012 . february 2013.
+10 rezvaniyeh, f. pulling the strings of the net: iran s cyber army . february 2010. twitter hackers appear to be shiite group . december 2009.
+11 opennet initiative. iran . june 2009.
+12 the irgc has also indicated that they would welcome hackers that support the iranian government. esfandiari, g. iran says it welcomes hackers who work for islamic republic . march 2011, hp security research. threat intelligence briefing episode 11 . february 2014.
+13 bbc persian. structure of iran s cyber warfare .
+14 mandiant. m-trends: beyond the breach, 2014 , page 9. april 2014.
+15 mount, m. u.s. officials believe iran behind recent cyber attacks . october 2012.
+16 shalal-esa, a. iran strengthened cyber capabilities after stuxnet: u.s. general . january 2013, lim, k. iran s cyber posture . november 2013. 7 bloomberg. neiman marcus hackers set off 60,000 alerts while bagging credit card data. february 2014.
+attack vectors
+we have observed the ajax security team use a
+variety of vectors to lure targets into installing
+malicious software and/or revealing login
+credentials. these attack vectors include sending
+email, private messages via social media, fake login
+pages, and the propagation of anti-censorship
+software that has been infected with malware.
+spear phishing
+during our investigation, we discovered that these
+attackers sent targeted emails, as well as private
+messages through social media. for example, the
+attackers targeted companies in the dib using a
+fake conference page as a lure to trick targets into
+installing malicious software. the attackers
+registered the domain aeroconf2014[.]org in
+order to impersonate the ieee aerospace
+conference the conference s actual domain is and sent out an email with the
+following information:
+from: invite@aeroconf2014[.]org
+subject: ieee aerospace conference 2014
+the email encouraged users to visit a fake
+conference website owned by the attackers:
+upon visiting the website, visitors were notified
+that they must install proxy software in order to
+access it, which is actually malware.
+figure 1: the fake
+ieee aerospace
+conference website credential phishing
+the attackers have also used phishing attacks, in
+which they set up web pages to emulate various
+services that require security credentials. the
+attackers tailored these login pages for specific
+targets in the dib and spoofed a variety of services
+such as outlook web access and vpn login pages.
+if users attempt to login through these fake web
+pages, the attackers collect their login credentials.
+anti-censorship tools
+all internet service providers (isps) in iran are
+required to implement filtering technology that
+censors access to content which the iranian
+government deems unacceptable.17 this content
+includes categories such as pornography and
+political opposition.18 in response to these
+restrictions, iranians have been increasingly using
+software that bypasses such filtering technology.
+to counter anti-censorship efforts, iran has
+attempted to block the use of certain software
+tools.19 in 2012, researchers found that an
+anti-censorship tool that is primarily used by
+internet users in iran was bundled with malware
+and redistributed.20
+our investigation found that malware-laden
+versions of legitimate anti-censorship software,
+such as psiphon and ultrasurf, were distributed to
+users iran and persian speaking people around the
+world.
+figure 2: the fake outlook
+web access page
+17 opennet initiative. iran . june 2009.
+18 opennet initiative. after the green movement: internet controls in iran 2009 2012 . february 2013.
+19 torbati, y. iran blocks use of tool to get around internet filter . march 2013.
+20 marquis-boire, m. iranian anti-censorship software simurgh circulated with malicious backdoor . may 2012. the stealer malware
+host-based indicators and malware
+functionality
+we have observed the ajax security team use a
+malware family that they identify simply as stealer .
+they deliver this malware as a malicious executable
+(dropper). the executable is a cab extractor that
+drops the implant . this implant, in turn,
+drops various other components into c:\
+documents and settings\{user}\application
+data\intelrapidstart\. the following files are
+written to disk in this location:
+the is written in .net and is aptly
+named stealer , as it has various data collection
+modules. it drops and launches via the following command: c:\
+documents and settings\{user}\application
+data\intelrapidstart\ ,#110
+110 is an ordinal that corresponds to startbypass export in .
+file functionality various stealer components and encryption implementation browser url extraction, ie accounts, rdp accounts (imported by ) .config config containing supported .net versions for ftp exfiltration (launched by )
+rapidstarttech.stl base64 encoded config block containing ftp credentials, implant name, decoy name, screenshot
+interval and booleans for startup, keylogger and screenshot
+figure 3: startbypass
+ordinal data exfiltration is conducted over ftp by , which acts as an ftp client.
+this dll is written in delphi. there is code to
+exfiltrate data over http post as well, but it is
+unused. we also found incomplete code that would
+perform sftp and smtp exfiltration, which could
+be completed in a future version.
+state is maintained between the stealer
+component and the ftp component using a file from the ftp
+server , as well as a global atom sqlitefinish . waits in an indefinite
+loop, until defines this state.
+once the state is set, proceeds to
+collect data from various areas in the system as
+described below: collects system information: hostname,
+username, timezone, ip addresses, open ports,
+installed applications, running processes, etc. performs key logging takes various screenshots harvests instant messaging (im) account
+information: gtalk, pidgin, yahoo, skype tracks credentials, bookmarks and history
+from major browsers: chrome, firefox, opera collects email account information extracts installed proxy software
+configuration information harvests data from installed cookies loads a delphi component called , which implements some
+additional data theft functionality for the following: internet explorer (ie) accounts remote desktop protocol (rdp) accounts browser urls
+figure 4: apptransferwizard.
+dll creates and
+global atom
+figure 5: sleeps
+until global atom is set and is present the stealer component uses common techniques
+to acquire credential data. for instance, it loads and uses various apis shown below to
+acquire rdp accounts from the windows vault.
+harvested data is encrypted and written to disk on
+the local host. the filenames for these encrypted
+files follow this naming scheme:
+{stolen data type}_{victim system name}_
+yyyymmdd_hhmm.enc
+the {stolen data type} parameter indicates where
+the data was harvested from (e.g., a web browser,
+an instant messenger application, installed proxy
+software).
+analysis of the malware indicates that the data is
+encrypted via a rijndael cipher implementation;
+more specifically it uses aes which is a specific set
+of configurations of rijndael. it uses a key size of
+256 bytes and block size of 128 bytes, which
+conforms to the fips-197 specification of
+aes-256.21 it utilizes the passphrase havijebaba and a salt of salam!*%# as an input to pbkdf2
+(password-based key derivation function 2) to
+derive the key and initialization vector for the
+encryption.22 this key derivation implementation in
+.net is done using the rfc2898derivebytes
+class.23 the passphrase and salt are persian
+language words. havij means carrot , baba means father , and salam is a common greeting
+that means peace .
+figure 6: acquiring rdp
+accounts
+sample timeline
+we identified 17 droppers during this research,
+including:
+the 2009 compile time appears to have been
+forged, while the 2013 compile times may be
+legitimate.
+in some cases, we found an implant but not the
+parent dropper. in total, 22 of the 23 implants that
+we identified during our research had unique
+compile times ranging from 2013-10-29 until
+2014-03-15. we identified two implants that were
+both compiled on 2014-3-15 at 23:16. these
+compile times appear to be legitimate and coincide
+with attempted intrusion activity attributed to
+these attackers.
+spoofed installers
+many of the malicious executables (droppers) that
+we collected were bundled with legitimate
+installers for vpn or proxy software. examples
+include:
+bundled with an installer for ultrasurf proxy
+software.
+bundled with an installer for gerdoovpn
+virtual private network software.
+bundled with an installer for the psiphon
+proxy.
+bundled with an installer for proxifier
+software.
+these droppers were also designed to visually
+spoof the appearance of the above applications.
+these droppers contained icons used in the
+legitimate installers for these programs.
+figure 7: icon for the psiphon
+anti-censorship tool process debug (pdb) strings
+analysis of the pdb strings seen in the implants
+indicates that there may be more than one
+developer working on the source code for the
+stealer builder. the following two pdb paths were
+seen in the collection of implants that we these strings indicate that the stealer source
+code was stored in two different paths but not
+necessarily on two different computers. the f:\
+projects\ path may be from an external storage
+device such as a thumb drive. it is therefore
+possible that only one person has access to the
+source code, but keeps a separate repository on
+an external storage device. alternatively, the
+different file paths could be the result of two
+different actors storing their source code in two
+different locations.
+builder artifacts
+in nine of the implants that we collected, we found
+a consistent portable executable (pe) resource
+with a sha256 of
+resource contains the vs_version_info. in
+layman s terms, this can best be described as the
+metadata describing the executable file. this
+specific pe resource contained the
+following information:
+note the internalname of . this is the
+attackers name for this malware family.
+vs_version_info
+varfileinfo
+translation
+stringfileinfo
+000004b0
+comments
+process for windows
+companyname
+microsoft
+filedescription
+process for windows
+fileversion
+internalname legalcopyright
+copyright
+originalfilename productname
+process for windows
+productversion
+assembly version the stealer builder and tools
+during our research, we recovered two different
+tools used by the members of the ajax security
+team in conjunction with targeted intrusion
+activities. the first tool, labeled the stealer builder was compiled on 2014-04-08. this compile date
+may indicate that the group is still active.
+upon executing the stealer builder the user is
+presented with an option to load the builder or to decrypt logs generated from a victim and
+exfiltrated to a command-and-control (cnc) server
+under the groups control.
+the builder option enables an attacker to
+configure a new stealer backdoor. the user can
+configure the new backdoor to connect to a
+specific cnc server with a personalized username
+and password. the attacker can bind the backdoor
+to a legitimate application of his or her choosing, or
+they can cloak it with an icon designed to make the
+backdoor appear as though it is a legitimate file.
+we also noted that the builder did not allow the
+attacker to select a new passphrase or salt used to
+encrypt the stolen data. the passphrase havijebaba and a salt of salam!*%# are both
+hardcoded into the builder.
+generated by this stealer builder had a timestamp
+of 2013-12-19. we had one backdoor in our
+repository with this same timestamp. this sample
+was configured to exfiltrate data to ultrasms[.]ir.
+the vs_version_info pe resource mentioned
+above (sha256
+the stealer builder that we recovered. the builder
+generates an executable named intelrapidstart.
+exe. this executable contains the aforementioned
+vs_version_info pe resource.
+we also recovered a tool designed to encode
+plaintext into base64 encoded text or decode
+base64 encoded text into plaintext. members of
+the ajax security team likely this use tool to
+encode the configuration data seen in
+rapidstarttech.stl files. as noted above, the
+rapidstarttech.stl contains the backdoor s ftp
+credentials, implant name, decoy name, and
+screenshot interval, along with boolean settings for
+startup, keylogger, and screenshot plugins.
+encoding and decoding base64 data is a
+straightforward task and the standard linux
+operating system offers a number of command line
+tools to achieve this task. the presence of a
+windows-based gui tool that simplifies encoding
+and decoding base64 data indicates that these
+tools may have been developed for less adept
+users.
+figure 10: base64 encoder command-and-control infrastructure
+the cnc infrastructure consists of distinct, but
+linked, clusters that have targeted both the users
+of anti-censorship tools in iran as well as defense
+contractor companies in the u.s.
+the first cluster contains the domain used in the
+aerospace conference attack as well as the
+domains used in phishing attacks designed to
+capture user credentials:
+the website used in the aerospace conference
+attack was aeroconf2014[.]org, which is registered
+to [.]us. however, historical whois
+information shows that the domain was registered
+by keyvan.ajaxtm@gmail[.]com the same domain
+used to register ajaxtm[.]org, the website of the
+ajax security team. the same email addresses
+were used to register variations of domain names
+associated with popular services provided by
+companies such as google, facebook, yahoo and
+linkedin.
+figure 11: ajax security
+team s phishing
+infrastructure the second cluster comprises the cnc
+infrastructure used in the anti-censorship attacks.
+the majority of the samples we analyzed connect
+to intel-update[.]com and update-mirror[.]com,
+which were registered by james.mateo@aim[.]com.
+the domain intel-update[.]com resolved to the ip
+address , which also hosted
+domains registered by osshom@yahoo[.]com, many
+of which are consistent with the pattern of
+registering domains with associations to google
+and yahoo services. we also observed crossover
+with a sample that connected to both intelupdate[.]com and ultrasms[.]ir, which was
+registered by lvlr98@gmail[.]com.
+figure 12: ajax security
+team s stealer cnc
+infrastructure
+figure 13: overlap between the
+phishing and stealer clusters these two clusters are linked by a common ip
+address ( ), which is used by both ns2.
+aeroconf2014[.]org and office.windowsessentials[.]tk.
+a third cluster of activity was found via analysis of . this
+sample is a stealer variant that connects to the
+aforementioned intel-update[.]com as well as
+plugin-adobe[.]com. the domain plugin-adobe[.]
+com resolved to . other domains
+seen resolving to ip address nearby include the
+following:
+aside from the sample connecting to pluginadobe[.]com, we have not discovered any malware
+connecting to these domains.
+victimology
+during our investigation, we were able to recover
+information on 77 victims from one cnc server
+that we discovered while analyzing malware
+samples that were disguised as anti-censorship
+tools. while analyzing the data from the victims, we
+found that the majority had either their timezone
+set to iran standard time or had their language
+setting set to persian: 44 had their timezone set to iran standard
+time (37 of those also have their language set
+to persian) of the remaining 33, 10 have persian
+language settings 12 have either proxifier or psiphon installed
+or running (all 12 had a persian language
+setting and all but one had their timezone set
+to iran standard time )
+the largest concentration of victims is in iran,
+based on the premise that persian language
+settings and iran standard time correlate the
+victim to be geographically located in iran. as such,
+we believe that attackers disguised malware as
+anti-censorship tools in order to target the users of
+such tools inside iran as well as iranian dissidents
+outside the country.
+domain ip first seen last seen 2013-11-28 2014-4-10
+privacy- 2014-02-14 2014-02-23
+xn--google- 2013-12-08 2014-01-15 2014-02-20 2014-02-20
+accounts- 2013-12-31 2014-02-20
+users- 2014-01-15 2014-01-15
+xn--facebook- 2013-11-27 2014-03- attribution
+the ajax security team appears to have been
+formed by personas named hurr!c4ne! and cair3x in 2010.24 both members were engaged in
+website defacements prior to the forming of the
+ajax security team, and both were members of
+iranian hacker forums such as ashiyane[.]org and
+shabgard[.]org. other members include 0day , mohammad pk and crim3r . the ajax security
+team website at ajaxtm[.]org had a web forum
+with at least 236 members. the group published
+several exploits for content management systems
+and engaged in defacements.25 initially, the
+defacements seemed to be motivated by a desire
+to demonstrate the group s prowess they even
+defaced an iranian government website.26
+however, the group appears to have become
+increasingly political. for example, in a blog post in
+2012, cair3x announced the targeting of iran s
+political opponents.
+figure 14: cair3x s original
+blog post and translation
+hacking anti-revolution political and opposition websites
+hello to everyone, after a while of operating underground
+and enhancing our company s projects and getting close to
+24 june 2012, and the martyrdom of ayatollah dr. beheshti
+and 72 of imam khomeini s (first and former supreme
+leader of iran) followers, we have planned a project/
+initiative to attack anti-revolution and political
+websites against the islamic republic. and in late hours
+of wednesday, june 24, 2012, we attacked these websites
+and defaced them by writing the words we are young but
+we can on their websites. this is so the enemies of this
+country know that the blood of our martyr will never be
+in vain and they will always be remembered in the heart
+of gallant iranians.
+have dwindled. there have been no defacements
+since december 2013. the website and forum at
+ajaxtm[.]org operated by hurr!c4ne! , aka k3yv4n , is no longer active. hurr!c4ne! has the most open/documented
+internet persona of the ajax security team. he
+registered the ajaxtm[.]org domain name using the
+email address keyvan.ajaxtm@gmail[.]com. this
+was also the email address used to register the
+domain aerospace2014[.]org, which was used in
+spear phishing attacks against companies in the
+u.s. and is linked with malware activity directed at
+users of anti-censorship tools in iran.
+figure 15: screenshot of the
+defacement content used in
+#opusa
+27 ashraf, n. #opisrael: hacktivists starting cyber attack against israel on 7th of april . march 2013. opusa targeting government & financial sectors on
+07 may 2013: likely tools, targets and mitigating measures . may 2013. hurr!c4ne! features prominently in all the
+group s activities and defacements. although there
+has been a decline in public-facing ajax security
+team activity, this coincides with an increase in
+malware activity linked to the group s
+infrastructure. ~2009 membership in and forums 2010 2012 defacements, release of exploits
+for cms 2012 2013 increasing politicization,
+participation on #opisrael, #opusa 2013 2014 transition to cyber-espionage
+the increasing politicization of the ajax security
+team aligns with the timing of their activities
+against the perceived enemies of iran. in addition
+to attacking companies in the u.s., they have
+targeted domestic users of anti-censorship
+technology.
+while the objectives of this group are consistent
+with iran s efforts at controlling political dissent
+and expanding offensive cyber capabilities, the
+relationship between this group and the iranian
+government remains inconclusive.
+for example, the ajax security team could just be
+using anti-censorship tools as a lure because they
+are popular in iran, in order to engage in activities
+that would be considered traditional cybercrime. in
+one case, hurr!c4ne! , using the email address
+keyvan.ajaxtm@gmail[.]com, has been flagged for
+possible fraud by an online retailer. while hurr!c4ne! is engaged in operations that align
+with iran s political objectives, he may also be
+dabbling in traditional cybercrime.
+this indicates that there is a considerable grey area
+between the cyber espionage capabilities of iran s
+hacker groups and any direct iranian government
+or military involvement.
+on the spectrum of state responsibility, these
+attacks align with state-encouraged attacks, which
+are defined as attacks in which:
+third parties control and conduct the attack, but
+the national government encourages them as a
+matter of policy.28
+recruiting hackers through this model allows iran
+to influence their activities, and provides the
+iranian government plausible deniability, but a lack
+of direct control also means that the groups may be
+unpredictable and engage in unsanctioned attacks.
+figure 16: screenshot
+of an online retailer s
+fraud alert
+28 healey, j. beyond attribution: seeking national responsibility for cyber attacks . january 2012. conclusion
+the increased politicization of the ajax security
+team, and the transition from nuisance
+defacements to operations against internal
+dissidents and foreign targets, coincides with
+moves by iran aimed at increasing offensive cyber
+capabilities. while the relationship between actors
+such as the ajax security team and the iranian
+government is unknown, their activities appear to
+align with iranian government political objectives.
+the capabilities of the ajax security team remain
+unclear. this group uses at least one malware
+family that is not publicly available. we have not
+directly observed the ajax security team use
+exploits to deliver malware, but it is unclear if they
+or other iranian actors are capable of producing or
+acquiring exploit code.
+while the ajax security team s capabilities remain
+unclear, we know that their current operations
+have been somewhat successful as measured by
+the number of victims seen checking into to an ajax
+security team controlled cnc server. we believe
+that if these actors continue the current pace of
+their operations they will improve their capabilities
+in the mid-term.

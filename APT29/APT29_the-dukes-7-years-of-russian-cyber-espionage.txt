@@ -1,0 +1,1265 @@
+the dukes
+7 years of russian cyberespionage
+tlp: white
+this whitepaper explores the tools - such as
+miniduke, cosmicduke, onionduke, cozyduke,
+etc- of the dukes, a well-resourced, highly
+dedicated and organized cyberespionage
+group that we believe has been working for the
+russian federation since at least 2008 to collect
+intelligence in support of foreign and security
+policy decision-making. f-secure labs
+threat intelligence
+whitepaper infection vectors decoys 25
+exploitation of vulnerabilities attribution and state-sponsorship bibliography 28
+appendix i: data listings over 7 years of russian cyberespionage the dukesexecutive summary
+the dukes are a well-resourced, highly dedicated and organized cyberespionage group
+that we believe has been working for the russian federation since at least 2008 to
+collect intelligence in support of foreign and security policy decision-making.
+the dukes primarily target western governments and related organizations, such
+as government ministries and agencies, political think tanks, and governmental
+subcontractors. their targets have also included the governments of members
+of the commonwealth of independent states; asian, african, and middle eastern
+governments; organizations associated with chechen extremism; and russian
+speakers engaged in the illicit trade of controlled substances and drugs.
+the dukes are known to employ a vast arsenal of malware toolsets, which we
+identify as miniduke, cosmicduke, onionduke, cozyduke, cloudduke, seaduke,
+hammerduke, pinchduke, and geminiduke. in recent years, the dukes have engaged
+in apparently biannual large-scale spear-phishing campaigns against hundreds or
+even thousands of recipients associated with governmental institutions and affiliated
+organizations.
+these campaigns utilize a smash-and-grab approach involving a fast but noisy breakin followed by the rapid collection and exfiltration of as much data as possible. if the
+compromised target is discovered to be of value, the dukes will quickly switch the
+toolset used and move to using stealthier tactics focused on persistent compromise
+and long-term intelligence gathering. ...the dukes show unusual confidence in their ability to
+continue successfully compromising their targets [...],
+as well as in their ability to operate with impunity.
+in addition to these large-scale campaigns, the dukes continuously and concurrently
+engage in smaller, much more targeted campaigns, utilizing different toolsets. these
+targeted campaigns have been going on for at least 7 years. the targets and timing of
+these campaigns appear to align with the known foreign and security policy interests
+of the russian federation at those times.
+the dukes rapidly react to research being published about their toolsets and
+operations. however, the group (or their sponsors) value their operations so highly
+that though they will attempt to modify their tools to evade detection and regain
+stealth, they will not cease operations to do so, but will instead incrementally modify
+their tools while continuing apparently as previously planned.
+in some of the most extreme cases, the dukes have been known to engage in
+campaigns with unaltered versions of tools that only days earlier have been brought
+to the public s attention by security companies and actively mentioned in the
+media. in doing so, the dukes show unusual confidence in their ability to continue
+successfully compromising their targets even when their tools have been publicly
+exposed, as well as in their ability to operate with impunity. the story of the dukes
+the story of the dukes, as it is currently known, begins with a malware toolset that we call pinchduke. this toolset
+consists of multiple loaders and an information-stealer trojan. importantly, pinchduke trojan samples always contain
+a notable text string, which we believe is used as a campaign identifier by the dukes group to distinguish between
+multiple attack campaigns that are run in parallel. these campaign identifiers, which frequently specify both the date
+and target of the campaign, provide us with a tantalizing view into the early days of the dukes. 2008: chechnya
+the earliest activity we have been able to definitively
+attribute to the dukes are two pinchduke campaigns
+from november 2008. these campaigns use pinchduke
+samples that were, according to their compilation
+timestamps, created on the 5th and 12th of november 2008.
+the campaign identifiers found in these two samples
+are respectively, 20081105 and cihaderi.
+net20081112 .
+the first campaign identifier, found in the sample
+compiled on the 5th, references , a domain
+associated with a turkish website proclaiming to be the chechan [sic] informational center (image 1, page
+5). the second campaign identifier, from the sample
+compiled on the 12th, references , another
+turkish website that claims to provide news from the
+jihad world and which dedicates a section of its site to
+chechnya.
+due to a lack of other pinchduke samples from 2008
+or earlier, we are unable to estimate when the duke
+operation originally began. based on our technical
+analysis of the known pinchduke samples from 2008 however, we believe pinchduke to have been under
+development by the summer of 2008.
+in fact, we believe that by the autumn of 2008, the dukes
+were already developing not one but at least two distinct
+malware toolsets. this assertion is based on the oldest
+currently known sample of another duke-related toolset,
+geminiduke, which was compiled on the 26th of january
+2009. this sample, like the early pinchduke samples,
+appears to already be a fully-grown sample, which is why
+we believe geminiduke was under development by the
+autumn of 2008.
+that the dukes were already developing and operating
+at least two distinct malware toolsets by the second
+half of 2008 suggests to us that either the size of their
+cyberespionage operation was already large enough to
+warrant such an arsenal of tools, or that they expected
+their operation to grow significantly enough in the
+foreseeable future to warrant the development of such an
+arsenal. we examine each of the duke toolsets in greater
+detail later in the tools and techniques section (page 16). etymology: a note on names
+the dukes the origins of the duke toolset names can be traced back to when
+researchers at kaspersky labs coined the term miniduke to
+identify the first duke-related malware they found. as explained in
+their whitepaper[7], the researchers observed the surprisingly small
+miniduke backdoor being spread via the same exploit that was
+being used by a malware that they had already named itaduke; the duke part of this malware s name had in turn come about because
+it reminded the researchers of the notable duqu threat. despite the
+shared history of the name itself however, it is important to note that
+there is no reason to believe that the duke toolsets themselves are in
+any way related to the itaduke malware, or to duqu for that matter.
+as researchers continued discovering new toolsets that were created
+and used by the same group that had been operating miniduke, the
+new toolsets were also given duke -derived names, and thus the
+threat actor operating the toolsets started to be commonly referred
+to as the dukes . the only other publicly used name for the threat
+actor that we are aware of is apt29 [22].
+some exceptions to this naming convention do exist, and in the case
+of specific duke toolsets, other commonly used names are listed in
+the tools and techniques section (page 16). cloudduke
+hammerduke
+seaduke
+cozyduke onionduke
+cosmicduke geminiduke
+pinchduke miniduke duke duke itaduke
+duqu over 7 years of russian cyberespionage the dukes2009: first known campaigns against
+the west
+based on the campaign identifiers found in pinchduke
+samples discovered from 2009, the targets of the dukes
+group during that year included organizations such as
+the ministry of defense of georgia and the ministries of
+foreign affairs of turkey and uganda. campaign identifiers
+from 2009 also reveal that by that time, the dukes were
+already actively interested in political matters related
+to the united states (us) and the north atlantic treaty
+organization (nato), as they ran campaigns targeting
+(among other organizations) a us-based foreign policy
+think tank, another set of campaigns related to a nato
+exercise held in europe, and a third set apparently
+targeting what was then known as the georgian information centre on nato .
+of these campaigns, two clusters in particular stand out.
+the first is a set of campaigns from the 16th and 17th of april,
+2009, that targeted a us-based foreign policy think tank,
+as well as government institutions in poland and the czech
+republic (image 1, below). these campaigns utilized
+specially-crafted malicious microsoft word documents
+and pdf files, which were sent as e-mail attachments to
+various personnel in an attempt to infiltrate the targeted
+organizations.
+we believe this cluster of campaigns had a joint goal of
+gathering intelligence on the sentiments of the targeted countries with respect to the plans being discussed at the
+time for the us to locate their european interceptor site missile defense base in poland, with a related radar station
+that was intended to be located in the czech republic.
+regarding the timing of these campaigns, it is curious to
+note that they began only 11 days after president barack
+obama gave a speech on the 5th of april declaring his
+intention to proceed with the deployment of these missile
+defenses [1].
+the second notable cluster comprises of two campaigns
+that were possibly aimed at gathering information on
+georgia-nato relations. the first of these runs used
+the campaign identifier natoinfo_ge , an apparent
+reference to the website belonging to
+a georgian political body that has since been renamed information centre on nato and eu . although the
+campaign identifier itself doesn t contain a date, we
+believe the campaign to have originated around the 7th
+of june 2009, which was when the pinchduke sample
+in question was compiled. this belief is based on the
+observation that in all of the other pinchduke samples
+we have analyzed, the date of the campaign identifier has
+been within a day of the compilation date. the second
+campaign identifier, which we suspect may be related, is mod_ge_2009_07_03 from a month later and apparently
+targeting the ministry of defense of georgia. image 1: early activity from
+2008 & 2009
+left - screenshot of [2]
+(circa 2008, preserved by the internet
+archive wayback machine), which was
+referenced in 2008 pinchduke sample
+below - decoy document from a 2009
+pinchduke campaign targeting poland,
+the czech republic and a us think
+tank. the contents appear to have
+been copied from a bbc news article [3] 2010: the emergence of cosmicduke
+in the caucasus
+the spring of 2010 saw continued pinchduke campaigns
+against turkey and georgia, but also numerous campaigns
+against other members of the commonwealth of
+independent states such as kazakhstan, kyrgyzstan,
+azerbaijan and uzbekistan. of these, the campaign with
+the identifier kaz_2010_07_30 , which possibly targeted
+kazakhstan, is of note because it is the last pinchduke
+campaign we have observed. we believe that during
+the first half of 2010, the dukes slowly migrated from
+pinchduke and started using a new infostealer malware
+toolset that we call cosmicduke.
+the first known sample of the cosmicduke toolset
+was compiled on the 16th of january 2010. back then,
+cosmicduke still lacked most of the credential-stealing
+functionality found in later samples. we believe that
+during the spring of 2010, the credential and file
+stealing capabilities of pinchduke were slowly ported to
+cosmicduke, effectively making pinchduke obsolete.
+during this period of transition, cosmicduke would
+often embed pinchduke so that, upon execution,
+cosmicduke would write to disk and execute pinchduke.
+both pinchduke and cosmicduke would then operate
+independently on the same compromised host, including
+performing separate information gathering, data
+exfiltration and communication with a command and
+control (c&c) server - although both malware would often
+use the same c&c server. we believe the purpose of this
+parallel use was to fieldtest the new cosmicduke tool,
+while at the same time ensuring operational success with
+the tried-and-tested pinchduke.
+during this period of cosmicduke testing and
+development, the duke authors also started
+experimenting with the use of privilege escalation
+vulnerabilities. specifically, on the 19th of january 2010
+security researcher tavis ormandy disclosed a local
+privilege escalation vulnerability (cve-2010-0232)
+affecting microsoft windows. as part of the disclosure,
+ormandy also included the source code for a proof-ofconcept exploit for the vulnerability [4]. just 7 days later,
+on the 26th of january, a component for cosmicduke was
+compiled that exploited the vulnerability and allowed the
+tool to operate with higher privileges. one loader to load them all (almost)
+in addition to all the other components being
+produced by the dukes group, in 2010 they were
+also actively developing and testing a new loader
+- a component that wraps the core malware code
+and provides an additional layer of obfuscation.
+the first sample of this loader was compiled
+on the 26th of july 2010, making it a direct
+predecessor of what has since become known
+as the miniduke loader , as later versions
+were extensively used by both miniduke and
+cosmicduke.
+some hints about the history of the miniduke
+loader were noted in the cosmicduke
+whitepaper we published [5] in 2014, where we
+observed that the loader appeared to have
+been in use with cosmicduke before it was
+used with miniduke. in fact, we now know that
+before being used with either, the miniduke
+loader was used to load pinchduke. the first
+known sample of the loader was used during the
+summer of 2010, while the most recent samples
+were seen during the spring of 2015.
+this neatly ties together many of the tools
+used by the dukes group, as versions of this
+one loader have been used to load malware
+from three different dukes-related toolsets cosmicduke, pinchduke, and miniduke over
+the course of five years. image 2: comparing whois
+registration details
+left - original whois registration details
+for , one of the duke
+c&c server domains registered on the
+29th of january, 2011 to john kasai right - details for the domain were later
+changed, providing a small glimpse of
+the dukes sense of humor 2011: john kasai of klagenfurt, austria
+during 2011, the dukes appear to have significantly
+expanded both their arsenal of malware toolsets and
+their c&c infrastructure. while the dukes employed both
+hacked websites and purposely rented servers for their
+c&c infrastructure, the group rarely registered their own
+domain names, preferring instead to connect to their selfoperated servers via ip addresses.
+the beginning of 2011 however saw a significant break
+from that routine, when a large grouping of domain
+names was registered by the dukes in two batches; the
+first batch was registered on the 29th of january and the
+second on the 13th of february. all the domains in both
+batches were initially registered with the same alias: john
+kasai of klagenfurt, austria (image 2, above). these
+domains were used by the dukes in campaigns involving
+many of their different malware toolsets all the way until
+2014. like the miniduke loader , these john kasai domains also provide a common thread tying together
+much of the tools and infrastructure of the dukes. 2011: continuing expansion of the
+dukes arsenal
+by 2011, the dukes had already developed at least
+3 distinct malware toolsets, including a plethora of
+supporting components such as loaders and persistence
+modules. in fact, as a sign of their arsenal s breadth,
+they had already decided to retire one of these malware
+toolsets as obsolete after developing a replacement for it,
+seemingly from scratch.
+the dukes continued the expansion of their arsenal in 2011
+with the addition of two more toolsets: miniduke and
+cozyduke. while all of the earlier toolsets geminiduke,
+pinchduke, and cosmicduke were designed around
+a core infostealer component, miniduke is centered
+on a simplistic backdoor component whose purpose is
+to enable the remote execution of commands on the
+compromised system. the first observed samples of the
+miniduke backdoor component are from may 2011. this
+backdoor component however is technically very closely
+related to geminiduke, to the extent that we believe
+them to share parts of their source code. the origins
+of miniduke can thus be traced back to the origins of geminiduke, of which the earliest observed sample was
+compiled in january of 2009.
+unlike the simplistic miniduke toolset, cozyduke is a
+highly versatile, modular, malware platform whose
+functionality lies not in a single core component but in an
+array of modules that it may be instructed to download
+from its c&c server. these modules are used to selectively
+provide cozyduke with just the functionality deemed
+necessary for the mission at hand. cozyduke s modular
+platform approach is a clear break from the designs of the
+previous duke toolsets.
+the stylistic differences between cozyduke and its older
+siblings are further exemplified by the way it was coded.
+all of the 4 previously mentioned toolsets were written
+in a minimalistic style commonly seen with malware;
+miniduke even goes as far as having many components
+written in assembly language. cozyduke however
+represents the complete opposite. instead of being
+written in assembly or c, it was written in c++ , which
+provides added layers of abstraction for the developer s
+perusal, at the cost of added complexity.
+contrary to what might be expected from malware, early
+cozyduke versions also lacked any attempt at obfuscating
+or hiding their true nature. in fact, they were extremely
+open and verbose about their functionality - for example,
+early samples contained a plethora of logging messages
+in unencrypted form. in comparison, even the earliest
+known geminiduke samples encrypted any strings that
+might have given away the malware s true nature.
+finally, early cozyduke versions also featured other
+elements that one would associate more with a traditional
+software development project than with malware. for
+instance, the earliest known cozyduke version utilized
+a feature of the microsoft visual c++ compiler known as
+run-time error checking. this feature added automatic
+error checking to critical parts of the program s execution
+at the cost, from a malware perspective, of providing
+additional hints that make the malware s functionality
+easier for reverse engineers to understand. image 3: miniduke decoy
+one of the ukraine-themed decoy
+documents used during a miniduke
+campaign in february 2013 based on these and other similar stylistic differences
+observed between cozyduke and its older siblings, we
+speculate that while the older duke families appear to
+be the work of someone with a background in malware
+writing (or at the least in hacking), cozyduke s author or
+authors more likely came from a software development
+background. 2012: hiding in the shadows
+we still know surprisingly few specifics about the dukes
+group s activities during 2012. based on samples of
+duke malware from 2012, the dukes do appear to have
+continued actively using and developing all of their
+tools. of these, cosmicduke and miniduke appear to
+have been in more active use, while receiving only minor
+updates. geminiduke and cozyduke on the other hand
+appear to have been less used in actual operations, but
+did undergo much more significant development. 2013: miniduke flies too close to the
+sun
+on the 12th of february 2013, fireeye published a
+blogpost[6] alerting readers to a combination of new
+adobe reader 0-day vulnerabilities, cve-2013-0640
+and cve-2013-0641, that were being actively exploited
+in the wild. 8 days after fireeye s initial alert, kaspersky
+spotted the same exploit being used to spread an entirely
+different malware family from the one mentioned in the
+original report. on 27th february, kaspersky [7] and crysys[8]
+lab published research on this previously unidentified
+malware family, dubbing it miniduke.
+as we now know, by february 2013 the dukes group
+had been operating miniduke and other toolsets for at
+least 4 and a half years. their malware had not stayed
+undetected for those 4 and a half years. in fact, in 2009 a
+pinchduke sample had been included in the malware set
+used by the av-test security product testing organization
+to perform anti-virus product comparison reviews. until
+2013 however, earlier duke toolsets had not been put in a
+proper context. that finally started to change in 2013. the miniduke samples that were spread using these
+exploits were compiled on the 20th of february, after the
+exploit was already publicly known. one might argue
+that since this took place after the exploits were publicly
+mentioned, the dukes simply copied them. we however
+do not believe so. as mentioned by kaspersky, even
+though the exploits used for these miniduke campaigns
+were near-identical to those described by fireeye, there
+were nevertheless small differences. of these, the crucial
+one is the presence of pdb strings in the miniduke
+exploits. these strings, which are generated by the
+compiler when using specific compilation settings, means
+that the components of the exploits used with miniduke
+had to have been compiled independently from those
+described by fireeye.
+we do not know whether the dukes compiled the
+components themselves or whether someone else
+compiled the components before handing them to the
+group. this does however still rule out the possibility that
+the dukes simply obtained copies of the exploit binaries
+described by fireeye and repurposed them.
+in our opinion, this insistence on using exploits that are
+already under heightened scrutiny suggests the existence
+of at least one of three circumstances. firstly, the dukes
+may have been confident enough in their own abilities
+(and in the slowness of their opponents to react to
+new threats) that they did not care if their targets may
+already be on the lookout for anyone exploiting these
+vulnerabilities. secondly, the value the dukes intended
+to gain from these miniduke campaigns may have been
+so great that they deemed it worth the risk of getting
+noticed. or thirdly, the dukes may have invested so much
+into these campaigns that by the time fireeye published
+their alert, the dukes felt they could not afford to halt the
+campaigns.
+we believe all three circumstances to have coexisted
+at least to some extent. as will become evident in this
+report, this was not a one-off case but a recurring theme
+with the dukes, in that they would rather continue with
+their operations as planned than retreat from operating
+under the spotlight. image 4: onionduke-trojanized
+torrent file
+example of a torrent file containing
+an executable trojanized with the
+onionduke toolset as originally detailed in kaspersky s whitepaper, the
+miniduke campaigns from february 2013 employed
+spear-phishing emails with malicious pdf file attachments.
+these pdfs would attempt to silently infect the recipient
+with miniduke, while distracting them by displaying a
+decoy document. the headings of these documents
+included ukraine s nato membership action plan (map)
+debates , the informal asia-europe meeting (asem)
+seminar on human rights , and ukraine s search for a
+regional foreign policy (image 3, page 8). the targets of
+these campaigns, according to kaspersky, were located
+variously in belgium, hungary, luxembourg and spain [7].
+kaspersky goes on to state that by obtaining log files
+from the miniduke command and control servers, they
+were able to identify high-profile victims from ukraine,
+belgium, portugal, romania, the czech republic, ireland,
+the united states and hungary [7]. 2013: the curious case of onionduke
+after the february campaigns, miniduke activity
+appeared to quiet down, although it did not fully stop,
+for the rest of 2013. the dukes group as a whole however
+showed no sign of slowing down. in fact, we saw yet
+another duke malware toolset, onionduke, appear first
+in 2013. like cozyduke, onionduke appears to have been
+designed with versatility in mind, and takes a similarly
+modular platform approach. the onionduke toolset
+includes various modules for purposes such as password
+stealing, information gathering, denial of service (dos)
+attacks, and even posting spam to the russian social
+media network, vkontakte. the onionduke toolset also
+includes a dropper, an information stealer variant and
+multiple distinct versions of the core component that is
+responsible for interacting with the various modules.
+what makes onionduke especially curious is an infection
+vector it began using during the summer of 2013. to
+spread the toolset, the dukes used a wrapper to combine
+onionduke with legitimate applications, created torrent
+files containing these trojanized applications, then
+uploaded them to websites hosting torrent files (image
+4, above). victims who used the torrent files to download
+the applications would end up getting infected with
+onionduke. for most of the onionduke components we observed,
+the first versions that we are aware of were compiled
+during the summer of 2013, suggesting that this was
+a period of active development around this toolset.
+critically however, the first sample of the onionduke
+dropper, which we have observed being used only with
+components of this toolset, was compiled on the 17th
+of february 2013. this is significant because it suggests
+that onionduke was under development before any
+part of the duke operation became public. onionduke s
+development therefore could not have been simply a
+response to the outing of one of the other duke malware,
+but was instead intended for use alongside the other
+toolsets. this indication that the dukes planned to use
+an arsenal of 5 malware toolsets in parallel suggests that
+they were operating with both significant resources and
+capacity. 2013: the dukes and ukraine
+in 2013, many of the decoy documents employed by
+the dukes in their campaigns were related to ukraine;
+examples include a letter undersigned by the first
+deputy minister for foreign affairs of ukraine, a letter
+from the embassy of the netherlands in ukraine to the
+ukrainian ministry of foreign affairs and a document titled ukraine s search for a regional foreign policy . [9]
+these decoy documents however were written before
+the start of the november 2013 euromaidan protests
+in ukraine and the subsequent upheaval. it is therefore
+important to note that, contrary to what might be
+assumed, we have actually observed a drop instead of an
+increase in ukraine-related campaigns from the dukes
+following the country s political crisis.
+this is in stark contrast to some other suspected russian
+threat actors (such as operation pawn storm [10]) who
+appear to have increased their targeting of ukraine
+following the crisis. this supports our analysis that
+the overarching theme in the dukes targeting is the
+collection of intelligence to support diplomatic efforts.
+the dukes actively targeted ukraine before the crisis, at a
+time when russia was still weighing her options, but once
+russia moved from diplomacy to direct action, ukraine
+was no longer relevant to the dukes in the same way. image 5: cosmicduke decoy
+screenshot of a decoy document
+appearing to be an order for growth
+hormones, which was used in a
+cosmicduke campaign in september 2013 2013: cosmicduke s war on drugs
+in a surprising turn of events, in september 2013 a
+cosmicduke campaign was observed targeting russian
+speakers involved in the trade of illegal and controlled
+substances (image 5, above).
+kaspersky labs, who sometimes refer to cosmicduke as bot gen studio , speculated that one possibility is that bot gen studio is a malware platform also available as
+a so-called legal spyware tool ; therefore, those using
+cosmicduke to target drug dealers and those targeting
+governments are two separate entities [11]. we however
+feel it is unlikely that the cosmicduke operators targeting
+drug dealers and those targeting governments could
+be two entirely independent entities. a shared supplier
+of malware would explain the overlap in tools, but it
+would not explain the significant overlap we have also
+observed in operational techniques related to command
+and control infrastructure. instead, we feel the targeting
+of drug dealers was a new task for a subset of the dukes
+group, possibly due to the drug trade s relevance to
+security policy issues. we also believe the tasking to have
+been temporary, because we have not observed any
+further similar targeting from the dukes after the spring
+of 2014. 2014: miniduke s rise from the ashes
+while miniduke activity decreased significantly during
+the rest of 2013 following the attention it garnered from
+researchers, the beginning of 2014 saw the toolset back
+in full force. all miniduke components, from the loader
+and downloader to the backdoor, had been slightly
+updated and modified during the downtime. interestingly,
+the nature of these modifications suggests that their
+primary purpose was to regain the element of stealth and
+undetectability that had been lost almost a year earlier.
+of these modifications, arguably the most important were
+the ones done to the loader. these resulted in a loader
+version that would later become known as the nemesis
+gemina loader due to pdb strings found in many of the
+samples. it is however still only an iteration on earlier
+versions of the miniduke loader. the first observed samples of the nemesis gemina loader
+(compiled on 14th december 2013) were used to load the
+updated miniduke backdoor, but by the spring of 2014
+the nemesis gemina loader was also observed in use with
+cosmicduke. 2014: cosmicduke s moment of fame
+and the scramble that ensued
+following the miniduke expose, cosmicduke in turn
+got its moment of fame when f-secure published a
+whitepaper about it on 2nd july 2014 [5]. the next day,
+kaspersky also published their own research on the
+malware [11]. it should be noted that until this point,
+even though cosmicduke had been in active use for
+over 4 years, and had undergone minor modifications
+and updates during that time, even the most recent
+cosmicduke samples would often embed persistence
+components that date back to 2012. these samples would
+also contain artefacts of functionality from the earliest
+cosmicduke samples from 2010.
+it is therefore valuable to observe how the dukes reacted
+to cosmicduke s outing at the beginning of july. by the
+end of that month, cosmicduke samples we found that
+had been compiled on the 30th of july had shed unused
+parts of their code that had essentially just been relics of
+the past. similarly, some of the hardcoded values that had
+remained unaltered in cosmicduke samples for many
+years had been changed. we believe these edits were an
+attempt at evading detection by modifying or removing
+parts of the toolset that the authors believed might be
+helpful in identifying and detecting it.
+concurrently with the alterations to cosmicduke, the
+dukes were also hard at work modifying their trusted
+loader. much like the cosmicduke toolset, the loader
+used by both miniduke and cosmicduke had previously
+only undergone one major update (the nemesis gemina
+upgrade) since the first known samples from 2010. again,
+much of the modification work focused on removing
+redundant code in an attempt to appear different from
+earlier versions of the loader. interestingly however,
+another apparent evasion trick was also attempted forging of the loaders compilation timestamps.
+image 6: cozyduke decoys
+left - us letter fax test decoy used
+in cozyduke campaigns
+right - screenshot of the monkey
+video decoy also used by cozyduke the first cosmicduke sample we observed after the initial
+research on cosmicduke was a sample compiled on the
+30th of july 2014. the loader used by the sample purported
+to have been compiled on the 25th of march 2010. due
+to artefacts left in the loader during compilation time
+however, we know that it used a specific version of the
+boost library, 1.54.0, that was only published on the 1st
+of july 2013 [12]. the compilation timestamp therefore
+had to have been faked. f-secure s whitepaper[5] on
+cosmicduke includes a timeline of the loader s usage,
+based on compilation timestamps. perhaps the dukes
+group thought that by faking a timestamp from before the
+earliest one cited in the whitepaper, they might be able to
+confuse researchers.
+during the rest of 2014 and the spring of 2015, the dukes
+continued making similar evasion-focused modifications
+to cosmicduke, as well as experimenting with ways to
+obfuscate the loader. in the latter case however, the
+group appear to have also simultaneously developed an
+entirely new loader, which we first observed being used in
+conjunction with cosmicduke during the spring of 2015.
+while it is not surprising that the dukes reacted to
+multiple companies publishing extensive reports on one
+of their key toolsets, it is valuable to note the manner in
+which they responded. much like the miniduke expose
+in february 2013, the dukes again appeared to prioritize
+continuing operations over staying hidden. they could
+have ceased all use of cosmicduke (at least until they had
+developed a new loader) or retired it entirely, since they
+still had other toolsets available. instead, they opted for
+minimal downtime and attempted to continue operations,
+with only minor modifications to the toolset. 2014: cozyduke and monkey videos
+while we now know that cozyduke had been under
+development since at least the end of 2011, it was not
+until the early days of july 2014 that the first large-scale
+cozyduke campaign that we are aware of took place.
+this campaign, like later cozyduke campaigns, began
+with spear-phishing emails that tried to impersonate
+commonly seen spam emails. these spear-phishing emails
+would contain links that eventually lead the victim to
+becoming infected with cozyduke. some of the cozyduke spear-phishing emails from
+early july posed as e-fax arrival notifications, a popular
+theme for spam emails, and used the same us letter
+fax test page decoy document that was used a year
+later by cloudduke. in at least one case however, the
+email instead contained a link to a zip-archive file named office monkeys lol , which was hosted on the
+dropbox cloud storage service. what made this particular
+case interesting was that instead of the usual dull pdf
+file, the decoy was a flash video file, more specifically a
+super bowl advertisement from 2007 purporting to show
+monkeys at an office (image 6, above). 2014: onionduke gets caught using a
+malicious tor node
+on the 23rd of october 2014, leviathan security group
+published a blog post describing a malicious tor exit node
+they had found. they noted that this node appeared
+to be maliciously modifying any executables that
+were downloaded through it over a http connection.
+executing the modified applications obtained this way
+would result in the victim being infected with unidentified
+malware. on the 14th of november, f-secure published
+a blog post naming the malware onionduke and
+associating it with miniduke and cosmicduke, the other
+duke toolsets known at the time [13].
+based on our investigations into onionduke, we believe
+that for about 7 months, from april 2014 to when
+leviathan published their blog post in october 2014, the
+tor exit node identified by the researchers was being used
+to wrap executables on-the-fly with onionduke (image
+7, page 13). this is similar to the way in which the toolset
+was being spread via trojanized applications in torrent files
+during the summer of 2013.
+while investigating the onionduke variant being spread
+by the malicious tor node, we also identified another
+onionduke variant that appeared to have successfully
+compromised multiple victims in the ministry of foreign
+affairs of an eastern european country during the spring
+of 2014. this variant differed significantly in functionality
+from the one being spread via the tor node, further
+suggesting that different onionduke variants are
+intended for different kinds of victims. we believe that, unusually, the purpose of the onionduke
+variant spread via the tor node was not to pursue targeted
+attacks but instead to form a small botnet for later use.
+this onionduke variant is related to the one seen during
+the summer of 2013 being spread via torrent files. both
+of these infection vectors are highly indiscriminate and
+untargeted when compared to spear-phishing, the usual
+infection vector of choice for the dukes.
+further, the functionality of the onionduke variant is
+derived from a number of modules. while one of these
+modules gathers system information and another
+attempts to steal the victim s usernames and passwords,
+as one would expect from a malware used for a targeted
+attack, the other two known onionduke modules are
+quite the opposite; one is designed for use in dos attacks
+and the other for posting predetermined messages to
+the russian vkontakte social media site. this sort of
+functionality is more common in criminality-oriented
+botnets, not state-sponsored targeted attacks.
+we have since been able to identify at least two separate
+onionduke botnets. we believe the formation of the
+first of these botnets began in january 2014, using both
+unidentified infection vectors and the known malicious
+tor node, and continued until our blogpost was published
+in november. we believe the formation of the second
+botnet began in august 2014 and continued until january
+2015. we have been unable to identify the infection
+vectors used for this second botnet, but the c&c servers
+it used had open directory listings, allowing us to retrieve
+files containing listings of victim ip addresses. the
+geographic distribution of these ip addresses (image 8,
+page 13) further supports our theory that the purpose of
+this onionduke variant was not targeted attacks against
+high-profile targets.
+one theory is that the botnets were a criminal side
+business for the dukes group. the size of the botnet
+however (about 1400 bots) is very small if its intended
+use is for commercial dos attacks or spam-sending.
+alternatively, onionduke also steals user credentials from
+its victims, providing another potential revenue source.
+the counter to that argument however is that the value
+of stolen credentials from users in the countries with the
+highest percentage of onionduke bots (mongolia and
+india) are among the lowest on underground markets. 2015: the dukes up the ante
+the end of january 2015 saw the start of the most highvolume duke campaign seen thus far, with thousands
+of recipients being sent spear-phishing emails that
+contained links to compromised websites hosting
+cozyduke. curiously, the spear-phishing emails were
+strikingly similar to the e-fax themed spam usually seen
+spreading ransomware and other common crimeware.
+due to the sheer number of recipients, it may not have
+been possible to customize the emails in the same way as
+was possible with lower-volume campaigns. the similarity to common spam may however also serve
+a more devious purpose. it is easy to imagine a security
+analyst, burdened by the amount of attacks against their
+network, dismissing such common-looking spam as just
+another crimeware spam run , allowing the campaign to,
+in essence, hide in the masses [14].
+the cozyduke activity continues one of the long-running
+trends of the dukes operations, the use of multiple
+malware toolsets against a single target. in this case, the
+dukes first attempted to infect large numbers of potential
+targets with cozyduke (and in a more obvious manner
+than previously seen). they would then use the toolset to
+gather initial information on the victims, before deciding
+which ones to pursue further. for the victims deemed
+interesting enough, the dukes would then deploy a
+different toolset.
+we believe the primary purpose of this tactic is an attempt
+at evading detection in the targeted network. even if the
+noisy initial cozyduke campaign is noticed by the victim
+organization, or by someone else who then makes it
+publicly known, defenders will begin by first looking for
+indicators of compromise (iocs) related to the cozyduke
+toolset. if however by that time the dukes are already
+operating within the victim s network, using an another
+toolset with different iocs, then it is reasonable to assume
+that it will take much longer for the victim organization to
+notice the infiltration.
+in previous cases, the group used their malware toolsets
+interchangeably, as either the initial or a later-stage
+toolset in a campaign. for these cozyduke campaigns
+however, the dukes appear to have employed
+two particular later-stage toolsets, seaduke and
+hammerduke, that were purposely designed to leave
+a persistent backdoor on the compromised network.
+hammerduke is a set of backdoors that was first seen
+in the wild in february 2015, while seaduke is a crossplatform backdoor that was, according to symantec, first
+spotted in the wild in october 2014 [15]. both toolsets were
+originally spotted being deployed by cozyduke to its
+victims.
+what makes seaduke special is that it was written in
+python and designed to work on both windows and linux
+systems; it is the first cross-platform tool we have seen
+from the dukes. one plausible reason for developing
+such a flexible malware might be that the group were
+increasingly encountering victim environments where
+users were using linux as their desktop operating system.
+meanwhile, hammerduke is a windows-only malware
+(written in .net) and comes in two variants. the simpler
+one will connect to a hardcoded c&c server over http
+or https to download commands to execute. the more
+advanced variant, on the other hand, will use an algorithm
+to generate a periodically-changing twitter account
+name and will then attempt to find tweets from that over 7 years of russian cyberespionage the dukesimage 7: flowchart of how onionduke uses
+malicious tor node to infect victims
+victim request
+account containing links to the actual download location
+of the commands to execute. in this way, the advanced
+hammerduke variant attempts to hide its network
+traffic in more legitimate use of twitter. this method is
+not unique to hammerduke, as miniduke, onionduke,
+and cozyduke all support similar use of twitter (image
+9, above) to retrieve links to additional payloads or
+commands. 2015: cloudduke
+in the beginning of july 2015, the dukes embarked on
+yet another large-scale phishing campaign. the malware
+toolset used for this campaign was the previously unseen
+cloudduke and we believe that the july campaign marks
+the first time that this toolset was deployed by the dukes,
+other than possible small-scale testing.
+the cloudduke toolset consists of at least a loader,
+a downloader, and two backdoor variants. both
+backdoors (internally referred to by their authors as bastionsolution and onedrivesolution ) essentially
+allow the operator to remotely execute commands on the
+compromised machine. the way in which each backdoor
+does so however is significantly different. while the
+bastionsolution variant simply retrieves commands from
+a hard-coded c&c server controlled by the dukes, the
+onedrivesolution utilizes microsoft s onedrive cloud
+storage service for communicating with its masters,
+making it significantly harder for defenders to notice the
+traffic and block the communication channel. what is
+most significant about the july 2015 cloudduke campaign
+is the timeline. the campaign appeared to consist of two
+distinct waves of spear-phishing, one during the first days
+of july and the other starting from the 20th of the month.
+details of the first wave, including a thorough technical
+analysis of cloudduke, was published by palo alto
+networks on 14th july [16]. this was followed by additional
+details from kaspersky in a blog post published on 16th july
+[17]
+.
+both publications happened before the second wave
+took place and received notable publicity. despite the
+attention and public exposure of the toolset s technical
+details (including iocs) to defenders, the dukes still
+continued with their second wave of spear-phishing,
+including the continued use of cloudduke. the group did
+change the contents of the spear-phishing emails they sent, but they didn t switch to a new email format; instead,
+they reverted to the same efax-themed format that they
+had previously employed, even to the point of reusing the
+exact same decoy document that they had used in the
+cozyduke campaign a year earlier (july 2014).
+this once more highlights two crucial behavioral elements
+of the dukes group. firstly, as with the miniduke
+campaigns of february 2013 and cosmicduke campaigns
+in the summer of 2014, again the group clearly prioritized
+the continuation of their operations over maintaining
+stealth. secondly, it underlines their boldness, arrogance
+and self-confidence; they are clearly confident in both
+their ability to compromise their targets even when their
+tools and techniques are already publicly known, and
+critically, they appear to be extremely confident in their
+ability to act with impunity. 2015: continuing surgical strikes with
+cosmicduke
+in addition to the notably overt and large-scale campaigns
+with cozyduke and cloudduke, the dukes also continued
+to engage in more covert, surgical campaigns using
+cosmicduke. the latest of these campaigns that we are
+aware of occurred during the spring and early summer
+of 2015. as their infection vectors, these campaigns
+used malicious documents exploiting recently fixed
+vulnerabilities.
+two of these campaigns were detailed in separate blog
+posts by the polish security company prevenity, who said
+that both campaigns targeted polish entities with spearphishing emails containing malicious attachments with
+relevant polish language names [18] [19]. a third, similar,
+cosmicduke campaign was observed presumably
+targeting georgian entities since it used an attachment
+with a georgian-language name that translates to nato
+consolidates control of the black .
+based on this, we do not believe that the dukes are
+replacing their covert and targeted campaigns with
+the overt and opportunistic cozyduke and cloudduke
+style of campaigns. instead, we believe that they are
+simply expanding their activities by adding new tools and
+techniques.
+the pinchduke toolset consists of multiple loaders and
+a core information stealer trojan. the loaders associated
+with the pinchduke toolset have also been observed
+being used with cosmicduke.
+the pinchduke information stealer gathers system
+configuration information, steals user credentials,
+and collects user files from the compromised host
+transferring these via http(s) to a c&c server. we
+believe pinchduke s credential stealing functionality
+is based on the source code of the pinch credential
+stealing malware (also known as ldpinch) that was
+developed in the early 2000s and has later been openly
+distributed on underground forums.
+credentials targeted by pinchduke include ones
+associated with the following software or services: the bat!
+yahoo! google talk
+netscape navigator
+mozilla firefox
+mozilla thunderbird
+internet explorer
+microsoft outlook
+wininet credential cache
+lightweight directory access protocol (ldap) pinchduke will also search for files that have been
+created within a predefined timeframe and whose file
+extension is present in a predefined list. as a curiosity, most pinchduke samples contain a
+russian language error message: ! 4 ! which roughly translates to: there is an error in the module s name! the length of
+the data section name must be 4 bytes! over 7 years of russian cyberespionage the dukesgeminiduke the geminiduke toolset consists of a core information
+stealer, a loader and multiple persistence-related
+components. unlike cosmicduke and pinchduke,
+geminiduke primarily collects information on the victim
+computer s configuration. the collected details include: local user accounts
+network settings
+internet proxy settings
+installed drivers
+running processes
+programs previously executed by users
+programs and services configured to
+automatically run at startup
+values of environment variables
+files and folders present in any users home folder
+files and folders present in any users my
+documents
+programs installed to the program files folder
+recently accessed files, folders and programs as is common for malware, the geminiduke infostealer
+uses a mutex to ensure that only one instance of itself
+is running at a time. what is less common is that the
+name used for the mutex is often a timestamp. we
+believe these timestamps to be generated during the
+compilation of geminiduke from the local time of the
+computer being used.
+comparing the geminiduke compilation timestamps,
+which always reference the time in the utc+0 timezone,
+with the local time timestamps used as mutex names,
+and adjusting for the presumed timezone difference, we
+note that all of the mutex names reference a time and
+date that is within seconds of the respective sample s
+compilation timestamp. additionally, the apparent
+timezone of the timestamps in all of the geminiduke
+samples compiled during the winter is utc+3, while for
+samples compiled during the summer, it is utc+4.
+the observed timezones correspond to the pre-2011
+definition of moscow standard time (msk) [20], which
+was utc+3 during the winter and utc+4 during the
+summer. in 2011 msk stopped following daylight saving
+time (dst) and was set to utc+4 year-round, then reset to utc +3 year-round in 2014. some of the observed
+geminiduke samples that used timestamps as mutex
+names were compiled while msk still respected dst and
+for these samples, the timestamps perfectly align with
+msk as it was defined at the time. moscow map of timezones in russia; eric muller [23]
+pink: msk (utc +3) ; orange: utc +4 however, geminiduke samples compiled after msk was
+altered still vary the timezone between utc+3 in the
+winter and utc+4 during the summer. while computers
+using microsoft windows automatically adjust for dst,
+changes in timezone definitions require that an update
+to windows be installed. we therefore believe that the
+dukes group simply failed to update the computer they
+were using to compile geminiduke samples, so that the
+timestamps seen in later samples still appear to follow
+the old definition of moscow standard time.
+the geminiduke infostealer has occasionally been
+wrapped with a loader that appears to be unique to
+geminiduke and has never been observed being used
+with any of the other duke toolsets. geminiduke
+also occasionally embeds additional executables that
+attempt to achieve persistence on the victim computer.
+these persistence components appear to be uniquely
+customized for use with geminiduke, but they use many
+of the same techniques as cosmicduke persistence
+components. cosmicduke
+the cosmicduke toolset is designed around a main
+information stealer component. this information stealer
+is augmented by a variety of components that the
+toolset operators may selectively include with the main
+component to provide additional functionalities, such
+as multiple methods of establishing persistence, as well
+as modules that attempt to exploit privilege escalation
+vulnerabilities in order to execute cosmicduke with
+higher privileges. cosmicduke s information stealing
+functionality includes: keylogging
+taking screenshots
+stealing clipboard contents
+stealing user files with file extensions that match a
+predefined list exporting the users cryptographic certificates
+including private keys collecting user credentials, including passwords,
+for a variety of popular chat and email programs
+as well as from web browsers
+cosmicduke may use http, https, ftp or webdav to
+exfiltrate the collected data to a hardcoded c&c server.
+while we believe cosmicduke to be an entirely customwritten toolset with no direct sharing of code with other
+duke toolsets, the high-level ways in which many of its
+features have been implemented appear to be shared
+with other members of the duke arsenal.
+specifically, the techniques cosmicduke uses to extract
+user credentials from targeted software and to detect
+the presence of analysis tools appear to be based on
+the techniques used by pinchduke. likewise, many of
+cosmicduke s persistence components use techniques
+also used by components associated with geminiduke
+and cozyduke. in all of these cases, the techniques are
+the same, but the code itself has been altered to work
+with the toolset in question, leading to small differences
+in the final implementation.
+a few of the cosmicduke samples we discovered also
+included components that attempt to exploit either
+of the publicly known cve-2010-0232 or cve-20104398 privilege escalation vulnerabilities. in the case of cve-2010-0232, the exploit appears to be based
+directly on the proof of concept code published by
+security researcher tavis ormandy when he disclosed
+the vulnerability [4]. we believe that the exploit for cve2010-4398 was also based on a publicly available proof
+of concept [21].
+in addition to often embedding persistence or privilege
+escalation components, cosmicduke has occasionally
+embedded pinchduke, geminiduke, or miniduke
+components. it should be noted that cosmicduke
+does not interoperate with the second, embedded
+malware in any way other than by writing the malware
+to disk and executing it. after that, cosmicduke and
+the second malware operate entirely independently of
+each other, including separately contacting their c&c
+servers. sometimes, both malware have used the same
+c&c server, but in other cases, even the servers have
+been different.
+finally, it is worth noting that while most of the
+compilation timestamps for cosmicduke samples
+appear to be authentic, we are aware of a few cases
+of them being forged. one such case was detailed
+on page 10 as an apparent evasion attempt. another
+is a loader variant seen during the spring of 2010 in
+conjunction with both cosmicduke and pinchduke.
+these loader samples all had compilation timestamps
+purporting to be from the 24th or the 25th of september,
+2001. however, many of these loader samples embed
+cosmicduke variants that exploit the cve-20100232 privilege escalation vulnerability thus making
+it impossible for the compilation timestamps to be
+authentic. the miniduke toolset consists of multiple downloader
+and backdoor components, which are commonly
+referred to as the miniduke stage 1 , stage 2 , and stage 3 components as per kaspersky s original
+miniduke whitepaper. additionally, a specific loader
+is often associated with the miniduke toolset and is
+referred to as the miniduke loader .
+while the loader has often been used together with
+other miniduke components, it has also commonly
+been used in conjunction with cosmicduke and
+pinchduke. in fact, the oldest samples of the loader
+that we have found were used with pinchduke. to
+avoid confusion however, we have decided to continue
+referring to the loader as the miniduke loader .
+two details about miniduke components are worth
+noting. firstly, some of the miniduke components were
+written in assembly language. while many malware
+were written in assembly during the old days of
+curiosity-driven virus writing, it has since become a
+rarity. secondly, some of the miniduke components
+do not contain a hardcoded c&c server address, but
+instead obtain the address of a current c&c server via
+twitter. the use of twitter either to initially obtain the
+address of a c&c server (or as a backup if no hardcoded
+primary c&c server responds) is a feature also found in
+onionduke, cozyduke, and hammerduke. cozyduke is not simply a malware toolset; rather,
+it is a modular malware platform formed around a
+core backdoor component. this component can be
+instructed by the c&c server to download and execute
+arbitrary modules, and it is these modules that provide
+cozyduke with its vast array of functionality. known
+cozyduke modules include: command execution module for executing
+arbitrary windows command prompt commands password stealer module nt lan manager (ntlm) hash stealer module system information gathering module screenshot module in addition to modules, cozyduke can also be
+instructed to download and execute other, independent
+executables. in some observed cases, these executables
+were self-extracting archive files containing common
+hacking tools, such as psexec and mimikatz, combined
+with script files that execute these tools. in other
+cases, cozyduke has been observed downloading and
+executing tools from other toolsets used by the dukes
+such as onionduke, seaduke, and hammerduke. the onionduke toolset includes at least a dropper,
+a loader, an information stealer trojan and multiple
+modular variants with associated modules.
+onionduke first caught our attention because it was
+being spread via a malicious tor exit node. the tor node
+would intercept any unencrypted executable files being
+downloaded and modify those executables by adding a
+malicious wrapper contained an embedded onionduke.
+once the victim finished downloading the file and
+executed it, the wrapper would infect the victim s
+computer with onionduke before executing the original
+legitimate executable.
+the same wrapper has also been used to wrap legitimate
+executable files, which were then made available for
+users to download from torrent sites. again, if a victim
+downloaded a torrent containing a wrapped executable,
+they would get infected with onionduke.
+finally, we have also observed victims being infected
+with onionduke after they were already infected with
+cozyduke. in these cases, cozyduke was instructed by
+its c&c server to download and execute onionduke
+toolset. seaduke is a simple backdoor that focuses on executing
+commands retrieved from its c&c server, such as
+uploading and downloading files, executing system
+commands and evaluating additional python code.
+seaduke is made interesting by the fact that it is written
+in python and designed to be cross-platform so that it
+works on both windows and linux. hammerduke is a simple backdoor that is apparently
+designed for similar use cases as seaduke. specifically,
+the only known infection vector for hammerduke is
+to be downloaded and executed by cozyduke onto
+a victim that has already been compromised by that
+toolset. this, together with hammerduke s simplistic
+backdoor functionality, suggests that it is primarily used
+by the dukes group as a secondary backdoor left on
+cozyduke victims after cozyduke performed the initial
+infection and stole any readily available information
+from them.
+hammerduke is however interesting because it is
+written in .net, and even more so because of its
+occasional use of twitter as a c&c communication
+channel. some hammerduke variants only contain a
+hardcoded c&c server address from which they will
+retrieve commands, but other hammerduke variants
+will first use a custom algorithm to generate a twitter
+account name based on the current date. if the account
+exists, hammerduke will then search for tweets from
+that account with links to image files that contain
+embedded commands for the toolset to execute.
+hammerduke s use of twitter and crafted image files
+is reminiscent of other duke toolsets. both onionduke
+and miniduke also use date-based algorithms to
+generate twitter account names and then searched for
+any tweets from those accounts that linked to image
+files. in contrast however, for onionduke and miniduke
+the linked image files contain embedded malware to be
+downloaded and executed, rather than instructions.
+similarly, geminiduke may also download image
+files, but these would contain embedded additional
+configuration information for the toolset itself. unlike
+hammerduke however, the urls for the images
+downloaded by geminiduke are hardcoded in its initial
+configuration, rather than retrieved from twitter. cloudduke is a malware toolset known to consist of,
+at least, a downloader, a loader and two backdoor
+variants. the cloudduke downloader will download
+and execute additional malware from a preconfigured
+location. interestingly, that location may be either a
+web address or a microsoft onedrive account.
+both cloudduke backdoor variants support simple
+backdoor functionality, similar to seaduke. while
+one variant will use a preconfigured c&c server over
+http or https, the other variant will use a microsoft
+onedrive account to exchange commands and stolen
+data with its operators. over 7 years of russian cyberespionage the dukesinfection vectors decoys the dukes primarily use spear-phishing emails when
+attempting to infect victims with their malware. these
+spear-phishing emails range from ones purposely
+designed to look like spam messages used to spread
+common crimeware and addressed to large numbers of
+people, to highly targeted emails addressed to only a few
+recipients (or even just one person) and with content
+that is highly relevant for the intended recipient(s). in
+some cases, the dukes appear to have used previously
+compromised victims to send new spear-phishing emails
+to other targets. the dukes commonly employ decoys with their infection
+vectors. these decoys may be image files, document
+files, adobe flash videos or similar that are presented to
+the victim during the infection process in an attempt to
+distract them from the malicious activity. the contents
+of these decoys range from non-targeted material such
+as videos of television commercials showing monkeys
+at an office, to highly targeted documents with content
+directly relevant to the intended recipient such as reports,
+invitations, or lists of participants to an event. the spear-phishing emails used by the dukes may contain
+either specially-crafted malicious attachments or links to
+urls hosting the malware. when malicious attachments
+are used, they may either be designed to exploit a
+vulnerability in a popular software assumed to be installed
+on the victim s machine, such as microsoft word or adobe
+reader, or the attachment itself may have its icon and
+filename obfuscated in such a way that the file does not
+appear to be an executable.
+the only instances which we are aware of where the
+dukes did not use spear-phishing as the initial infection
+vector is with certain onionduke variants. these were
+instead spread using either a malicious tor node that
+would trojanize legitimate applications on-the-fly with
+the onionduke toolset, or via torrent files containing
+previously trojanized versions of legitimate applications.
+finally, it is worth noting that the dukes are known to
+sometimes re-infect a victim of one of their malware
+tools with another one of their tools. examples
+include cozyduke infecting its victims with seaduke,
+hammerduke,or onionduke; and cosmicduke infecting
+its victims with pinchduke,geminiduke or miniduke. usually, the contents of the decoys appear to be taken
+from public sources, either by copying publicly accessible
+material such as a news report or by simply repurposing
+a legitimate file that has been openly distributed. in
+some cases however, highly targeted decoys have
+been observed using content that does not appear to
+be publicly available, suggesting that these contents
+may have been stolen from other victims that had been
+infected by duke toolsets. exploitation of
+vulnerabilities
+the dukes have employed exploits both in their infection
+vectors as well as in their malware. we are however only
+aware of one instance - the exploitation of cve-2013-0640
+to deploy miniduke - where we believe the exploited
+vulnerability was a zero-day at the time that the group
+acquired the exploit. in all known cases where exploits
+were employed, we believe the dukes did not themselves
+discover the vulnerabilities or design the original
+exploits; for the exploited zero-day, we believe the dukes
+purchased the exploit. in all other cases, we believe the
+group simply repurposed publicly available exploits or
+proofs of concept. map of timezones in russia; eric muller [23]
+pink: msk (utc +3) ; orange: utc +4 attribution and state-sponsorship
+attribution is always a difficult question, but attempting
+to answer it is important in understanding these types of
+threats and how to defend against them. this paper has
+already stated that we believe the dukes to be a russian
+state-sponsored cyberespionage operation. to reach
+this conclusion, we began by analyzing the apparent
+objectives and motivations of the group.
+based on what we currently know about the targets
+chosen by the dukes over the past 7 years, they appear to
+have consistently targeted entities that deal with foreign
+policy and security policy matters. these targets have
+included organizations such as ministries of foreign affairs,
+embassies, senates, parliaments, ministries of defense,
+defense contractors, and think tanks.
+in one of their more intriguing cases, the dukes have
+appeared to also target entities involved in the trafficking
+of illegal drugs. even such targets however appear to be
+consistent with the overarching theme, given the drug
+trade s relevance to security policy. based on this, we
+are confident in our conclusion that the dukes primary
+mission is the collection of intelligence to support foreign
+and security policy decision-making.
+this naturally leads to the question of state-sponsorship.
+based on our establishment of the group s primary
+mission, we believe the main benefactor (or benefactors)
+of their work is a government. but are the dukes a team
+or a department inside a government agency? an external
+contractor? a criminal gang selling to the highest bidder?
+a group of tech-savvy patriots? we don t know.
+based on the length of the dukes activity, our estimate of
+the amount of resources invested in the operation and the
+fact that their activity only appears to be increasing, we
+believe the group to have significant and most critically,
+stable financial backing. the dukes have consistently
+operated large-scale campaigns against high-profile
+targets while concurrently engaging in smaller, more
+targeted campaigns with apparent coordination and no
+evidence of unintentional overlap or operational clashes.
+we therefore believe the dukes to be a single, large,
+well-coordinated organization with clear separation of
+responsibilities and targets. the dukes appear to prioritize the continuation of
+their operations over stealth. their 2015 cozyduke
+and cloudduke campaigns take this to the extreme by
+apparently opting for speed and quantity over stealth and
+quality. in the most extreme case, the dukes continued
+with their july 2015 cloudduke campaign even after their
+activity had been outed by multiple security vendors.
+we therefore believe the dukes primary mission to be
+so valuable to their benefactors that its continuation
+outweighs everything else.
+this apparent disregard for publicity suggests, in our
+opinion, that the benefactors of the dukes is so powerful
+and so tightly connected to the group that the dukes are
+able to operate with no apparent fear of repercussions
+on getting caught. we believe the only benefactor with
+the power to offer such comprehensive protection would
+be the government of the nation from which the group
+operates. we therefore believe the dukes to work either
+within or directly for a government, thus ruling out the
+possibility of a criminal gang or another third party.
+this leaves us with the final question: which country?
+we are unable to conclusively prove responsibility of
+any specific country for the dukes. all of the available
+evidence however does in our opinion suggest that the
+group operates on behalf of the russian federation.
+further, we are currently unaware of any evidence
+disproving this theory.
+kaspersky labs has previously noted the presence of
+russian-language artefacts in some of the duke malware
+samples [9]. we have also found a russian-language
+error message in many pinchduke samples: ! 4 ! this roughly translates as, there is an error in the module s name! the length of the data section
+name must be 4 bytes! additionally, kaspersky noted that based on the
+compilation timestamps, the authors of the duke malware
+appear to primarily work from monday to friday between
+the times of 6am and 4pm utc+0 [11]. this corresponds
+to working hours between 9am and 7pm in the utc+3
+time zone, also known as moscow standard time, which
+covers, among others, much of western russia, including
+moscow and st. petersburg. over 7 years of russian cyberespionage the dukesthe kaspersky labs analysis of the duke malware authors working times is supported by our own analysis, as well
+as that performed by fireeye [22]. this assertion of time
+zone is also supported by timestamps found in many
+geminiduke samples, which similarly suggest the group
+work in the moscow standard time timezone, as further
+detailed in the section on the technical analysis of
+geminiduke (page 17).
+finally, the known targets of the dukes - eastern european
+foreign ministries, western think tanks and governmental
+organizations, even russian-speaking drug dealers conform to publicly-known russian foreign policy and
+security policy interests. even though the dukes appear
+to have targeted governments all over the world, we are
+unaware of them ever targeting the russian government.
+while absence of evidence is not evidence of absence, it is
+an interesting detail to note.
+based on the presented evidence and analysis, we believe,
+with a high level of confidence, that the duke toolsets are
+the product of a single, large, well-resourced organization
+(which we identify as the dukes) that provides the russian

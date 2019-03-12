@@ -1,0 +1,254 @@
+
+a research team at the microsoft malware protection center (mmpc)
+proactively monitors the threat landscape for emerging threats. part of this job
+involves keeping tabs on targeted attack groups, which are often the first ones
+to introduce new exploits and techniques that are later used widely by other
+attackers. one such group, which microsoft has code-named strontium, is of
+particular interest because of its aggressive, persistent tactics and techniques,
+and its repeated use of new zero-day exploits to attack its targets. microsoft is
+sharing some of the information it has gathered on this prominent attack group
+in the hope that it will raise awareness of the group s activities and help
+organizations take immediate advantage of available mitigations that can
+significantly reduce the risks that they face from this and similar groups. adversary profile strontium has been active since at least 2007. whereas most modern
+untargeted malware is ultimately profit-oriented, strontium mainly seeks
+sensitive information. its primary institutional targets have included government
+bodies, diplomatic institutions, and military forces and installations in nato
+member states and certain eastern european countries. additional targets have
+included journalists, political advisors, and organizations associated with political
+activism in central asia. strontium is microsoft s code name for this group,
+following its internal practice of assigning chemical element names to activity
+groups; other researchers have used code names such as apt28,1 sednit,2
+sofacy,3 and fancy bear as labels for a group or groups that have displayed activity similar to the activity observed from strontium. the group s persistent
+use of spear phishing tactics and access to previously undiscovered zero-day
+exploits have made it a highly resilient threat. how strontium attacks a target strontium primarily uses two kinds of attack. it uses spear phishing phishing
+attempts targeted at specific individuals to perform reconnaissance and steal whereas most
+modern
+untargeted
+malware is
+ultimately profit-
+oriented,
+strontium
+mainly seeks
+sensitive
+information. login credentials to gather information about potential high-
+value targets associated with the institution under attack.
+following the reconnaissance phase, it uses a variety of
+methods to infect the computers of high-value targets with
+malware, often by exploiting previously unknown vulnerabilities
+in browser add-ons and other software. reconnaissance and target identification strontium typically begins its attack on an institution by
+identifying and profiling potential victims with connections to
+the institution. microsoft has seen indications that strontium
+relies on open-source intelligence (osint), such as email lists
+and information harvested from public forums or social
+networking sites, to identify targets for spear phishing. microsoft
+also believes that strontium relies on past successful phishing
+attacks to augment its dataset, by making use of any email communications it can identify between prior targets and the current target. strontium casts a wide net with its reconnaissance activities, seeking login
+credentials for email and other systems from a large number of people, which it
+then weeds through to assess its value. microsoft believes strontium used its
+spear phishing attacks to target several thousand individuals during the first half
+of 2015. although strontium isn t choosy with its targets, it is persistent. when
+strontium identifies an individual to target, the group will repeatedly conduct
+spear phishing attacks against it over a long duration, possibly a year or more,
+until one of the attempts succeeds. strontium s spear phishing modus operandi focuses on making the recipient
+concerned about unauthorized use of an account. a recent attack campaign
+involved sending messages with the subject line privacy alert purporting to
+originate from a well-known email service, informing the user that their account has been accessed from an unrecognized device in a different country. because
+the targeted individuals are often professionals who have access to sensitive
+information, this can be an effective way to entice users to click a change
+password link that actually leads to a webpage under the attacker s control. typically, the link will lead to a domain name that is similar to a legitimate
+domain name used by the service in an effort to fool the user into thinking the
+message is legitimate. figure 2 lists some examples. if the attack is successful, strontium uses the captured credentials to access
+the victim s email account to identify additional targets and for additional
+analysis and attacks. even if the recipient doesn t enter their login credentials microsoft security intelligence report, volume 19, january june 2015 5 into the malicious webpage, the act of clicking the link can provide strontium
+with valuable information. in addition to providing strontium with the
+recipient s ip address, clicking the link transmits a user-agent string to the web
+server that typically includes details about the recipient s browser and operating
+system versions, and sometimes includes information about the browser add-
+ons the recipient is using. this can provide strontium with insight into what
+software is deployed in the organization, and possibly help it plan future drive-
+by download activities. figure 3. javascript is used to collect information about the visitor s browser for drive-by download attacks attacking the target the ultimate goal of the reconnaissance phase is to compile a list of high-value
+individuals who have information or access that strontium wants. with this list
+at hand, the group moves to the next phase of operations: installing malware on the high-value targets computers, and thereby gaining access to the
+institution s network. strontium primarily uses email to deliver malware to targeted individuals,
+although some researchers have reported delivery through social networking
+channels as well. typical messages, such as the one shown in figure 4, are tied
+to current events: an upcoming conference, for example, or a real world news
+event in which the recipient might be interested. strontium s email senders
+are usually associated with well-known email providers, and use plausible-
+seeming names and titles that are designed to give the messages credibility.
+depending on the specific attack used, the message typically includes a link for additional information, which will launch a drive-by download or social
+engineering attack when clicked. other messages include malicious attachments
+instead of links, typically a document file containing an exploit. please be advised that the spanish army personnel and a large number of the
+spanish guardia civil officers
+currently deployed in the central african republic (car) as part of the
+european eufor rca mission will return
+to spain in early march as the mission draws to a close. little is known about how and what information strontium gathers to tailor its
+attacks to specific high-value individuals. as discussed earlier, the user-agent
+and potential fingerprinting information gathered from phishing victims may
+play a part in planning the individual attacks by giving the group insight into
+what software may be in widespread use within the institution. in general, microsoft security intelligence report, volume 19, january june 2015 7 strontium can take advantage of a variety of attacks that span general tactics
+and cover a wide range of technologies, including zero-day exploits. zero-day exploits exploits that target vulnerabilities for which the affected
+software vendor has not yet released a security update form a significant part
+of strontium s arsenal. it is not yet clear whether the group researches
+vulnerabilities and develops the exploits themselves, or purchases them on the
+black market. microsoft researchers have observed strontium moving swiftly to take zero-day exploits
+form a significant
+part of
+strontium s
+arsenal. advantage of newly disclosed vulnerabilities; notably, the group
+deployed a number of zero-day exploits disclosed in a july 2015
+leak of information from the security company hacking team. in
+other cases, strontium deployed exploits within days of a
+vendor releasing a security update that addressed the
+associated vulnerability, relying on the fact that not everyone
+installs security updates immediately after they are published. the exploits used by strontium include a wide range of products from multiple vendors, including adobe flash player, the oracle java
+runtime environment (jre), microsoft word and internet explorer, and some
+components of the windows kernel. figure 5 lists some of the exploits used by
+strontium in recent campaigns, including a number of zero-day exploits
+(shaded). all of the vulnerabilities listed in figure 5 were quickly addressed by
+security updates as part of the vendors rapid response processes. (see guidance on page 16 for information about how organizations can use up-to-
+date software to defend against targeted attacks.) figure 5. some of the exploits used by strontium in attack campaigns in 2014 and 2015 in addition to using zero-day exploits, strontium also makes use of exploits
+that target older vulnerabilities for which security updates have been available
+for a long time. microsoft believes that in some cases, the group learns during
+the reconnaissance phase that the targeted institution may be exposed to risks
+by running older or out-of-support platforms and software, by not testing and
+applying security updates quickly, or by not taking advantage of the latest
+mitigations and defense mechanisms shipped with more recent product
+versions and then acts accordingly. in a development observed in october 2015, the shellcode that executes after a
+successful memory corruption exploit displayed a number of characteristics that
+researchers had not observed from the malware previously: api resolution: ror 0x0d hashing, resolution made just before using the api payloads in memory remote payloads in addition to relying on exploits, strontium also uses social engineering to
+trick victims into installing malware. since march of 2015, for example, microsoft
+has observed strontium successfully compromising mozilla firefox users by
+convincing them to install a malicious browser add-on based on a publicly
+available module ( bootstrapped addon social engineering code execution )
+developed for the metasploit security testing framework. establishing control after gaining administrative privileges on the computer through an exploit or
+social engineering, strontium uses a dropper to deploy a backdoor
+component, coreshell, which eventually downloads other modules.
+(microsoft products sometimes detect the primary components as variants in
+the win32/foosace family, although the group has used other malware in the
+past.) the dll backdoor is installed via execution of rundll32 with an export
+named init or initw. the dropper deletes itself after execution, while the dll
+backdoor and any additional components are typically copied under the
+following folders: the dropper also writes the command and control (c&c) configuration
+information to the registry or an encrypted file. this strategy complicates
+forensic discovery of the attacker s infrastructure if the backdoor dll is
+discovered, because the configuration information must be located separately. 10 strontium: a profile of a persistent and motivated adversary strontium ensures that its backdoor will run every time the computer starts by
+creating autostart extensibility point (asep) registry entries and shortcuts, which
+differ depending on what the attacker has chosen for the victim and which
+backdoor variant is used. (see advanced malware cleaning techniques for the
+it professional on page 96 of microsoft security intelligence report, volume 11
+(january june 2011), available from the microsoft download center, for
+guidance on using sysinternals tools to monitor aseps for signs of malware
+infection.) the most common aseps used by strontium for its malware
+include the following: the strontium backdoor is composed of several pieces with different
+functions. the attacker can deploy a large set of tools to perform tasks including
+key logging, email address and file harvesting, information gathering about the
+local computer, and remote communication with c&c servers. strontium also
+uses a component that is designed to infect connected usb storage devices, so
+that information can be captured from air-gapped computers that are not on microsoft security intelligence report, volume 19, january june 2015 11 the network when a user transfers the usb device to the air-gapped computer
+and then back to the network again. figure 9. different types of strontium components and filenames used during recently observed incidents the strontium group also appears to be active on non-windows systems.
+microsoft has seen solid indicators that strontium used malicious backdoors
+to take control of proxy servers, mail servers, and other systems
+running the linux operating system. microsoft also observed the
+group using domains that seem to be customized for different
+operating systems, including and . although microsoft does not generally
+study attacks on non-windows systems, a multiplatform attack
+strategy is very much in line with what has been observed about
+strontium in general that they have capabilities that cover a the strontium
+group also appears
+to be active on
+non-windows
+systems. wide range of technologies and any incident response against this adversary
+should take both windows and non-windows computers into consideration. 12 strontium: a profile of a persistent and motivated adversary the strontium backdoor can communicate over different network protocols,
+including http, smtp, and pop3. typically, the backdoor tests its connectivity
+with a series of http post requests to legitimate websites, and then establishes
+communication with its c&c servers. the domains
+strontium uses for its c&c servers are typically designed
+to avoid attracting attention if administrators notice them
+when reviewing network traffic, such as and , suggestive of software update and
+malware reputation services. in recent incidents during 2015, microsoft observed
+strontium using a tunnel component designed to provide
+a remote encrypted interactive shell to a pre-configured ip address using proxy
+software on the victim s computer, such as the popular open-source squid
+proxy. the tunneling module, which is customized for different targets, is slightly
+larger than 1 mb and is statically linked with an openssl library. based on debug
+information left in some samples, some researchers have reported that the
+name of the component may be xaps objective or xtunnel. 4 the c&c
+server for this tunnel could be either hardcoded in the binary or passed as a
+command-line parameter at startup. the domains
+strontium uses
+are designed to
+avoid attracting
+attention. figure 10. "xaps" in the strontium tunnel module binary samples for this component include the items in the following table: 4 gastbeitrag, digital attack on german parliament: investigative report on the hack of the left party
+infrastructure in bundestag, , june 19, 2015, https:// /2015/digital-attack-on-
+german-parliament-investigative-report-on-the-hack-of-the-left-party-infrastructure-in-bundestag/. microsoft security intelligence report, volume 19, january june 2015 13 after gaining a foothold on one computer, strontium attempts to move
+laterally through the organization by compromising additional computers to
+gain access to more data and high-value targets. strontium uses publicly
+available tools such as winexe (a remote command-line execution tool) and
+mimikatz (a windows credential gathering tool) to move between computers via
+methods such as pass the hash (pth). in recent incidents microsoft observed
+strontium using a customized version of mimikatz that was recompiled with a
+privilege escalation exploit (cve-2015-1701, addressed by security bulletin
+ms15-051) and stored captured credential information in a dedicated file, . figure 12. a customized version of mimikatz storing passwords in the file strontium has displayed an advanced understanding of military and classified
+government networks, and uses a component that is designed to extract
+information from air-gapped computers. this module registers a device callback via registerdevicenotification5 and receives a notification every time a usb
+mass storage device is inserted into a compromised computer. depending on
+the variant deployed, the backdoor may simply harvest the entire contents of
+the usb device and save it on the local computer for later extraction, or it may
+also use autorun malware to transfer itself to the device so that it can attempt to
+compromise any other computers it is later inserted into, including air-gapped
+computers.6 some strontium victims have reported the presence of computers running
+kali linux on their networks. kali linux is a linux distribution that combines a
+variety of tools for the purpose of penetration testing and security assessment. it
+contains tools for password attacks, sniffing & spoofing, maintaining access,
+hardware hacking, reverse engineering, information gathering, vulnerability
+analysis, wireless attacks, web application attacks, stress testing, and forensic and 6 changes to the way the autorun feature works make it more difficult for this technique to succeed in recent
+versions of windows. see - for more information. microsoft security intelligence report, volume 19, january june 2015 15 exploitation analysis. the tool lists within each category are quite extensive and
+the distribution is actively maintained, so that strontium can always take
+advantage of the latest open-source tools. strontium does not deploy this
+linux distribution on an existing computer that belongs to the targeted
+institution; rather, it uses a vpn connection to join one of its own kali linux
+computers to the victim s network, possibly using the tunnel component that
+was previously deployed. this approach allows strontium to only ephemerally
+expose its toolset to the victim s network. guidance strontium is a very challenging adversary for a targeted institution to defend
+against: it possesses a broad range of technical exploitation capabilities,
+significant access to resources such as previously undiscovered zero-day
+exploits, and the determination to keep up an attack for months or years until it
+succeeds. nevertheless, there are steps an organization can take to significantly
+reduce its attack surface and decrease the probability of a successful
+compromise. strontium is a
+challenging
+adversary for a
+targeted institution
+to defend against. stay up-to-date on vendor security updates and deploy them quickly after they are released. all of the exploits discussed
+in this section have been addressed by security updates from
+microsoft and other vendors. strontium depends heavily on
+the presence of out-of-date software installations inside target
+institutions, so keeping software up-to-date denies the group
+the use of some of its most effective tools. take advantage of the mitigations built into your software. recent versions of windows and other software include critical mitigations that render many
+of strontium s exploits ineffective when deployed. figure 5 on page 8 lists
+a number of zero-day exploits that strontium has used in recent
+campaigns. most of these exploits will fail if tried on a computer running the
+latest versions of windows and office, even without security updates that
+address the vulnerabilities: the strontium exploits that target cve-2015-1641 and cve-2015- 2424, which affect microsoft word and have been addressed by security bulletins ms15-033 and ms15-070 respectively, depend on static hard- coded rop chains that fail when address space layout randomization 16 strontium: a profile of a persistent and motivated adversary player addressed by adobe security bulletin apsb15-06, fails in internet explorer running on an up-to-date installation of windows 8.1 or windows 10 because of control flow guard, a mitigation introduced in a windows 8.1 security update in november 2014. control flow guard mitigates virtual function hijacking attempts such as the one involving enforce segregation of privileges on user accounts and apply all possible safety measures to protect admin accounts from being compromised;
+strontium relies on pass-the-hash techniques and elevation of privileges
+to successfully move laterally across networks. see mitigating pass-the-
+hash (pth) attacks and other credential theft, version 2, available at the
+microsoft download center, for more information. in enterprise environments in which isolated computer networks (air-
+gapped) and internet connected networks co-exist, enforce strong policies
+to prevent sharing and usage of removable media across the air gap. conduct enterprise software security awareness training, and build awareness about malware infection prevention. strontium heavily relies
+on social engineering to entice individual targets into clicking links to
+malware. security training can raise awareness around this attack vector. institute multi-factor authentication. as strontium extensively uses
+credential-stealing spear phishing attacks, multi-factor authentication can
+be an effective tool to prevent unauthorized access even if credentials are
+stolen. microsoft security intelligence report, volume 19, january june 2015 19 prepare your network to be forensically ready, so that you can achieve
+containment and recovery if a compromise occurs. a forensically ready
+network that records authentications, password changes, and other
+significant network events can help to quickly identify affected systems. keep personnel and personal data private. strontium uses open-source
+intelligence (osint) to obtain its initial lists of victims, which might include
+things like name and email address, but can expand into employment
+information and other items of interest. these are all pieces of information
+strontium can use to devise a realistic attack. the more information
+strontium has available, the better they can target you. make sure your
+email is kept confidential and privacy settings on social media don t disclose
+sensitive information publicly. 20 strontium: a profile of a persistent and motivated adversary

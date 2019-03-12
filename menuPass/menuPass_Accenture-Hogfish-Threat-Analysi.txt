@@ -1,0 +1,100 @@
+threat
+analysis
+hogfish redleaves campaign
+hogfish (apt10) targets japan with redleaves
+implants in new battle idefense analysts have identified recent campaigns
+attributed to apt10, also known as hogfish and stone
+panda. this report provides a technical overview of the
+bespoke redleaves implants leveraged by the actor in their new battle campaign.
+idefense is providing information about this reported campaign to the general
+idefense customer base so that customers are aware of the modus operandi of a
+highly active threat group that is targeting institutions for espionage purposes,
+especially in japan.
+more specifically, this threat analysis is intended for security operations center (soc)
+analysts and engineers. intelligence analysts may also want to read this report.
+additionally, management and executive leadership may want to use this information.
+soc analysts and engineers can use this threat analysis detailed information
+pertaining to the workings of a malware family and indicators of compromise (iocs) to
+contain or mitigate the discussed threat through monitoring or blocking. soc analysts
+can use the information provided in the analysis and mitigation sections of this ia to
+conduct hunting activities on systems that may have already been compromised.
+analysts and security engineers can use the iocs by adding them to hunting lists on
+endpoint detection and response (edr) solutions as well as network- and host-based
+blacklists to detect and deny malware implantation and command-and-control (c2)
+communication. intelligence analysts may want to use the information provided in this
+ia to better inform their own analyses. the provided information can also help inform
+ongoing intelligence analyses and forensic investigations, particularly for compromise
+discovery, damage assessment, and attribution.
+management and executive leadership may use this information to assess the risks
+associated with the threat described herein to make operational and policy decisions
+accordingly.
+knowledge of the tactics, techniques, and procedures (ttps) used by the operators
+behind this campaign helps to better inform detection and response to attacks by this
+threat group.
+hogfish (apt10) targets japan with
+redleaves implants in new battle
+redleaves analysis
+the sample that idefense analyzed for this report is a word document with japanese
+filename,, which translates to english as about the 2018 fiscal year (heisei 30) tax system . this document has the after the document is opened, the victim is presented with a message from office 365 to
+asking the victim to enable content (see exhibit 1). on the next page, however,
+idefense identified what appears to be a base64-encoded string.
+exhibit 1: dropper document
+the macro shown in exhibit 2 will then perform the following sequence of actions:
+drop the embedded base64-encoded content into a new file, decode this new file by leveraging certutil , a legitimate windows program; the
+base64 encoded data decodes to a microsoft corp. cabinet file, which is saved as use expand , again a legitimate windows program, to expand or decompress
+file contents ( and ptl.aym) to the %temp% folder, and
+consequently delete the earlier created files
+exhibit 2: vba macro
+as mentioned earlier, this malware creates two new binaries: and
+ptl.aym. is a legitimate and digitally signed binary created by estsoft
+corp. and pertains to alyac, korean anti-virus software. ptl.aym is in fact another binary
+file; specifically, it is a dll file with the following properties:
+the compiled time stamp, assuming it is not altered, suggests the actor developed the
+implant 2 days before launching the described campaign.
+this dll is a clone of a legitimate dll, also by alyac, and corresponds to the anti-virus
+software s utility module. however, rather than the original dll, it only has two imports
+as the authors have implemented a simple, single-byte xor obfuscation (using key 0x40)
+to obfuscate other imports and strings. for example, xor decoding the binary reveals
+the following two interesting strings:
+as opposed to the original dll by alyac, which typically has 15 exports, the analyzed
+three exported functions clearly stood out: initialize_ijdejk, nbhghuxigf, and
+rgbkikbejobswsjy. these are, however, all dummy exports to throw off analysts or
+perhaps even taunt researchers, and more specifically perhaps to taunt the japan
+computer emergency response team coordination center (jpcert/cc).
+for example, when executing the dll file by calling the nbhghuxigf export function, the
+victim would be prompted with a windows message box with "jpcert-1 , as can be shown
+in exhibit 3 and 4.
+exhibit 3: windows message box creation
+exhibit 4: windows message box with the message jpcert-1 all other functions are either empty or also filled with calls to messageboxa(), which is
+unusual for dll loading implants. however, one export function, getfolderpathnew2, is
+responsible for loading the redleaves dll implant by performing process hollowing in , microsoft corp. s default browser. the initial process, , is
+unable to work correctly and will therefore exit.
+for persistence, redleaves will add a shortcut .lnk file in the user s startup folder,
+which points to ` , as shown in exhibit 5.
+exhibit 5: in startup folder
+once running, the redleaves implant will then attempt to communicate with the
+following c2 domains, using http, but connects to the c2 server on port 443:
+firefoxcomt.arkouowi[.]com the configuration settings for the redleaves implant can be extracted from memory and
+contains the following information:
+campaign id: 2018-1-8-newbattle the string 2018-1-8-newbattle refers to the campaign id set up by the actor and may
+allude the actor starting a new battle (campaigns). the malware will create a unique
+version of the aforementioned mutex on the victim machine in order to avoid running the
+implant twice.
+as mentioned before, redleaves will attempt to communicate over http, using post
+requests with a hardcoded user-agent:
+network traffic is encrypted with rc4 using the key babybear .
+the redleaves implant has at least the following abilities:
+take screenshots gather browser usernames and passwords gather extended system information send, receive, and execute commands from the c2 server
+further analysis also reveals that the redleaves implant described corresponds to the
+actor s lavender version of the malware family.
+for example, the strings lavenderx and lavenderengin (which are dynamically
+built on the stack) are used to determine the implant s version.
+other redleaves implants
+idefense analysts also identified the redleaves samples with the following attributes:
+internal filename: c2 infrastructure
+c2 infrastructure enumeration reveals overlap between the three samples that idefense
+analyzed, as exhibit 8 illustrates.
+exhibit 8: maltego graph showing campaigns overlap
+mitigation
+to effectively defend against the threats described in this report, idefense recommends
+blocking access to the following c2 domains and ip addresses:

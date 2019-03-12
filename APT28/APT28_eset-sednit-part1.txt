@@ -1,0 +1,484 @@
+
+executive summary
+introduction the sednit group
+the first part of the trilogy
+attribution
+publication strategy who are the targets? how did we find the target list? context
+the operators mistake what is in the list?
+what kind of targets?
+conclusion attack methods email attachments
+sedkit: exploit kit for targeted attacks attracting visitors
+fingerprinting
+delivering exploits conclusion and open questions seduploader: target confirmation identikit
+timeline
+analysis dropper workflow
+payload workflow conclusion and open questions closing remarks
+indicators of compromise email attachments
+sedkit
+seduploader
+references
+executive summary
+the sednit group also known as apt28, fancy bear and sofacy is a group of attackers
+operating since 2004 if not earlier and whose main objective is to steal confidential information
+from specific targets.
+this is the first part of our whitepaper en route with sednit , which covers the sednit s group
+activities since 2014. here, we focus on the methods used by the group to attack its targets,
+and on who these targets are.
+the key points described in this first installment are the following: during the sednit phishing campaigns more than 1,000 high-profile individuals involved in eastern european politics were attacked, including some ukrainian leaders, nato officials,
+and russian political dissidents the sednit operators launched their phishing attacks on weekdays, and at times corresponding to office hours in the time zone utc+3 the sednit group developed its own exploit kit a first for an espionage group deploying a surprisingly high number of 0-day exploits the sednit group developed particular first-stage malware in order to bypass network security measures implemented by compromised organizations for any inquiries related to this whitepaper, contact us at: threatintel@ ntroduction the sednit group
+the sednit group variously also known as apt28, fancy bear, sofacy, pawn storm, strontium
+and tsar team is a group of attackers operating since 2004 if not earlier, whose main objective
+is to steal confidential information from specific targets. over the past two years, this group s activity
+has increased significantly, with numerous attacks against government departments and embassies
+all over the world.
+among their most notable presumed targets are the american democratic national committee [1],
+the german parliament [2] and the french television network tv5monde [3]. moreover, the sednit
+group has a special interest in eastern europe, where it regularly targets individuals and organizations
+involved in geopolitics.
+one of the striking characteristics of the sednit group is its ability to come up with brand-new 0-day [4]
+vulnerabilities regularly. in 2015, the group exploited no fewer than six 0-day vulnerabilities, as shown
+in figure 1.
+timeline of 0-day vulnerabilities exploited by the sednit group in 2015 this high number of 0-day exploits suggests significant resources available to the sednit group, either
+because the group members have the skills and time to find and weaponize these vulnerabilities,
+or because they have the budget to purchase the exploits.
+also, over the years the sednit group has developed a large software ecosystem to perform
+its espionage activities. the diversity of this ecosystem is quite remarkable; it includes dozens
+of custom programs, with many of them being technically advanced, like the xagent and sedreco
+modular backdoors (described in the second part of this whitepaper), or the downdelph bootkit
+and rootkit (described in the third part of this whitepaper).
+we present the results of eset s two-year pursuit of the sednit group, during which we uncovered
+and analyzed many of their operations. we split our publication into three independent parts: part 1: approaching the target describes the kinds of targets the sednit group is after,
+and the methods used to attack them. it also contains a detailed analysis of the group s
+most-used reconnaissance malware. part 2: observing the comings and goings describes the espionage toolkit deployed
+on some target computers, plus a custom network tool used to pivot within
+the compromised organizations. part 3: a mysterious downloader describes a surprising operation run by the sednit group,
+during which a lightweight delphi downloader was deployed with advanced persistence
+methods, including both a bootkit and a rootkit. each of these parts comes with the related indicators of compromise. he first part of the trilogy
+figure 2 shows the main components that the sednit group has used over the last two years,
+with their interrelationships. it should not be considered as a complete representation of their arsenal,
+which also includes numerous small custom tools. nd how they are related we divide sednit s software into three categories: the first-stage software serves for reconnaissance
+of a newly compromised host, then comes the second-stage software intended to spy on machines
+deemed interesting, while the pivot software finally allows the operators to reach other computers.
+in this first part, we focus on sednit s attack methods. indeed, having reliable methods
+to compromise the computers of the intended targets with spying malware is one of the most
+important parts of a cyber espionage operation.
+the components on which we focus in this first part are outlined in figure 2, which includes
+the attack methods employed and the first-stage malware we call seduploader, composed
+of a dropper and its associated payload. all the components shown in figure 2 are described in this whitepaper,
+with the exception of usbstealer, a tool to exfiltrate data from air-gapped
+machines that we have already described at welivesecurity [5]. recent
+versions have been documented by kaspersky labs [6] as well. attribution
+one might expect this reference whitepaper to add new information about attribution. a lot has
+been said to link the sednit group to some russian entities [7], and we do not intend to add anything
+to this discussion.
+performing attribution in a serious, scientific manner is a hard problem that is out of scope
+of eset s mission. as security researchers, what we call the sednit group is merely a set of software
+and the related network infrastructure, which we can hardly correlate with any specific organization.
+nevertheless, our intensive investigation of the sednit group has allowed us to collect numerous
+indicators of the language spoken by its developers and operators, as well as their areas of interest,
+as we will explain in this whitepaper. publication strategy
+before entering the core content of this whitepaper, we would like to discuss our publication strategy.
+indeed, as security researchers, two questions we always find difficult to answer when we write
+about an espionage group are when to publish? , and how to make our publication useful to those tasked with
+defending against such attacks? .
+there were several detailed reports on the sednit group published in 2014, like the operation
+pawn storm report from trend micro [8] and the apt28 report from fireeye [9]. but since then
+the public information regarding this group mainly came in the form of blog posts describing specific
+components or attacks. in other words, no public attempts have been made to present the big
+picture on the sednit group since 2014.
+meanwhile, the sednit group s activity significantly increased, and its arsenal differs from
+those described in previous whitepapers.
+therefore, our intention here is to provide a detailed picture of the sednit group s activities over
+the past two years. of course, we have only partial visibility into those activities, but we believe
+that we possess enough information to draw a representative picture, which should in particular
+help defenders to handle sednit compromises.
+we tried to follow a few principles in order to make our whitepaper useful to the various types
+of readers: keep it readable: while we provide detailed technical descriptions, we have tried to make them readable, without sacrificing precision. this is the reason we decided to split our whitepaper
+into three independent parts, in order to make such a large amount of information easily
+digestible. we also have refrained from mixing indicators of compromise with the text. help the defenders: we provide indicators of compromise (ioc) to help detect current sednit infections, and we group them in the ioc section and on eset s github account [10]. hence,
+the reader interested only in these ioc can act directly, and find more context
+in the whitepaper afterwards. reference previous work: a high profile group such as sednit is tracked by numerous entities. as with any research work, our investigation stands on the shoulders of the previous
+publications. we have referenced them appropriately, to the best of our knowledge. document also what we do not understand: we still have numerous open questions regarding sednit, and we highlight them in our text. we hope this will encourage fellow
+malware researchers to help complete the puzzle. we did our best to follow these principles, but there may be cases where we missed our aim.
+we encourage readers to provide feedback at threatintel@ , and we will update
+the whitepaper accordingly.
+who are the targets?
+in order to set the scene for the sednit group, we will first take a look at who their targets are.
+indeed, knowing the targets of such a group allows us to get some idea of their motivations,
+their level of sophistication, and the interests they serve.
+in a number of publicized cases high-profile entities have supposedly been attacked by the sednit
+group, such as:
+such high-profile cases allow us to draw an initial conclusion: the sednit group s objectives
+are connected to international geopolitics, and the group is definitely not afraid of targeting
+major entities. to continue this reasoning in more depth, we will describe in the next sections
+a list of targets for a phishing operation run by the sednit group in 2015. how did we find the target list?
+context
+one of the common attack methods used by the sednit group see figure 2 is spearphishing
+(sending targeted phishing emails) to steal webmail account credentials. to do so, the group
+creates fake login pages for various webmail services, and lures the targets into visiting the fake
+page and entering their credentials. this attack method was initially documented by trend micro [8]
+and pwc [11]. for example, figure 3 shows a sednit phishing email targeting gmail users. example of phishing email sent to attempt to steal gmail credentials.
+the hyperlink actually points to a domain used for phishing the link in this email points in reality to a sednit domain name. if potential victims click on it,
+they will be redirected to a fake gmail login panel, as shown in figure 4. hence, they will get the
+impression that they have to log in again in order to access the document mentioned in the email.
+those who fall prey by entering their credentials will be redirected to the legitimate google drive
+webpage, while their credentials will be collected by sednit. fake gmail login panel. target s name and email address have been redacted an important point here is that the fake login panel displays the targets names and email addresses,
+to reinforce the illusion they have been logged out from their real gmail accounts. the fake webmail login panels deployed by sednit are usually just a copy
+of the real login panel source. the operators mistake
+during one of these phishing campaigns against webmail users, the operators used bitly [12] to shorten
+the urls contained in the emails. to do so, they created a few accounts on bitly, and used each
+of them to shorten multiple phishing urls. luckily enough for us, one of those bitly accounts was
+set as public , which allows everyone to see the list of urls that were shortened by this account,
+with the exact time at which they were shortened. the public profile feature has been removed from bitly [13], and hence the list
+is no longer available. interestingly, each url that was shortened contained the email address and the name of the target.
+having this information in the url allowed the fake login panel to display them easily, as shown
+in figure 4, rather than requiring an instance of the login panel for each target. an example
+of a url that was shortened is shown below: here, the continue parameter contains parepkyiv@ encoded in base64, while
+the df parameter contains pakistan+embassy+kyiv. therefore, it is possible to identify the target
+precisely from a url that was shortened, in this case the pakistan embassy in kiev. what is in the list?
+the list contains around 4,400 urls that were shortened between 16th of march 2015 and 14th
+of september 2015. assuming that the time at which a url was shortened corresponds roughly
+to the moment when the corresponding phishing email was sent, it allows us to create a relatively
+accurate timeline of the events related to these phishing attacks. first, the number of urls that were shortened per day is showed in figure 5 for the first
+(and most active) two months of the account s activity.
+weekends there were regular peaks in the number of urls that were shortened, usually monday or friday,
+probably corresponding to the launch of new phishing campaigns. also, there is almost no activity
+during the weekends indicating that the operators are likely to work only on weekdays.
+secondly, the same target may appear in several urls, probably corresponding to repeated phishing
+attempts. the list contains 1,888 unique target email addresses, most of them being gmail addresses.
+figure 6 shows the number of times the targets were attacked. more than half of the targets were attacked only once, and in most of these cases the corresponding
+shortened url was clicked at least once, according to the bitly statistics. on the other hand,
+the others targets have been attacked several times during the six months of data, with a maximum
+of seven attempts against nine of them. most of the corresponding shortened urls were not visited.
+in other words, the targets are regularly attacked until an attempt to phish succeeds, and for more
+than half of the targets one attempt was enough. the number of clicks on a bitly-shortened url is publicly available,
+by appending a + to the shortened url, with the countries from which those
+clicks originated. nevertheless, one can not know whether
+a shortened url was visited by the intended target, or someone else. finally, since we know the exact time when a url was shortened, we can display the hour
+of the day when it happened, as shown in figure 7. number of urls that were shortened per hour of the day interestingly, the distribution of the hours matches the working hours from 9am to 5pm in the
+utc+3 time zone, with sometimes some activity in the evening. this may indicate that the operators
+work from this time zone [14]. what kind of targets?
+as the list contains mostly gmail addresses, the majority of the targeted emails belong to individuals.
+nevertheless, the following organizations also have gmail addresses that were targeted: embassies belonging to algeria, brazil, colombia, djibouti, india, iraq, north korea, kyrgyzstan, lebanon, myanmar, pakistan, south africa, turkmenistan, united arab emirates,
+uzbekistan and zambia ministries of defense in argentina, bangladesh, south korea, turkey and ukraine regarding the individuals targeted, here are a few of their positions that are typical of the list: political leaders and heads of police of ukraine members of nato institutions members of the people s freedom party, a russian liberal democratic political party [15] russian political dissidents shaltay boltai , an anonymous russian group known to release private emails of russian politicians [16] journalists located in eastern europe academics visiting russian universities chechen organizations overall, most of the targets we could identify are related by the fact that they all share the same
+standpoint in the current political situation in eastern europe.
+while this list only provides a partial view of the sednit group s targets, another list was analyzed
+by trend micro, with similar findings [17]. conclusion
+the sednit group targets a lot of individuals and organizations, with a particular focus on eastern
+europe, as shown by our analysis of one of their phishing targets lists.
+moreover, the sednit operators launched their phishing attacks on weekdays, and at times
+corresponding to office hours in the time zone utc+3. attack methods
+in this section, we will describe the two main attack methods used by the sednit group to deploy
+its malicious software. we already discussed the third attack method fake webmail login
+panels in the previous section.
+the first method is to lure the target into opening an email attachment, while the second one relies
+on the target visiting a website containing a custom exploit kit. in both cases, the lure itself is usually
+a phishing email. email attachments
+as with many other cyber espionage actors, sending targeted phishing emails with malicious
+attachments is one of the main attack vectors of the sednit group. sometimes those attachments
+are simply executables, and no exploits are used. it is, for example, the case for the most recent
+deployment of downdelph, a pretty surprising operation that we will describe in the third part
+of this whitepaper.
+on the other hand, the sednit group also uses exploits, and in some cases even 0-day exploits,
+with its email attachments. the list of vulnerabilities exploited with this attack method is described
+in table 1, to the best of our knowledge. the malware usually dropped by those exploits for the last two years has been seduploader s
+payload, as shown in figure 2. to illustrate this (well known) attack method, we are now going to briefly describe one particular
+recent phishing campaign with email attachments from the sednit group. the email in question was
+sent to targets located in ukraine in may 2016, and is pictured in figure 8. targeted phishing email sent in may 2016 the subject of the email can be translated to the aggravation of russian-eu relations , while
+the body roughly translates to: good afternoon! attached you can find the document on russia and the european union
+aggravation of relations. yours faithfully, vasyl stasiuk.
+ukrainian academic union,
+02140, ukraine, kiev, prospect bazhana mykoly, 26, office 334 the address of the ukrainian academic union is the correct one [28], while the sender email address
+was created by the attackers using a freemail provider.
+the rtf attachment exploits the cve-2015-1641 vulnerability [24] to drop two dlls on the system,
+as described by prevenity [25]. the first dll loads each time a microsoft office application is executed,
+by registering it under a windows registry key named office test (see ioc section for details).
+this dll in turn loads the second one, which is seduploader s payload.
+interestingly, the decoy document was apparently wrongly embedded when building the exploit,
+and thus fails to open. from the attachment name, we can speculate that it was supposed
+to be an rtf version of a news article entitled putin is being pushed to abandon his conciliatory
+approach to the west and prepare for war [29].
+this particular case is one among a series of attacks using the cve-2015-1641 vulnerability launched
+from april 2016 by the sednit group [30] (more details in the ioc section). sedkit: exploit kit for targeted attacks
+the second main attack method of the sednit group is an exploit kit, which we named sedkit.
+it was discovered by eset researchers in september 2014 [23]. at this time, several websites belonging
+to a large financial institution in poland were modified to automatically redirect the visitors
+to the exploit kit also known as a watering hole attack [31].
+the workflow of the sedkit exploit kit has stayed the same since its first appearance. it is shown
+in figure 9, and described below. visitors not selected attracting visitors
+as previously explained, the targets were initially attracted to visit sedkit via a watering hole
+attacks. but since then, the usual way to lure the targets has been to send targeted phishing
+emails containing a url pointing to sedkit. figure 10 shows an example of such a targeted phishing
+email from march 2016. this email supposedly comes from stratfor [32], an intelligence company providing regular reports
+on geopolitics. while the email signature and sender address are correct, the domain name
+in the url is not being the legitimate stratfor domain name. also, the uri path
+closely resembles the path of an existing article on the stratfor website (/weekly/ruthless-and-
+sober-syria), the only difference being the insertion of an id number (51586), which likely identifies
+the target. the attentive reader may have noticed that the email body text contains a
+typing mistake: sratfor rather than stratfor , indicating that this text was
+not copied but manually written by the attackers. such typing mistakes are
+common in sednit phishing emails. using legitimate news articles as lures, with urls mimicking the real ones, is the usual way
+of attracting visitors to sedkit since 2015. table 2 shows some recent examples of news articles
+mimicked by sedkit urls. examples of sedkit lure news articles
+(see ioc section for other sedkit domain names) sedkit domain name legitimate domain name legitimate news article title "west s military advantage is being eroded,
+report warns" worldpoliticsreviews.
+com "despite isis attacks, north korea remains
+the `varsity` of global threats"
+these news articles not only serve as phishing clickbait, but also as a way to hide the exploitation
+attempt. indeed, the visitor will be redirected to the real news article after having been exploited.
+visitors not selected for exploitation, as explained below, will also be redirected. thus, the target
+will be left under the impression that the phishing email was actually legitimate. in order to be effective, the lure needs to be related to the target s interests.
+while in most cases we analyzed the lure was a news article about geopolitics,
+we also found a few cases using websites of legitimate russian companies
+as lures. fingerprinting
+once the target clicks on the phishing url, the browser is redirected to the sedkit landing page.
+the purpose of this page is to build a report of the visitor s machine. to do so, it contains over
+200 lines of javascript code (once beautified) that collect various data.
+the landing page code has stayed the same since march 2015, and an annotated, beautified extract
+is shown below. the javascript comments are from the developers, while the variable string_of_json
+is the actual report built as a json object. the report is then sent within an http post request to a uri hardcoded in the landing page code.
+an example of such a uri is shown below: this hardcoded uri path is different each time the landing page is visited, and only works for a limited
+amount of time. this probably serves to prevent security researchers from sending specially crafted
+reports directly to sedkit servers, in order to collect the exploits. the only way (we know of) to visit
+the exploit kit is to pass through a landing page url first, which can be difficult due to the limited
+distribution of the phishing emails containing those urls. again, these landing page urls are active
+for a short time.
+then, depending on the report, the visitor may receive a suitable exploit, or be redirected
+to the legitimate website the email lure was based on, as shown in figure 9. given the amount
+of information contained in the report, the operators can very precisely select the visitors to exploit,
+and those to filter out. the exact logic behind this selection is unknown to us, and remains one
+of the major open questions regarding sedkit. delivering exploits
+landing page visitors matching the sedkit operators criteria then receive an exploit suitable
+for their machines. since sedkit s first appearance, numerous exploits have been added. table 3
+lists the exploited vulnerabilities we have observed during our tracking of sedkit. the end goal of these exploits is to download and execute sednit malware, usually seduploader s
+dropper.
+most of these exploits and their use by sednit have already been documented, as mentioned
+in the reference column of table 3. nevertheless, we will describe the specific case of the
+cve-2014-6332 vulnerability exploitation, as it is a good example of sednit s abilities,
+and to the best of our knowledge has not been documented previously.
+the vulnerability cve-2014-6332 was discovered in may 2014 by an ibm x-force security researcher [51],
+and affected internet explorer versions 3 through 11. roughly summarized, the vulnerability
+is an integer overflow in the internet explorer vbscript engine that allowed arbitrary read/write
+in memory. soon after the disclosure, a proof-of-concept was released by a chinese security researcher [52].
+the proof-of-concept used the vulnerability to disable internet explorer s safemode , so that arbitrary
+vbscript code could be executed. numerous miscreants then integrated revamped versions
+of this proof-of-concept into their toolsets, and the sednit group was no exception. indeed,
+in october 2015 a simple revamped version of the original proof-of-concept was added to sedkit.
+but the sednit group went one step further in february 2016 by deploying a different exploit
+for this vulnerability. this time the purpose of the exploit was not to disable safemode , but rather
+to write a return-oriented programming (rop) shellcode in memory, and to execute it. to do so,
+the exploit developers implemented numerous helper functions in vbscript, resulting in over 400 lines
+of code. for example, the beautified code in charge of building the rop shellcode is shown below:
+we did not find any re-use of this code by other groups of attackers, leading us to believe
+it was specifically developed by, or for, the sednit group. parts of this code seem to have been inspired by a presentation at blackhat usa 2014, where
+a security researcher named yang yu published some javascript code related to internet explorer
+exploitation [53]. as an example of that, figure 12 shows one particular javascript function published
+on one of his slides. slide extracted from a blackhat usa 2014 presentation and a very similar vbscript function in the sedkit exploit code is shown below: in other words, the exploit developers re-implemented some of the ideas of the blackhat
+presentation in vbscript, and implemented the rop part themselves.
+we believe this is a good example of the technical abilities available to the sednit group.
+the developers were able to understand a complex exploit well enough to make their own version.
+we can speculate that the purpose of that was to bypass some security products. it also shows
+that these developers are following technical security publications. conclusion and open questions
+from personalized phishing emails to exploit kits, the sednit group invested a lot of effort into
+its attack methods over the last two years. in particular, the number of 0-day exploits available
+to the group is surprisingly high, showing a significant resources at their disposal.
+one major open question regarding the sednit attack methods concerns the crawling of the sedkit
+exploit kit. indeed, the exact logic of the operators in accepting a visitor as a target remains unknown
+to us, and probably depends on their objectives at that moment. given the fact that the exploit kit
+has been the home of several 0-day exploits in the past, the ability to receive an exploit from it would
+surely be interesting from a research perspective. seduploader: target confirmation identikit
+seduploader serves as reconnaissance malware. it is made
+up of two distinct components: a dropper and the per-
+sistent payload installed by this dropper. alternative names
+jhuhugit, jkeyskw usage
+seduploader s payload is a downloader used by sednit's operators
+as reconnaissance malware. if the victim is considered interesting,
+seduploader is instructed to download a spying backdoor, like
+sedreco or xagent. known period of activity
+march 2015 to august 2016 (the time of this writing). probably
+still in use. known deployment methods downloaded by sedkit dropped by microsoft office exploits attached to targeted phishing emails distinguishing characteristics the seduploader payload borrows parts of its code from carberp an infamous malware family whose partial source
+code was made public as documented by f-secure in
+september 2015 [54] seduploader has been compiled for windows and os x (at least) older seduploader dropper samples contain an unusual
+anti-analysis trick based on large temporary files (named
+jhuhugit.temp, or jkeyskw.temp
+depending on the version) the seduploader payload implements three different methods to contact its c&c server oldest known
+seduploader
+sample seduploader os x
+version deployed with
+sedkit using an exploit
+against mackeeper
+[56] seduploader deployed with targeted
+phishing emails using an exploit for
+the microsoft office vulnerability
+ost recently known
+seduploader sample seduploader deployed
+with targeted phishing
+emails using a (cid:3)-day
+exploit for the microsoft
+office vulnerability one week after the hacking
+team leak, seduploader s
+dropper integrates a hacking
+team exploit for lpe vulnera- seduploader major events the dates posited in the timeline mainly rely on the compilation timestamps of the seduploader
+payloads. we believe that the payloads timestamps were not tampered with, because they match
+our telemetry data, as opposed to the droppers timestamps. the dates in the timeline may be later
+than the actual events though, as we do not have all seduploader samples but enough are present
+to give a good approximation. analysis
+we define seduploader as a two-binary component, comprising a dropper and the payload usually
+contained in this dropper. while those two have sometimes been used independently of each other,
+as shown in figure 2, they usually are deployed together and remain the most-used first-stage
+malware of the sednit group since the beginning of 2015.
+the payload component of seduploader has been compiled for windows and os x, but our analysis
+is based solely on the windows version. nevertheless, the os x version is very similar, and has been
+described by bae systems in june 2015 [56]. dropper workflow
+the workflow of seduploader s dropper component can be summarized by the four steps presented
+in figure 14. while pretty straightforward, it has some interesting details that we will describe
+in this section.
+anti-analysis trick
+the dropper starts with an unusual anti-analysis technique, shown as pseudocode in figure 15. this code allocates a small memory buffer b and sets its tenth byte to the value 42. it then writes
+and reads one million times into a newly created temporary file1. after that operation, it checks
+whether the tenth byte of b still contains the value 42. if this is not the case, seduploader terminates
+its execution.
+this code primarily serves to delay execution with i/o intensive operations, in order to exhaust
+security products analysis limits. it may also detect security software emulators that wrongly
+implement memory management, and hence are unable to maintain the correct state of b due
+to the number of operations performed. this technique was present in another dropper employed by the sednit
+group in 2014, which we have not seen since then. this trick disappeared
+from seduploader in december 2015 probably because it was easy to spot
+and could be used to detect the malware. it was then replaced by a more
+common anti-analysis technique based on time measurement. additionally, important strings in seduploader s dropper are encrypted with a simple xor-based
+algorithm, and the addresses of important windows api functions are resolved dynamically. the temporary file can be named jhuhugit.temp, or jkeyskw.temp depending
+on the seduploader version payload dropping
+the core logic of seduploader s dropper is implemented in a c++ class named uploader
+by its developers. this class has evolved several times since seduploader s first appearance,
+and its last known version contains the eight methods described in table 4. decompresses a given memory area using windows api function
+rtldecompressbuffer [59]
+writes the content of a given memory area into a file on disk executes a given file, which can be either a windows library, whose export named
+init will then be called, or an executable. if the current process runs at system
+integrity level [60], it ensures that the child process runs at the same integrity
+level. using those c++ methods, the dropper decrypts and decompresses its embedded payload,
+which consists of one or more files. it then drops the files on disk and executes them. finally, before
+removing itself from the machine, the dropper makes the payload persistent, as we will describe
+in the following sections. we know the developers named this class uploader because they left
+run-time type information (rtti) [61] in some seduploader samples.
+additionally, the following program database (pdb) [62] path overlooked
+by the developers in one sample, indicates that the binary itself is named
+uploader: the significance of other parts of this pdb path remain obscure, except
+for the redmine part, which may refer to a project management web
+application [79]. privilege escalation
+before making the payload persistent on the system, seduploader may execute local privilege
+escalation exploits. since seduploader s first appearance, the two vulnerabilities described
+in table 5 have been exploited, and both were unpatched when first used by the sednit group. local privilege escalation vulnerabilities exploited by seduploader payload persistence
+since its inception, seduploader s dropper has employed a variety of persistence methods
+for its payload, some of them only when running with system privileges (thanks to the previously
+mentioned exploits). here are the most common persistence methods we observed (details are given
+in the ioc section): register the payload under the run registry key [66]. while this is essentially a classic method, seduploader employs a uncommon trick to write into the registry by executing javascript
+code within the process. this technique was first seen in the win32/poweliks
+malware in mid-2014 [67] , and has since been documented in detail [68]. register the payload as a windows service that will run at startup. this method is used only when running with system privileges. register the payload as a scheduled task that will run each time the current user logs in. this method is used only when running with system privileges. replace a legitimate windows com object [69] with the payload, so that it will be loaded in any process using that com object. the exact hijacked object is a class named
+mmdeviceenumerator [70]. this technique has also been seen in the malware win32/
+compfun [71]. register the payload as a shell icon overlay handler com object [72], so that the payload will
+be loaded each time a user logs in. the chosen clsid of this object ({3543619c-d563-43f7-
+95ea-4da7e1cc396a}) is already legitimately used in an internet explorer plug-in open-
+source project named bhoincpp [73], probably to confuse defenders. register a windows shell script under the registry key hkcu\environment\ userinitmprlogonscript, which will run the payload at startup. this is also a documented
+technique [74], yet not well known. this method is usually the preferred one when
+seduploader does not run with system privileges. the diversity of these persistence methods shows the intensity of the development effort behind
+seduploader, and that its developers have a good grasp of the current literature, as several
+of these techniques seem to have been inspired by other malware. payload workflow
+the workflow of the seduploader payload is presented in figure 16. this binary can be roughly
+described as a first-stage reconnaissance tool, probably used to distinguish security researchers
+performing analysis from real targets. in this section we describe the workflow of this payload
+as found in the most recent version.
+initialization
+network link establishment
+the first operation of the seduploader payload is to find a reliable way to reach its c&c server
+on the internet, which may be difficult depending on the network setup of the compromised
+organization. to test whether the compromised machine is connected to the internet without
+attracting attention, seduploader tries to reach google servers over http, usually or .
+this part of the seduploader code changed several times over the last year and currently contains
+three possible means of communication, pictured in figure 17 and described below. main loopinitialization 1. direct connection
+first, seduploader simply sends an http post request to google with a pseudo-randomly-generated
+uri path. if the http status code in the answer is either 200 (ok) or 404 (not found) the most
+likely answer because there is little chance the pseudo-random uri path exists on google
+websites the network connection is assumed to be working. in this event, seduploader
+initialization continues to the next step.
+on the other hand, if seduploader receives a different http status code, it means the connection
+has been blocked (and hence any later attempt to reach the c&c server will also likely be blocked).
+in this case, seduploader tries an alternative method to establish the network link, as described
+in the next two sections. before testing the connection, seduploader checks if the computer has
+a working network interface. to do so, it searches for an interface with
+an ip address different from and . this second
+ip address belongs to ipv4 link-local network /16, from which
+an address is randomly chosen by a computer failing to receive an ip address
+via dhcp protocol [75]. therefore, it makes very little sense to check
+for a particular ip address in this network, as all addresses have the same
+probability of being chosen. 2. via proxy
+some organizations force their computers to pass through an http proxy to access the internet,
+which may explain why the previous direct connection did not work. to use the proxy, seduploader
+needs to retrieve its ip address and tcp port number, plus some credentials, if needed.
+to retrieve this information, seduploader searches for proxy configuration settings in the firefox
+browser, via the two following steps: it parses the firefox preference file ( ) to find the network.proxy.http and network.proxy.http_port fields, respectively, containing the proxy address and port
+number. it retrieves the proxy credentials from the custom windows registry key hkcu\control panel\desktop\weelscrinit. interestingly, this registry key was created during
+the exploitation of the target by sedkit. for example, the following code snippet comes from a sedkit exploit against firefox
+(cve-2014-1510 [37]), and sets the registry key weelscrinit to the value of the http field proxy-
+authorization, after a request has been made to download the payload. this http field contains
+the credentials for proxy basic authentication, and can be reused for multiple requests [76]. once the proxy information has been retrieved, seduploader sends an http post request
+to google via the proxy and checks the answer status code, in the same way as previously described. we speculate that only firefox is currently implemented because sednit
+operators have had trouble establishing an internet connection on specific
+targets using this browser, while the code injection technique described below
+was good enough for other browsers. the proxy information retrieval code
+has been built so that it could possibly be extended to other browsers than
+firefox, with the use of an abstract c++ class. 3. inject into a running browser
+if the proxy method also fails, seduploader injects some code into a running browser, which may
+allow it to bypass network security products. to do so, seduploader waits for the user to launch a
+browser, by regularly enumerating the running processes and comparing the hash of their names
+with some hardcoded values. the hash function is a simple series of rol 7 operations, and table 6
+shows the list of targeted browsers. if a browser is found running, seduploader injects a shellcode into its memory, and creates
+a thread in it with the createremotethread windows api. this shellcode tries to contact google in
+a way similar to that described above, and communicates the result back to the seduploader process
+through shared memory. this shared memory is created with the windows api openfilemapping
+and bears a hardcoded, random-looking name.
+if all the tested methods fail, seduploader will try all the methods again, until there is a working
+internet connection. reconnaissance report
+once the network link has been established, seduploader builds a report on the compromised
+machine in the form of id=xxxxxx&w= . the id parameter contains the serial number of the hard
+drive and serves to identify the machine, while the w parameter contains the actual report with
+the following information: list of running processes hard drive information extracted from windows registry key hklm\system\ build identifier, which is a hardcoded 4-byte value (preceded by build=) optional field named inject indicating whether the network link was established through an example of such a report is shown below: the report is then encrypted with a simple algorithm: a pseudo-randomly-generated 4-byte value
+is xored with a hardcoded 4-byte value (different in each sample), and serves as a key to xor the data.
+the encrypted data are then appended to the key.
+finally, the resulting encrypted data are sent as the body of an http post request.
+all communications with the c&c server are sent in the same manner. the build identifier was introduced in may 2015. between then and writing
+this report we have seen 10 different values. main loop
+after the initialization step, the code enters its main loop, as described in figure 15. this loop
+comprises the following steps:
+1. establish the network link, with the same tests as executed during initialization
+2. download a configuration file from the c&c server, by sending an http post request with id=xxxxxx&c=1 in the body (before encryption). this configuration file provides information
+on how to retrieve and execute an additional payload, and its structure is the following
+(most fields are optional, and self-explanatory): 3. download a payload executable from the c&c server, according to the configuration file,
+by sending an http post request with id=xxxxxx&f=<file name> in the body (before
+encryption) 4. run the payload executable, according to the configuration file
+5. report to the c&c server the return code of the execution (retrieved with the getlasterror downloading a configuration file first, so as then to fetch a payload binary:
+this is also the workflow of downdelph, described in the third part of this
+whitepaper. moreover, seduploader and downdelph share some wording
+in their configuration files, which may indicate that the same developers
+are behind the two components. according to our observations, the payload binary is usually either sedreco or xagent,
+the spying backdoors of the sednit group. conclusion and open questions
+over the last year, seduploader became the most-used first-stage malware of the sednit group.
+during this time, this component has been under intense development, for example by adding
+persistence methods to the dropper, or improving the payload s ability to contact its c&c server.
+the purpose of seduploader is twofold. first, it serves to establish a network link between the
+compromised machine and the c&c server, bypassing possible network security measures. second,
+it serves to check that the infected computer belongs to an intended target (and in particular, does
+not belong to a security researcher).
+we do not know the exact logic used to select certain computers as being interest. we speculate
+that sednit operators know quite precisely the target s environment in many cases, because they
+had already infected computers belonging to the same organization in the past. hence the simple
+seduploader report is informative enough to select real targets. closing remarks
+the attack methods and malware described in this first part of our whitepaper demonstrate
+the technical abilities and the review of the literature of the sednit group. for example, the group
+revamped the 0-day exploits from the hacking team data leak only a few days after their release,
+created a brand new exploit for the cve-2014-6332 vulnerability based on a presentation at the
+blackhat conference, and regularly integrated novel persistence methods into seduploader.
+the attack methods of the sednit group are not limited to those described in this whitepaper.
+in particular, we know from several investigations that they have: trojanized some legitimate private applications used in some eastern european embassies,
+so that the employees would be infected with spying malware when running the modified
+executable hacked into some linux servers using a known vulnerability for wordpress hacked into some zimbra webmail servers using a known vulnerability overall, the sednit group is always looking for new ways to approach its targets,
+both with opportunistic strategies and by developing its own original methods.

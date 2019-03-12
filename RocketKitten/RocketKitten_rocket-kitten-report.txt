@@ -1,0 +1,369 @@
+thre at intelligence a nd re se a rch
+rocket kit ten:
+a campaign with 9 lives executive summary
+since early 2014, an attacker group of iranian origin has been actively targeting persons
+of interest by means of malware infection, supported by persistent spear phishing
+campaigns. this cyber-espionage group was dubbed rocket kitten, and remains active
+as of this writing, with reported attacks as recent as october.
+the rocket kitten group and its attacks have been analyzed on numerous occasions by
+several vendors and security professionals, resulting in various reports describing the
+group s method of operation, tools and techniques.
+characterized by relatively unsophisticated technical merit and extensive use of spear
+phishing, the group targeted individuals and organizations in the middle east (including
+targets inside iran itself), as well as across europe and in the united states. many of these
+targets were successfully compromised by various pieces of custom-written malware;
+and despite identification and flagging of their infrastructure, the attackers have struck
+again-and-again by making minor changes to their tools or phishing domains.
+check point has obtained a complete target listing from the attackers servers; among
+confirmed victims are high ranking defense officials, embassies of various target
+countries, notable iran researchers, human rights activists, media and journalists,
+academic institutions and various scholars, including scientists in the fields of physics
+and nuclear sciences.
+this report provides a summary of the findings including: new evidence obtained during check point s independent investigation into attacker
+infrastructure, including previously unpublished malware indicators. information that appears to reveal the full extent of operations over the past year, and
+provides unique insight into target profiles and attacker operation internals. analysis of attack data to reveal details on victims and specific industries that may
+have special significance to iranian political and military interests. analysis of attacker mistakes that appear to reveal the true identity of the main developer behind the group s activities (a.k.a. wool3n.h4t ), detailed for the first time.
+it is our hope this report and measures taken over the past few weeks lead to an effective
+shutdown of attacker operations (current generation of tools and infrastructure). while
+check point customers are protected against all known variants of this threat, we urge
+fellow security vendors and malware research professionals to extend malicious ioc
+(indicators-of-compromise) coverage in current protection infrastructure.|
+investigation timeline review
+[if you are familiar with previous publications and interested in check point s new insights, you may skip this section.]
+the rocket kitten campaign/actor group has been studied and analyzed on multiple occasions by different vendors, threat intelligence
+groups and individual researchers. in a repeating challenge in the malware research domain, we have seen different reports introduce
+a myriad of code names and operation names for what may very well be the same campaign/actors.
+in contrast to malware naming schemes, all reports are in unanimous agreement with strong indications of the campaign s iranian
+origin. this thesis is supported by the individuals and verticals targeted, as part of a plethora of circumstantial and direct evidence.
+while we should keep in mind digital evidence can be forged and tailored to falsely masquerade as any attacker to deceive a forensic
+analyst, the overwhelming amount of independent evidence collected over years of attack activity render the notion of a false campaign
+extremely improbable.
+despite all the reporting and sharing of malicious indicators, check point has detected continued active attacks using the same
+methods and infrastructure. these findings were confirmed by other security vendors, as well as check point s research partners.
+it seems as if the attackers, unsophisticated as they are, are completely undeterred by the western security industry s revelations
+and publications. often with the simple replacement of a domain name and minor updates to their malware tools, they continue to
+carry out their operation undisturbed.
+let us try to review and briefly summarize points of interest from the publications so far.
+operation saffron
+rose1
+newscaster an
+iranian threat
+inside social
+media2
+rocket kitten: advanced
+off-the-shelf targeted
+attacks against nation
+states4
+gholee a protective
+edge -themed spear
+phishing campaign3
+thamar reservoir: an
+iranian cyber-attack
+campaign against
+targets in the middle
+east6
+the spy kittens are
+back: rocket kitten
+operation woolengoldfish5
+london calling:
+two-factor authentication
+phishing from iran7
+gadi evron &
+tillmann werner
+the citizen lab
+isight partners clearsky
+clearsky
+trend micro, inc.
+&
+fireeye clearsky trend micro, inc.9 |
+the may operation saffron rose publication identifies an iranian hacking group formerly named ajax security (code-named flying kitten by crowdstrike) engaged in active spear phishing attacks on iranian dissidents (those attempting to circumvent
+government traffic monitoring). this group is potentially linked to more recent rocket kitten attacks (different tools, yet very similar
+mode of operation and phishing domain naming scheme). no concrete evidence of such link has been presented yet.
+newscaster by isight partners was released the same month, to detail similar efforts of persistent spear phishing backed by false
+social media identities pertaining to be journalists of the fake news web site . isight, who reportedly cooperated
+with the fbi, provides a clear iranian attribution to these efforts. the report specifies the attackers targeted policymakers, senior
+military personnel and defense industry organizations in the us, uk and israel. we did not find direct evidence linking this activity
+to rocket kitten.
+clearsky s september blog post first described active attacks using a piece of malware they dubbed gholee (as appears in a
+malicious payload export function, potentially named after a popular iranian singer9). the researcher points to initial leads into
+other attacks and notes the threat is currently undetected by the overwhelming majority of av products.
+image the gholee export name as noted by clearsky.
+gadi & tillman s presentation atc3 (thest chaos communication congress in germany) was the first clear identification of the
+rocket kitten attacker group, continuing the crowdstrike naming scheme for iranian attacker groups. the publication introduced
+the involvement of hacker persona wool3n.h4t and other identities in forensic evidence obtained from the malicious documents.
+image forensic artifact in malicious document hinting to file creator as noted by tillman werner & gadi evron.|
+the researchers followed to describe two pieces of malware used by the attackers: a deeper look into clearsky s gholee determined it is the wrapper component of an off-the-shelf penetration testing tool
+originally authored by argentina-based core security. this legitimate pt tool, named core impact, was illegally repurposed
+and used for malicious attacks by the rocket kitten group. a .net-based credential stealer that pilfers known certain credential storage locations in the infected computer and e-mails
+them to wool3n.h4t@ . this tool appears to be named firemalv by the attackers.
+trend micro s march publication reintroduces the gholee malware (as ghole) campaign, and describes operation woolen
+goldfish, as well as an additional cwoolger an unsophisticated key-logger apparently named woolger (likely a portmanteau for wool3n keylogger ) written in c++, and present evidence showing its existence starting.
+c:\users\wool3n.h4t\documents\visual studio\projects\c- the researchers continue to point at the very likely attribution to the wool3n.h4t identity as the malware author, whose only online
+reference was found in an iranian blogging platform.
+image as pointed to by trend micro researchers
+in this publication, trend micro researchers document rocket kitten s minor update to the gholee malware (the gholee function
+was renamed to function ), supposedly to avoid the yara signature published by clearsky and document the existence of gholee
+malware samples dating march, as further evidence for historic attacker activity.
+clearsky continued their investigations into the group s activities and in june published a paper dubbing the attack campaign thamar reservoir named after dr. thamar e. gindin, herself a rocket kitten target. clearsky researchers notably mention
+the breach of an israeli academic institution to serve as a hosting service for the phishing web site, and follow to present an opsec
+(operational security) failure by the attackers that allowed clearsky to learn of a detailed (partial) target list.saudi arabia
+image partial target country distribution as visible on the phishing server logs exposed by clearsky
+this list was analyzed to confirm a strong alignment with nation-state political interests, with specific victims known as adversarial
+or of intelligence value to iran. clearsky also reference an inadvertent public confirmation for the iranian attribution by the us
+department of treasury in a memo which briefly appeared online, before being deleted.
+clearsky provided many examples of personalized phishing e-mails and communication, including phone calls to victims luring
+them to open these attachments, demonstrating the group s persistency and breadth of operations.
+image custom- tailored phishing page as presented by clearsky|
+the same phishing phone calling scheme was detailed in an august report by citizen lab, describing attempts to lure victims
+to provide their two-factor authentication tokens. in these attempts, victims receive tailored calls from a person who has clearly
+researched them, prompting them to take action on received e-mails. among targeted victims citizen lab mention eff s director for
+international freedom of speech jillian york. the citizen lab report describes overlapping phishing domains with ones previously
+reported, confirming a link with rocket kitten.
+image google password reset phishing page as presented by citizen lab
+interestingly, a special update to the citizen lab publication was added to include a response from a news outlet reported to be in
+close connection with iranian intelligence, following allegations by exiled iranian journalist omid memarian attributing these attacks
+to iranian revolutionary guards10 with no doubt. the response mocks the western media fishing in muddy waters and describe the
+allegations as weird. the latest paper from trend micro and clearsky (dated september) goes a great length to detail the group s profile and mode of
+operations so far, and introduces a few more attack incidents, as well as a new downloader piece of malware.
+10 a branch of the iranian armed forces, sworn to protect the country s islamic system and prevent foreign interference .|
+rocket kitten tools & infrastructure
+the rocket kitten attacker group s main attack vector is spear-phishing. an effective phishing campaign requires nothing more than
+a tailored phishing page, hosted on a cheaply-available web server. as described in previous publications, the rocket kitten attackers
+make extensive use of various phishing schemes, often including back-and-forth e-mail correspondence with the victims, or even
+phone calls to establish legitimacy and reason to open the malicious attachment.
+actual malicious attachments detected in this campaign varied between a set of custom-written malware pieces, or downloader components that, in turn, fetch the malware from a remote server and execute in on the victim machine.
+additionally, we have witnessed many attacks using various web hacking tools and suites, in attempt to break into victim web sites.
+previously reported custom-malware included: cwoolger a c++ based woolen key-logger. the malware records all keystrokes and sends out key-log data to a hard-coded
+ftp server. wrapper/gholee repurposed core impact penetration testing tool. the malware allows a platform for remote access,
+pivoting for lateral movement and further malware installation. firemalv a .net based firefox credential stealer. this tool copies passwords stored in the firefox browser storage.
+check point investigations additionally discovered the attackers using the following: .netwoolger a .net based woolen key-logger. this malware is functionally similar to cwoolger. the attackers seem to use
+them interchangeably, as alternate infection mechanisms (in case one is detected at the victim computer). mpk a custom rat of wider functionality. the malware allows key-logging, as well as remote command execution, screenshot
+grabbing and traffic monitoring. for a detailed technical description of the mpk malware see appendix b.
+in addition to custom-written malware, we have seen the attackers use various hacking and scanning tools to attack victim
+web-sites. metasploit an open-source, extensible penetration testing platform. metasploit s meterpreter payload was wrapped in
+an executable file and distributed as a rat attached to phishing emails by the attackers. havij & sqlmap sql injection tools; havij originates in iranian development, while sqlmap is an open source project. acunetix & netsparker off-the-shelf web vulnerability scanners, attempting to automatically discover and exploit
+vulnerabilities in common web platforms. wso web shell a well-known web shell - php script that allows backdoor access on a hacked server. typically deployed
+after successful compromise to allow further actions. nim-shell a web shell of iranian hacker group origin with similar functionality. additionally uses perl scripts on the hacked
+server.
+web hacking attempts were detected to originate from various ip ranges, occasionally immediately adjacent to known rocket kitten
+c&c servers. we can estimate the attack operators either used these servers directly, or configured them as proxy/vpn endpoints
+to channel their attacks.
+combining the research work done so far with observed attacks by check point, we can map out a diagram overviewing the
+attacker s infrastructure.| we have no reason to believe any of the mentioned providers are related to the malicious activity. the campaign operators likely
+masqueraded as a legitimate customer or hacked into the servers without the knowledge of the service provider. specified ranges are likely to be assigned in whole for the attackers use. due to the dynamic nature of ip assignment, these
+may expire after the release of this report. because of the way satellite communications work, the infrastructure geo-located to germany may not be physically located
+in that country. it would be an educated speculation to assume the servers are physically located in iran. this assumption is
+supported by several indicators, including registrant details.|
+gefilte phish best served cold
+after learning of an active attack incident from the rocket kitten group on a customer network, check point researchers decided to
+actively join the investigation. while the recent paper from trend micro and clearsky ( the spy kittens are back: rocket kitten )
+does extensively cover the campaign s narrative, we aimed to seek confirmation that our analyzed attack was positively connected to
+the same campaign and set out to provide additional value and insight.
+upon learning of the attack, we attempted to communicate with the phishing web server and gather primary reconnaissance.
+we learned the same ip address was used for multiple malicious domains. noting the server on this ip address was alive and well,
+we decided to probe and question that particular server s purpose.
+what we found took us all by surprise.
+we started our web probe by making scripted get requests attempting to browse to well-known paths. a minute later, we were
+excited to find a ok response for a few requests, including /xampp and none other than /phpmyadmin(!).
+suspecting false positive results by our scripts, we typed in /xampp into our browser and watched with awe:
+we curiously entered the direct path into our web browser and loaded the phpmyadmin interface.
+it wasn t until we actually submitted a query on the server, when we understood that phpmyadmin had been configured to allow
+password-less root access to any browsing visitor. such a gaping hole must be a decoy we immediately thought. there is no way nation-state attackers would err in such amateur
+fashion, leaving their phishing server database exposed would they?
+image a default configuration of xampp on a live attacker server!|
+if only they had paid attention to the xampp security page:
+happily browsing through the free-for-all exposed database, we quickly noted numerous schemas; most of them were completely
+empty (for testing purposes?), with one specific schema standing out: phakeddb .
+image phakeddb schema note utf8_persian_ci collation for several tables phakeddb contained a set of very interesting tables and data sets; the kind of data sets that fuel the fantasies of malware campaign
+researchers. browsing these tables, we found the phishing web application, likely to be a custom development by the rocket kitten
+attackers. the web application would, upon operator instruction, generate the target-specific personalized phishing page for the
+targeted service (gmail, youtube, hotmail, etc ).
+as we later learn, this platform was named oyun management system by the attackers.
+image the mysql admin user root has no password unsecure |
+let us first look at the users table:
+image the users table
+the attackers log in to the application, just like any other web platform, in order to set up their phishing campaigns. this server
+seems to have been deployed august, when all users were created.
+and the hash type of passwd fields used? you may not be surprised to learn they used unsalted md5 hashes.
+that s actually not the most oblivious malpractice in this system, however; the hash for the user named super admin (assigned with
+all possible permissions) is . hobbyist cryptographers may recognize this string as the
+md5 hash for 123456 .
+looking at user names, we can spot some potentially persian names or aliases such as merah, kaveh, ahzab or amirhosein. these
+were potentially the campaign operators tasked with social engineering and tailoring a phishing page per target. (hint: 123456 was not the only trivially crackable password in this list)
+moving on to the intriguing conversation table, this appears to be an experimental messaging feature between attackers.
+unfortunately, it was rarely used.
+image the conversation table|
+most messages include links to various phishing domain pages, perfectly correlating to reported attack pages, proving this database
+is indeed in direct correlation to the attacks.
+interestingly enough, we can see user id (correlating with the attache username in the users table) making a request:
+please subject for me.
+tank you
+attache
+as 'boos' is farsi for 'kiss', 'bos bos' might be considered the persian version of 'xoxo'.
+what does that mean? what projects and subjects are this system s users referring to?
+a glimpse into requiretypes lays out a much clearer description for this system s purpose:
+image the requiretypes table|
+we can see template codes for phishing pages, including the descriptive victim full name, victim user name field values.
+it seems that this application generates the custom phishing templates using these custom fields. even more telling, we have
+examples for each field, reintroducing us to our wool3n.h4t friend (author of key-logger malware by the same group), repeatedly
+mentioned in this column. this introduces the reasonable possibility that wool3n.h4t himself wrote this phishing application as a supporting tool for the campaign.
+there is an intriguing supervisor@ reference, too, but is currently registered to a chinese electronics shop,
+so no luck in that direction.
+the real jackpot, however, is still ahead.
+when we opened the projects table, we momentarily lost our breath. a project is apparently a single victim (target e-mail address),
+assigned with a proj_id , a tasked operator, and the specific link that was generated to be sent to this victim. we just hit records
+including all victims attacked starting august and all the way to august (when this database was accessed).
+image the projects table
+not only do we have the e-mail addresses of all victims, we also have the template values for their respective phishing pages
+(in the projectmailrequirevalues table)!. for example a google sign-in page normally displays the full name of the victim,
+as well as a public avatar defined by the user. the attackers had to replicate this look and feel, and filled the database with full
+names, addresses and photos for every targeted victim.
+we verified and retrieved names and images of previously reported victims as expected.|
+image the projectmailrequirevalues table
+but what does projectlogs contain?
+is that what we think it is?
+image log of every access to any phishing page on that server
+this table contained a log entry for every access to any phishing page, including the credentials provided by the victims, if successfully
+fooled. we can now use this data to gather insightful analytics on spear phishing activity over one year spanning august to august
+2015. please see the attack log analysis section in this report.
+continuing our server probe, we discovered a similarly exposed webalizer interface, providing useful analytics including counters
+and frequently accessed links.|
+image webalizer statistics for august
+the webalizer interface neatly presented us with a lot of useful metadata, including top visitor ips clearly identifying attacker
+access to the site, and providing us with many leads for the remainder of the investigation. interestingly enough, we also found some
+referrer headers, leading to a path on the same server:
+image login screen|
+in what can be described as a hacker secret access portal we seem to have reached the web interface of the phishing platform.
+testing the admin credentials we previously cracked we get:
+image the oyun mangement system (oms) [sic]
+we now learn the attackers name this system oyun and actually used larry page s public profile picture as admin s avatar.
+the remainder of the interface simply allows access to the phakeddb database, including insertion, editing of projects (/targets)
+and even the internal chat platform as evident in conversations. woolgered hoisted by their own petard
+using credentials hard-coded into the woolen key-logger, we were able to retrieve numerous woolger dat files (key-logs),
+as uploaded from victims around the world.
+as apparent, the same hard-coded ftp credentials were, in fact, administrator credentials on the c&c windows server itself,
+which had the c$ and d$ netbios/smb administrative shares openly accessible from the wan.
+image if you didn t want to allow researchers to have administrator access to your c&c server >
+you shouldn t have hard-coded administrator credentials into your malware.|
+among many logged keystroke files containing stolen data, we stumbled on an astonishing discovery: the rocket kitten attackers
+had, in fact, infected their own workstations, apparently as test-runs for woolger. the attackers failed to remove these files from
+the c&c server, demonstrating, yet again, utter lack of opsec.
+of peculiar interest to us were logs made by none other than wool3n.h4t himself:
+image the test worked.
+would you be surprised what followed in the same log file?
+image the attacker testing his own tool.
+yes, we actually just witnessed wool3n.h4t switching through his open windows, including a microsoft visual studio live debugging
+session of a project called cwoolger in another log, we observe the specific programming of loading of the wsc.vbs script, as observed in the trend micro publication and
+others. at this point, there should be no question we are looking at the malware author s development workstation.
+image mutexes and thread-safety should be the least of your worries.|
+the next log shows us the attacker wanted to test whether his tool would accurately capture credentials entered into a firefox http
+authentication prompt, and thus he entered his own c&c server image
+all of wool3n.h4t s retrieved logs were dated october.
+then, we spotted this log segment:
+image aol mail already narrowed it|
+recorded under the wool3n.h4t name, a user logs into aol mail with username yaserbalaghi. could it be the same yaser as noted in the recent trend micro and clearsky paper? ( d:\yaser logers\cwoolger ) could it explain
+the phakeddb reference to ybsoft ? we don t know at this point; we have to go deeper. yaserbalaghi@ appears to give a technical answer in a long c++ thread in an iranian programmers forum ( barname nevis )
+in iranian solar hijri calendar year (2010-2011):
+the same yaserbalaghi user made several posts, also linking to various programming instructional videos in the subjects of and ajax, jquery and sql injections as instructed by him using screen capture software.
+careful watching of the videos allowed us to learn a few interesting details. for starters, yaser balaghi is a microsoft visual studio
+2010 user, with familiarity of several tools observed to be used during the rocket kitten campaign.
+image screenshot taken from instructional video by yaser balaghi (engineer balaghi)|
+image engineerbalaghi host name
+further inspecting the user names and host names evident in the screen captures, we noticed we were actually in possession
+of logged keystrokes from an "infected computer where the user name was engineer balaghi, strengthening our suspicions.
+however, we can t be sure yet; yaser balaghi may be a common name or perhaps this is someone related to wool3n.h4t or the
+attackers.
+a few minutes later, and we spotted this gem of an opsec mistake in the sqli instructional video, which precisely provided the
+smoking gun we were after:
+image watching an hour of farsi sql injection tutorial has its rewards|
+wool3n.h4t is caught red-handed. one of his many mistakes, he was now caught giving a public tutorial while logged in under his
+secret alias, otherwise unlinked with his real identity. these videos were recorded february, prior to the first clear rocket kitten
+attack wave mid-year.
+a quick glance on w00l3n.hat s desktop reveals a striking match with web hacking attack tools previously described in rocket
+kitten s arsenal.
+image havij, acunetix, netsparker, sqlmap, wamp, and oh is that ida properly licensed?
+a few online queries later, we are getting numerous results, cross-referenced to verify as the same yaser balaghi, now the main
+suspect to hold the wool3n.h4t identity.
+engineer yaser balaghi is not only an active member of various programming forums he had a web site (www.eng- ,
+gone offline since august, still available in the wayback machine). in the available archived version of the site he described
+himself as a programmer, analyst, consultant and lecturer, and made himself available for hire.
+image yaser balaghi s stackoverflow account|
+if all that wasn t enough, we also managed to retrieve an updated resume for tehran-based engineer balaghi:
+image yaser balaghi s resume (2013)
+islamic azad university computer software graduate balaghi lists his job experience, including technical director and team
+leader of software development team (private) (highlighted in original), as well as head of security and hacking (legal and ethical)
+(private) . later, he goes as far as listing sample accomplishments and completed projects, including the development and system
+design for a phishing attacks system ordered by a cyber-organization .
+image (original and translation) we kid you not.
+we could go on, but the main lesson of this section can be: if you don t want people to know you created malware for the government,
+don t list it in your cv.|
+reeled in phishing logs analysis
+as reported so far, the attackers persistently e-mailed, called and responded with fake identities, tailored for each victim. the
+attackers clearly read the public reports about them, respond and adapt their tactics, occasionally showing a creative mindset.
+in one reported case, the attacked posed under the true identity of a clearsky researcher, referencing the recent rocket kitten
+report, attaching detection software that does exactly the opposite. this an interesting tactic, worthy of mentioning in social
+engineering classes. it would be wise at this point to mention that the release of report does not include any accompanying
+detection or protection tools other than the existing check point software blades. if you received this report with an attached
+executable, it is likely a malicious lure.
+in another case, the attackers sent a malicious attachment using the identity of a previously known targeted victim. the israeli
+recipient of that attachment was wary enough to suspect the origin of the e-mail and responded with a query: is that you or are
+the iranians in your computer again? to which the attackers responded (in perfect non-google-translate hebrew): the iranians
+will never return to my computer! that very well may have been the talk of the day at the tehran operations center, possibly featured in an email printout in the main
+dining room.
+as the rocket kitten group s behavior was well characterized in previous publications (see the recent report from trend micro
+and clearsky). we will focus on new insights based on our analysis of the oyun system victim database. we understand that this
+database contains a partial view, starting august to august. while the data can be successfully correlated with logs
+collected from other servers, we have no visibility of e-mails with malicious attachments (as opposed to phishing links to steal
+credentials), or any complete web hacking log for attacker activity.
+the sheer volume of the target database suggests an extensive operation, the work of a group of people over months. the logs
+included the visiting ip address geo-located country. our analysis shows the following distribution:
+chart phishing visitors country distribution
+we have studied the visitor data to determine this includes many attacker accesses to test the site functionality. we know the
+attackers used addresses from iran, as well as vpn access from the us, germany, saudi arabia and the netherlands. the data
+must be interpreted taking these facts into consideration.
+our primary filtering dismissed around% of logs and% of projects as test runs for the system. the following is based on the
+remaining seemingly valid entries.
+charting the phishing logs over time, we can observe the following timeline:
+chart phishing logs and successes over time
+we can study this data to make a few interesting observations: on average, all phishing pages on this server had% success in fooling victims to enter their credentials. these are
+surprisingly high results, potentially attributed to persistency and well-targeted e-mails. on may,, there is a unique peak of access to the site, with minimal successes. when analyzed, these accesses appear
+mostly in batches over periods of minutes, with incremental project_ids and no data provided, from israeli ip addresses.
+we can safely discard these as researcher probes, attempting to brute-force phishing pages, immediately preceding the
+clearsky june publication. the attackers seem to have shut down their platform on june and july (likely due to the publication) and resumed operations
+during august. we found evidence to suggest the database had been migrated from a previous server.
+slicing the projects table by user_id allows a unique internal look on operator assignment; while our target analysis is far from
+conclusive, we can share a reserved primary assessment of what each user was tasked with:
+user projects target profile
+admin projects strictly system testing
+anonymous projects this is one of the prominent users in the system, tasked with all around mixed targets focused on saudi arabia, many human rights
+activists, ceos and ministry officials.
+merah projects
+assigned with all israeli targets, notably including known physics and nuclear scientists, former military officials, national security
+and foreign policy researchers. this operator is probably a fluent hebrew speaker.
+kaveh projects very little activity mostly testing and some venezuelan targets.
+ahzab projects one of the two busiest operators, in he targeted a vast amount of saudi scholars and persons of influence, and later listed
+education and media outlets in saudi arabia.
+124 & attache projects
+these users both showed clear targeting of defense sector victims, as well as embassies of iran s neighboring countries and
+others. quite fitting with one of their usernames, they listed several military attach s in their victim list. notable targets include
+representatives from the united arab emirates, nato and other regional posts in afghanistan as well as thailand and turkey.
+john projects during late he was directly tasked with venezuela trade and finance targets, later in he moved to former iranians living
+abroad listing professors, scientists, journalists and investors
+despite our limited visibility, we can confirm many of these attacks were successful the attackers gained confidential information
+from various targets all around the world.
+epilogue
+we believe the rocket kitten case is an interesting case study for the malware research industry, exemplifying a continuing trend in
+the nation-state attacker profile we have witnessed over the past two years; cyber-espionage is no-longer reserved to organizations
+with monstrous budgets to hire thousands of cyber-warriors, operate password-cracking super-computer clusters or advanced
+research to infect your hard-drive firmware. adversaries will often find simpler ways for effective compromise, such as creative
+phishing and simple custom malware.
+in this case, as in other previously reported cases, it can be assumed that an official body recruited local hackers and diverted them
+from defacing web sites to targeted espionage at the service of their country. as is often the case with such inexperienced personnel,
+their limited training reflects in lack of operational security awareness, leaving a myriad of traces to the origin of the attack and their
+true identities (e.g. yaser balaghi, mehdi mahdavi and others).
+despite publications, code names and articles in security outlets - the same known attacker group continues to attack with
+minimal interruption.
+highlighting a repeating industry problem, minimal changes to existing malware often evade most current protection solutions.
+effectively stopping attackers must involve action on top of analysis efforts.
+we approached and will continue to approach hosting providers through the assistance of cert coordination and other bodies in
+various countries. we hope these efforts are fruitful, and can help disable or reduce the attacking infrastructure.

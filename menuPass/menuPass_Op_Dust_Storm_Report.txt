@@ -1,0 +1,233 @@
+executive summary cylance spear has uncovered
+a long-standing persistent
+threat targeting numerous
+major industries spread across
+japan, south korea, the united
+states, europe, and several other
+southeast asian countries. the early days: spear phishing the earliest indications of the group s activities stem
+from the compile times of the executable resource
+section of misdat samples. all of the early backdoor
+samples were compiled using a version of delphi which
+notoriously mangles the compilation timestamp of
+the file to june 19, 1992 22:22:17 utc. by using the
+executable resource section timestamp, spear was
+able to more accurately gauge the actual compile
+times of these samples, and traced one of them, power comes in many forms our research indicates operation dust storm has been
+operational since at least early 2010, and has employed
+a number of different operational techniques, including
+spear phishing, waterholes, and zero-day exploits over
+time. several antivirus companies initially detected
+early backdoor samples under the moniker misdat, but
+the group has quietly evolved over the years to remain
+undetected and highly effective.
+attack telemetry in 2015 indicates the dust storm
+group has migrated from more traditional government
+and defense-related intelligence targets to exclusively
+seek out organizations involved in japanese critical
+infrastructure and resources.
+the group recently compromised a wide breadth of
+victims across the following industry verticals: electricity
+generation, oil and natural gas, finance, transportation,
+and construction. spear s current research indicates
+the group s present focus has shifted to specifically
+and exclusively target japanese companies or japanese
+subdivisions of larger foreign organizations.
+1 during analysis of older command and control infrastructure, there were several domains that resolved to known malicious ip addresses in
+september 2009. however, spear was not able to corroborate these dates in any known malware samples. operation dust stormvery little public information was available throughout
+2010 on this threat, despite the group s primary
+backdoor gaining some level of prominence in targeted
+asian attacks. this may be explained by the group s early
+reliance on dynamic dns domains for their command and
+control (c2) infrastructure, as well as their use of public
+rats like poison ivy and gh0st rat for second-stage
+implants. the actors relied heavily on the free dynamic
+dns providers no-ip (http:// ), oray (http:// /) and 3322 (http:// /)
+for their infrastructure continuing into 2011; the earliest
+known backdoors spear identified communicated to and .
+it wasn t until june 2011 that operation dust storm
+started to garner some notoriety from a series of
+attacks which leveraged an unpatched internet explorer
+8 vulnerability, cve-2011-1255, to gain a foothold into
+victim networks. in these attacks, a link to the exploit was
+sent via a spear phishing email from a purported chinese
+student seeking advice or asking the target a question
+following a presentation. media coverage of these
+attacks included http:// /
+blogs/inside-back-door-attack , 2 and http://asec.ahnlab.
+com/730 which named the early backdoor variants misdat .
+the secondary c2 server from symantec s writeup was
+mentioned in news reports elsewhere as ;
+this domain resolved to during early june
+2011. this address is coincidentally the same ip address
+that one of the earliest misdat samples that spear
+identified beaconed to during the same timeframe.
+a paper published in august 2011 by ned moran via usenix
+( /
+105484- ) described in detail an attack by this threat group during april 2011. the attack was initiated by
+a spear phishing email that contained a word document
+embedded with a zero-day flash exploit (cve-2011-0611).
+the final payload described in the report matched other
+confirmed misdat samples, and beaconed to msejake.7766.
+org , which first resolved to , then later to at the time of the attack.
+as to other documented cases, the attacker started
+interacting with the infected machine within minutes
+of compromise to begin manual network and host
+enumeration.
+in october 2011, the group attempted to take advantage
+of the ongoing libyan crisis at the time and phish the news
+cycle regarding muammar gaddafi s death on october
+20, 2011. it appears that in addition to some us defense
+targets, this campaign was also directed at a uyghur
+mailing list. this time, the group used a specially crafted
+malicious windows help (.hlp) file, which exploited cve2010-1885. the hlp files, when opened, would execute
+a piece of javascript code via , which in turn
+launched a second piece of visual basic script using the
+windows scripting host. this secondary piece of vbs
+code was then responsible for decoding the payload from
+the body of the hlp file and executing it.
+the first stage payloads used in these attacks were
+misdat variants stored base64 encoded within the hlp
+file. the samples spear identified both communicated
+to the domain , which resolved to the
+ip address at that time. pivoting off
+of this ip address yielded several additional dynamic dns
+domains that were used for command and control, as
+well as several standard domains that were used by the
+group from may 2010 up until december 2015. early infrastructure for the 2010-2011 timeframe used
+by the group relied heavily on two email addresses,
+"wkymyx (at) and duomanmvp (at) ,
+for domain registration.
+the attackers typically used either seemingly random
+four-character subdomains or common words like image,
+blog, ssl, pic, mail, news, etc. there was also evidence to
+suggest this group attempted to gather user credentials
+for yahoo, windows live and other accounts through
+several different phishing domains during july and
+august 2011.
+while spear was unable to recover the original pages
+served, the domains these pages were hosted on
+are: , ,
+and . individual ip address
+resolutions for each of the domains were generally shortlived, with none of them lasting more than a month. identity crisis: zero-day attacks spear identified another operation dust storm campaign
+in june 2012 that leveraged both cve-2011-0611, a
+flash exploit the group had used previously, and cve2012-1889, an internet explorer zero-day. the attackers used the domain to deliver the
+exploits, and the domain was hosted on the ip address at the time of the attack. spear was
+unable to definitively tie this particular exploit site to a
+watering hole or phishing campaign, however, numerous
+other cn-apt operators leveraged the internet explorer
+zero-day during the same period using both techniques.
+the exploit domain was registered shortly
+before the attack on may 24, 2012. two different emails
+were used in the registration of this domain: effort09 (at) and zaizhong16 (at) .
+this attack was the first to use the file deployjava.
+js to fingerprint installed software on victim systems
+prior to delivery and ensure a known effective exploit
+was deployed. this javascript file was first used
+and documented by ahnlab a month earlier in the
+gong da exploit kit: http:// /
+securityinfo/secunews/ ?menu_
+dist=2&seq=19418. the worked in
+conjunction with another script embedded in the exploit
+page, to deliver the flash exploit if the version of ie was
+8 or 9 or deliver the ie zero-day if the version of ie was
+6 or 7. also of note in this attack: the final payload (hxxp://mail. /pic/win.exe) was delivered encoded with
+a single-byte xor against the byte 0x95, skipping both
+the key itself and zero in an attempt to avoid exposing
+the key. this method of obfuscation at the time would
+have ensured delivery of the payload past most ids/ips
+systems. the unencoded payload was a hybrid of the
+older misdat backdoor and its next generation, the s-type
+backdoor. the backdoor would first attempt to use the
+old misdat network protocol and communicate to smtp. . if that failed, it would fallback to the newer
+http-based s-type protocol which communicated with into the future: japanese targets the group completely abandoned older incarnations of
+the misdat backdoor for their first stage implants in 2013,
+and moved predominantly to the new s-type backdoors.
+a full analysis of both of these backdoors is included in
+the implant analysis section. there was some anecdotal evidence to suggest operation
+dust storm leveraged an ichitaro zero-day cve-20135990 to target japanese victims. this zero-day was first
+reported publicly on november 12, 2013. ichitaro is a
+popular japanese word processing program designed by spear noticed a fairly large lull in activity from march
+2013 to august 2013. coincidentally (or perhaps not),
+mandiant released their apt 1 report on february 19, 2013
+( /02/mandiant-exposes-apt1-chinas-cyber-espionageunits.html). activity didn t cease entirely, but the volume
+of malware spear was able to collect during this period
+was remarkably decreased. attack resolved to during this same
+time period, the domain also
+pointed to this ip address and was used in previous
+attacks that relied on web-based exploits. the
+intermediate payload was an xor encoded
+executable common to other cve-2014-0322 attacks,
+which ultimately delivered a variant of the s-type
+backdoor to the victim. throughout 2013, the other incidents spear identified all
+deployed the s-type backdoor exclusively. this year also
+marked an epoch in terms of relying on dual persistence
+locations in case the victim had lower permissions and
+couldn t perform certain actions like writing to the
+registry or certain file locations. older techniques like
+using the startup folder made a resurgence during this
+time period. operation dust storm also began to branch out in
+2014 into establishing and finding alternative means of
+persistence on victim systems. spear identified several
+second-stage samples that needed to be installed as a
+servicedll in order to work properly, as well as one that
+functioned as a router manager for the normal routing
+and remote access service. doing a simple search for
+this registry key, hklm\system\currentcontrolset\
+services\remoteaccess\routermanagers\ip\dllpath yielded numerous other pieces of malware; however,
+spear was only able to identify one of the group s samples
+that took advantage of this. several new domains were
+also registered in 2014 to support expanding operations. beginning in february 2014, there was definitive evidence
+to suggest the group used a watering hole attack on a
+popular software reseller to deliver an internet explorer
+zero-day, cve-2014-0322, to a number of unsuspecting
+targets. the exploit itself was hosted on hxxp://krtzkj. , which at the time of the several new domains were registered during this time
+period, which would go on to become the crux of the
+group s operations for the next several years. figure 4: new c2 domains registered in 2013a company called justsystems. while spear was unable
+to find the exact sample that delivered a misdat payload,
+our team analyzed numerous other related samples. the
+backdoors were encoded within the exploit documents
+using a very familiar method of xor ing skipping zero
+bytes and the key itself; only this time the key used for
+encoding was 0x85. figure 5: c2 domains registered in 2014 and 2015 here and now: companies compromised activity in 2015 was significantly more interesting, and prompted spear
+to begin studying operation dust storm s other activities. spear identified
+a number of second-stage backdoors with hardcoded proxy addresses and
+credentials. these proxy addresses revealed the attacker had compromised
+a number of japanese companies involved in power generation, oil and
+natural gas, construction, finance, and transportation.
+in one case that transpired in early february 2015,
+spear was able to recover the second-stage implant
+delivered by a variant of the s-type backdoor shortly
+following its initial reconnaissance. what caught our
+attention was the fact that the victim was part of the
+investment arm of a major japanese automaker. the
+attack came just two weeks before eleven unions
+representing japan s autoworkers demanded a monthly raise of six thousand yen.
+the second-stage implants were also programmed and
+compiled using microsoft visual studio 6, an archaic
+version of visual studio that seems to be preferred by
+malware authors. despite using an old version of visual operation dust storm studio, the backdoor is well designed by comparison and
+provides a full suite of functionality to the attacker.
+no antivirus vendors seem to reliably detect most of
+the variants spear identified.
+perhaps even more interesting was the fact that the
+group adopted and eventually customized several android
+backdoors to suit their purposes in the beginning of 2015.
+the group rapidly expanded their mobile operations in
+may 2015. the initial backdoors were relatively simple,
+and would continually forward all sms messages and
+call information back to the c2 servers. later variants
+became much more complex, and included the ability to
+enumerate and exfiltrate specific files directly from the
+infected devices. the android campaigns was massive in comparison to
+previous operations. more than two hundred domains
+have been identified to date. spear plans to release
+more information regarding this threat shortly.
+spear discovered two more waves of attacks that
+started in july 2015 and october 2015. interestingly, one
+of the primary targets was a japanese subsidiary of a
+south korean electric utility. similarly, spear identified
+a separate intrusion into a major japanese oil and gas
+company. the exact motivations for this particular
+attack were unclear; however, if this attack coincided
+with all previous operations, the most likely goals were
+reconnaissance and long-term espionage.

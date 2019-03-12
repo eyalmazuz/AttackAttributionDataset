@@ -1,0 +1,216 @@
+morphisec lab fin7 dissected: hackers accelerate innovation
+introduction
+like clockwork, fin7 again unleashed a new attack able to bypass almost every security solution. the attack,
+which took place between october 8 to 10, 2017, is yet another demonstration of the high-paced innovation by
+threat actors.
+fin7 is one of today s most organized and sophisticated cybercrime groups, primarily known for targeting us
+businesses to steal payment card data. they typically use clever, customized spear-phishing lures with
+malicious attachments. once an organization is infected, they move laterally across the network, using various
+anti-forensic techniques to evade detection. the group is closely tied to the notorious carbanak gang,
+responsible for a slew of attacks against financial institutions, although so far evidence falls short of directly
+equating the two.
+over the past year, morphisec has been closely monitoring fin7 and their targets, publishing several analyses
+on methods used by this group. in june 2017 morphisec identified a highly sophisticated fileless attack
+targeting restaurants across the us, as discussed on morphisec s blog and in a post co-authored with cisco
+talos. the june campaign used a new stealer dll variant injected into malicious documents.
+in this report we take a broader approach, describing in detail the rapid dynamic changes over the course of the
+last four months, including the recent october attack, which was first documented by researchers at icebrg. we
+examine each of the component modifications in the attack chains, and show how those changes helped fin7
+evade the dynamic behavior patterns and static patterns applied by many security solutions.
+in fact, a presentation on fin7 by fireeye at this year s infosecurity europe stated that in most environments,
+prevention is not possible. the presenters, however, did not take into account the effectiveness of moving
+target defense solutions (e.g. morphisec endpoint threat prevention solution) against these types of attacks. morphisec lab technical analysis
+document structure rtf and docx format
+we start with the first obvious component the document structure. over the period of the last four months,
+fin7 has used two types of word document formats: open xml format (.docx) and rich text format (.rtf).
+both document types contain the same embedded png object and a lnk file object that is executed by double
+clicking the image.
+with the exception of the september documents, the rtf (rtf files could be also renamed to doc extensions)
+files usually have the malicious code in plain text (fig. 1 below), and the docx files usually have the code in one
+of the xml documents archived inside the docx files (fig. 2). during the same period, security solutions tried to create static patterns to help detect these malicious
+documents. those patterns were based on some of the following observations: names of methods or variables
+order of bytes or strings
+code introspection by simulated interpreter execution (needs valid rtf parser)
+decode of base64 strings and deeper examination of the code after the decoding
+byte pattern detection for some unicode and ascii strings that are represented in hex pattern (code that is
+within the lnk file will usually be represented unicode to hex) is this enough to combat fin7? a look at virus total scoring reveals that when a fin7 campaign is first active, is
+goes mostly undetected by security solutions. the malicious documents do not score more than 1-3 detections.
+within a couple of days, security solutions update their patterns and those documents score around 10/56 or
+higher. however, at the same time, the fin7 group begins shutting down that campaign and starts work on the
+next one, thereby diminishing the usefulness of reactive, pattern-based detection rules for such attacks.
+there are many ways to break string and byte patterns inside the document structure. for example, for rtf
+documents there are inserting dummy control words, spaces, messing up the encoding, and abusing the standard by breaking av document parsers. during the latest fin7 campaigns, the hacker group broke almost
+every above-mentioned detection method as described next. july the group evaded string-based pattern detection, especially the patterns which are based on
+method names and parameter names. most likely those names are automatically re-obfuscated using
+some framework before every campaign.
+august in order to evade base64 automatic decoding rules and code introspection implemented by
+security solutions, the fin7 injected dummy control words within and between the different strings
+including the base64 strings. a control word is a specially formatted command that rtf uses to mark
+printer control codes or information that applications use to manage documents. this broke the validity
+of the strings if parsing the strings sequentially. rtf standard allows the use of control words which are
+not recognized by some parsers (to support backward compatibility), the scopes represented by the
+control words are stacked and if the control word is not recognized, the scope is popped out of the
+stack. as a result, the attack successfully executed by any standard microsoft word parser but evaded
+the known static introspection by antivirus parsers. september the group evaded most of the static patterns rules by simply converting all human
+readable code into hex representation (moving the malicious code to the internals of the lnk file object
+and breaking previous string matching patterns). this kind of manipulation hold still further options for
+the attackers; they easily can change their encoding to any other form, such a binary for example. in addition, the hackers also moved the code between some of the internal documents in docx format, from to . october the group replaced the lnk file with a simple cmd batch file embedded as ole object inside
+the doc file (represented as hex string). stage 1: lnk file ole object
+except for the october campaign, ole .lnk file execution from word documents was used during all fin7
+campaigns in the past year and is one of the most tell-tale fin7 signatures. this is why many of the security
+solutions focus on detecting the .lnk file execution from within word either statically or dynamically. at the same
+time, they try to limit false positives as there are some legitimate examples for such execution flow (e.g.
+combining identification of lnk file code content in hex to unicode representation, lnk file details, names and
+sizes can limit the false positive rate).
+the table below presents examples of fin7 s pattern modification during the period of the last 4 months and
+the october campaign. it demonstrates how this hacker group is able to easily bypass all current behavior and
+pattern recognition defenses.
+campaign
+time
+middle
+june lnk file properties code content
+static approach
+lnk file execution from within word documents can be easily identified statically within many of the document
+formats. rtf standard for embedded objects will require it to be prefixed with "\objdata"; it may also be
+followed by an encoding indicator like "\bin"). the .lnk file content is also part of the embedded object and
+usually represented in unicode translated to hex encoding (or other encoding, e.g. binary). the same object
+also includes the original lnk full path name represented in ascii and translated to hex. any of the lnk file
+indicators (e.g. content, name, location) can be used in static pattern detection (e.g. using yara rules). although
+those detection methods are implemented by many solutions, they are very easy to bypass. and, as these
+targeted campaigns usually have a very short time exposure, these types of rules are not fit to prevent any
+future unknown campaigns. dynamic approach
+some security solutions try to detect and prevent the execution of suspicious process chain patterns
+dynamically (e.g. -> -> ). some of the algorithms extract
+the properties code content out of the lnk file and block the execution of word even before the child process
+execution simply by inspection of the lnk file content. other mechanisms block the execution of the process
+chain in runtime, usually using some sort of driver that is registered for process notification callbacks and
+blocks the process create as soon as a process chains matches one of the malicious patterns. some of the
+nextgen solutions use ai models, however these are trained on the same prior known process chain patterns
+and therefore are prone to the same bypasses as others. moreover, ai are especially prone to producing many
+false positives.
+as shown in the table above, the attackers change and modify their process chain patterns constantly, and
+might use more advanced techniques (e.g. to simulate the execution of or other processes
+of those security patterns.
+lnk file file details / batch file details
+as mentioned previously, some security solutions also use lnk file details to minimize the exposure to false
+positives. some of those details, which appear in hex format inside the rtf or docx files, are: in some cases, even the office version on the attacker s computer can be registered in the lnk file and used
+for detection
+lnk file size (in fin7 campaigns the size can be up to more than 400k, since it also includes the next stage
+code. the usual size is not more than 4k.]
+and more although some of those parameters haven't changed much between the campaigns, it is fairly easy to modify
+any patterns that are based on the lnk file details. as mentioned earlier, fin7 removed lnk file from the attack chain in their october 8-10 campaign and instead
+added a direct cmd batch file with clear commands. in this case, we can still identify the user machine using
+the details of the embedded batch objects: stage 2 ole automation
+the second stage of malicious code extraction and execution is performed by the code written inside the lnk
+file properties content as described in the previous section. the process chain executed from lnk contents as
+described in stage 1 will eventually extract the next stage malicious javascript code from the active word
+process (sometimes vbscript as well). the hacker uses ole automation to extract and execute the malicious
+code from the shape.textframe.text property that resides within the active word process.
+the obvious exclusion from this pattern is found in the latest two campaigns (september and october).
+here the hackers removed the stage of reading the code from active documents and directly injected most
+of the code as part of the lnk file details or as part of a batch file. in the case of the september campaign,
+the code is extracted from the internals of the lnk file details after tracking the special cookie indicator
+(:\"@#[0-9]#@\" ) inside file content (stage 1). in the october campaign the code is activated directly from
+embedded batch script which writes the next stage into a file and then executes it.
+shape.textframe.text
+in most cases shape.textframe.text property contains the malicious next stage javascript/vbscript code. the
+code is part of the shape objects inside the active document. extracting such code for pattern matching can be
+easily done dynamically using the same ole automation methods or statically by having good rtf or docx
+parser. (it can be assumed, that many modern security detection solutions have such functionality.)
+the table below clearly shows how the attackers gradually modified this second stage code chain extraction
+and execution to evade static and dynamic analysis (until they finally removed it altogether): initially, the hackers wrote the code in clear text directly as part of shape 1. this can be easily parsed by static
+security solutions. as this early version wasn t evasive enough, fin7 included an abort operation if kaspersky
+processes were found. in later campaigns from june and july they modified the shape number (to evade the
+simple pattern of executing activedocument.shape[0].textframe.text in word document from within
+javascript). next, they also added techniques that would confuse dynamic analyzers (overriding console
+function and messing with the control flow). in their august campaign they added one more stage in between
+and moved the malicious code into shape 3 after redirecting shape 2 to it (as shown in the table above).
+as stated previously, in latest campaigns this stage was removed and the code was extracted and executed directly
+from within the lnk file content or the batch file content.
+since there are many ways to break behavior patterns recognition or the static analysis based on the shape
+execution source and sequence, this is a very weak basis for detection of this type of malicious behavior.
+we suspect the hackers may use additional ways to extract and execute the code: using other document properties (already used in later stages of the attack) using inlineshapes instead of regular shapes
+using excel and its activesheet
+extracting the text using oleobjects in vb
+adding more shapes in the sequence
+read the code directly from lnk or png files (specially the png)
+and more as mentioned before, the rapid changes in this stage leave most detection solutions a few steps behind, which
+is just enough to reach the target of the campaign. stage 3 scheduled tasks
+we will not cover the internals of the scheduled tasks since, other than the time trigger, they have not changed
+much over the last several campaigns. morphisec lab
+stage 4 network based detection evasion
+as described in the previous sections, many of the malicious code signatures and patterns can be easily
+modified by hackers or even by automatic frameworks that have the ability to reorder, obfuscate and encode
+code. by contrast, c&c protocol modification requires significantly more effort and resources. many of today s
+security solutions (av/ngav) will usually have at least one network host intrusion detection module (ids).
+those modules might detect suspicious traffic with ids rules that are created based on some of the following
+parameters: ip/url reputation
+url and header structures (parameters, ports)
+protocol communication sequence and timing patterns (query and query type sequence)
+deep packet inspection
+packet sizes
+anomaly and deviation from other computers network behavior within the enterprise (less relevant for apt,
+more relevant for bots) although fin7 successfully evades some of the above ids-based rules, some relatively basic rules can certainly
+limit the risk of being compromised by these threat actors. this is described next.
+c&c
+with respect to c&c, ip reputation and url structure, the fin7 protocol doesn t differ much from many other
+protocols used by some of the most popular rat families protocols.
+it is known that ports 80 and 443 are often utilized by rats for their communication protocol, simply because
+those ports are usually not filtered by firewalls. fin7 certainly uses those ports, but the group also uses google
+api urls which are rarely filtered by gateways and other ports as well.
+the hackers are not using real https protocol over the port 443. instead they use substitution cypher with a
+constantly changing key. although blocking non-https traffic on 443 or non-http traffic on 80 can certainly help,
+this results in many false positives. hackers are well aware of this fact.
+the table below represents the changes in the url sequence and structure modification (not including the
+parameters) with each listed campaign.
+june below are some of the patterns fin7 is modifying to evade many of the ids rules: throughout the latest campaigns, all hardcoded urls are inside a comment within the malicious code.
+the code extracts the urls in runtime from the comments.
+every query is executed against a sequence of urls, until the first successful response is received. this
+response ends the execution of the sequence and as a result the attacker can control the sequence
+length directly from the c&c server. this enables the attackers to mess up the sequence and reputation
+based detection patterns.
+to break header structure matching, for each query, the url is appended with random named
+parameters + encoded values which are encrypted in each campaign with a different substitution cypher
+and a unique campaign key. to break deep packet inspection, each piece of information posted to the c&c is encoded with substitution
+cypher as well. the "alfout" hardcoded variable is the substitution key that is modified with each campaign, notice also
+that some of the url parameters are seeded with the day of the attack ("com_pref"): the hackers add additional information that is sent to the c&c. this breaks some ids rules that are based
+partially on the size of the packets or/and on the entropy. more recent campaigns also added the support of proxies on the endpoint again, we see that fin7 constantly modifies its patterns. this keeps them a few steps ahead of defenders that
+use pattern recognition on the network protocol. eventually the attack will get through the network defenses to
+the endpoint unless harsh steps e.g. network isolation, full deep packet inspection, forced filtering, etc. - are
+fully implemented. such steps of course come at the price of business and operation disruption. stage 5 - powershell reflective dll injection
+the final component for this report is the powershell script that is extracted and executed from disk. this
+component contains a reflective loader for an embedded dll directly into the process memory. the dll and
+the framework is covered in detail in the cisco talos -morphisec co-authored post fin7 group uses javascript
+and stealer dll variant in new attacks .
+this framework and dll haven't changed through all of the fin7 campaigns analyzed over the past couple of
+months (the attack looked at in our june blog used a different powershell component dns message loader).
+fin7 added several obstacles to evade detection-based security solutions at this stage:
+mid-july
+the powershell framework was first added to the campaign, mainly based on the powersploit reflective
+injection, with the info stealer dll embedded as a base64 string.
+some security solutions recognized the high similarity to the original pe reflective loader and flagged it as
+suspicious as soon as the file is written to disk: writing and executing the file from disk: august
+in order to set higher barrier for the security solutions, the group added one more encoding level that is decoded
+directly into memory of the process by using deflatestream compression stream. following that, some security solutions created static scanning rules for powershell scripts that are written to
+disk. these rules are matched against the base64 encoded string parts that represent the original pe reflective
+loader script.
+september
+during the september campaign fin7 tried to evade the previously created static rules by modifying the base64
+string parts by increasing the length of each part and reducing the number of the string components, and
+eventually rebuilding it in runtime. the group also abused the fact that it can increase the length of the string as
+long as it extracts only a fixed number of bytes out of it (63149 bytes). october
+sometimes reducing complexity is beneficial. during the october campaign the fin7 group removed the
+comments obstacle and flattened the strings to a single string that, when decompressed, results in the original
+stealer dll. halfbaked backdoor
+powershell is only a single backdoor command that is part of the halfbaked malware delivered by the fin7
+attack. additional backdoor commands are described in this fireeye blog.
+in the october campaign a new command - "getnk2" - was introduced. this command enables the exfiltration of
+information from the outlook client (for more see icebrg research). conclusions:
+at the heart of fin7 s business model are constant upgrades of their attacks and evasion techniques to bypass
+static, dynamic and behavior based solutions. as shown in this study, every campaign includes enough new
+features to make them unknowable to these solutions.
+and as security vendors scramble to catch up, fin7 is already preparing its next attack.
+the only answer to these kinds of constantly evolving threats is a security solution that does not require prior
+knowledge about the attack to prevent it. morphisec s breakthrough moving target defense technology does
+not rely on signatures, patterns, behaviors or classifications. morphisec stopped all of these fin7 attacks as
+they emerged. 

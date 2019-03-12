@@ -1,0 +1,39 @@
+
+print document
+tweet
+like me
+share
+systems affected
+network systems overview
+this joint technical alert (ta) is the result of analytic efforts between the department of homeland security (dhs) and the federal bureau of investigation (fbi). working with u.s. government partners, dhs and fbi identified internet protocol (ip) addresses and other indicators of compromise (iocs) associated with a remote administration tool (rat) used by the north korean government commonly known as fallchill. the u.s. government refers to malicious cyber activity by the north korean government as hidden cobra. for more information on hidden cobra activity, visit - . fbi has high confidence that hidden cobra actors are using the ip addresses listed in this report s ioc files to maintain a presence on victims networks and to further network exploitation. dhs and fbi are distributing these ip addresses to enable network defense and reduce exposure to any north korean government malicious cyber activity. this alert includes iocs related to hidden cobra, ip addresses linked to systems infected with fallchill malware, malware descriptions, and associated signatures. this alert also includes suggested response actions to the iocs provided, recommended mitigation techniques, and information on reporting incidents. if users or administrators detect activity associated with the fallchill malware, they should immediately flag it, report it to the dhs national cybersecurity and communications integration center (nccic) or the fbi cyber watch (cywatch), and give it the highest priority for enhanced mitigation. for a downloadable copy of iocs, see: nccic conducted analysis on two samples of fallchill malware and produced a malware analysis report (mar). mar-10135536-a examines the tactics, techniques, and procedures observed in the malware. for a downloadable copy of the mar, see: description
+according to trusted third-party reporting, hidden cobra actors have likely been using fallchill malware sinceto target the aerospace, telecommunications, and finance industries. the malware is a fully functional rat with multiple commands that the actors can issue from a command and control (c2) server to a victim s system via dual proxies. fallchill typically infects a system as a file dropped by other hidden cobra malware or as a file downloaded unknowingly by users when visiting sites compromised by hidden cobra actors. hidden cobra actors use an external tool or dropper to install the fallchill malware-as-a-service to establish persistence. because of this, additional hidden cobra malware may be present on systems compromised with fallchill. during analysis of the infrastructure used by fallchill malware, the u.s. government identifiednetwork nodes. additionally, using publicly available registration information, the u.s. government identified the countries in which the infected ip addresses are registered. technical details
+fallchill is the primary component of a c2 infrastructure that uses multiple proxies to obfuscate network traffic between hidden cobra actors and a victim s system. according to trusted third-party reporting, communication flows from the victim s system to hidden cobra actors using a series of proxies as shown in figure 1. hidden cobra communication flow figure 1. hidden cobra communication flow
+fallchill uses fake transport layer security (tls) communications, encoding the data with rc4 encryption with the following key: [0d09 2a48f7 0d010503 82]. fallchill collects basic system information and beacons the following to the c2: operating system (os) version information,
+processor information,
+system name,
+local ip address information,
+unique generated id, and
+media access control (mac) address.
+fallchill contains the following built-in functions for remote operations that provide various capabilities on a victim s system: retrieve information about all installed disks, including the disk type and the amount of free space on the disk;
+create, start, and terminate a new process and its primary thread;
+search, read, write, move, and execute files;
+get and modify file or directory timestamps;
+change the current directory for a process or file; and
+delete malware and artifacts associated with the malware from the infected system.
+detection and response
+this alert s ioc files provide hidden cobra indicators related to fallchill. dhs and fbi recommend that network administrators review the information provided, identify whether any of the provided ip addresses fall within their organizations allocated ip address space, and if found take necessary measures to remove the malware. when reviewing network perimeter logs for the ip addresses, organizations may find instances of these ip addresses attempting to connect to their systems. upon reviewing the traffic from these ip addresses, system owners may find some traffic relates to malicious activity and some traffic relates to legitimate activity. network signatures and host-based rules
+this section contains network signatures and host-based rules that can be used to detect malicious activity associated with hidden cobra actors. although created using a comprehensive vetting process, the possibility of false positives always remains. these signatures and rules should be used to supplement analysis and should not be used as a sole source of attributing this activity to hidden cobra actors. impact
+a successful network intrusion can have severe impacts, particularly if the compromise becomes public and sensitive information is exposed. possible impacts include: temporary or permanent loss of sensitive or proprietary information,
+disruption to regular operations,
+financial losses incurred to restore systems and files, and
+potential harm to an organization s reputation.
+solution
+mitigation strategies
+dhs recommends that users and administrators use the following best practices as preventive measures to protect their computer networks: use application whitelisting to help prevent malicious software and unapproved programs from running. application whitelisting is one of the best security strategies as it allows only specified programs to run, while blocking all others, including malicious software.
+keep operating systems and software up-to-date with the latest patches. vulnerable applications and operating systems are the target of most attacks. patching with the latest updates greatly reduces the number of exploitable entry points available to an attacker.
+maintain up-to-date antivirus software, and scan all software downloaded from the internet before executing.
+restrict users abilities (permissions) to install and run unwanted software applications, and apply the principle of least privilege to all systems and services. restricting these privileges may prevent malware from running or limit its capability to spread through the network.
+avoid enabling macros from email attachments. if a user opens the attachment and enables macros, embedded code will execute the malware on the machine. for enterprises or organizations, it may be best to block email messages with attachments from suspicious sources. for information on safely handling email attachments, see recognizing and avoiding email scams. follow safe practices when browsing the web. see good security habits and safeguarding your data for additional details.
+do not follow unsolicited web links in emails. see avoiding social engineering and phishing attacks for more information.
+response to unauthorized network access
+contact dhs or your local fbi office immediately. to report an intrusion and request resources for incident response or technical assistance, contact dhs nccic (ncciccustomerservice@ or 888-282-0870), fbi through a local field office, or the fbi s cyber division (cywatch@ or 855-292-3937).

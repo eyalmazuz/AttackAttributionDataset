@@ -1,0 +1,351 @@
+fireeye isight intelligence apt28:
+at the center
+of the storm russia strategically evolves
+its cyber operations overview apt28 targeting and intrusion activity table 1 - apt28 targeting of political entities and intrusion activity table 2 - apt28 network activity has likely supported
+information operations from olympic slight to data leak:
+investigating apt28 at the world anti-doping agency conclusion appendix special report / apt28: at the center of the storm introduction the democratic national committee s (dnc) june
+2016 announcement attributing its network breach
+to the russian government triggered an international
+debate over russia s sponsorship of information
+operations against the u.s. at issue is the question of proof: did the russian government direct the group
+responsible for the breaches and related data leaks? if so, is this simply a matter
+of accepted state espionage, or did it cross a line? was the dnc breach part
+of a concerted effort by the russian government to interfere with the u.s.
+presidential election? unfortunately, we have failed to ask the most consequential question: how will
+russia continue to employ a variety of methods, including hacks and leaks,
+to undermine the institutions, policies, and actors that the russian government
+perceives as constricting and condemning its forceful pursuit of its state aims? our visibility into the operations of apt28 - a group we believe the russian
+government sponsors - has given us insight into some of the government s
+targets, as well as its objectives and the activities designed to further them.
+we have tracked and profiled this group through multiple investigations, endpoint
+and network detections, and continuous monitoring. our visibility into apt28 s
+operations, which date to at least 2007, has allowed us to understand the group s
+malware, operational changes, and motivations. this intelligence has been critical
+to protecting and informing our clients, exposing this threat, and strengthening
+our confidence in attributing apt28 to the russian government. special report / apt28: at the center of the storm overview on december 29, 2016, the department of homeland security (dhs)
+and federal bureau of investigation (fbi) released a joint analysis
+report confirming fireeye s long held public assessment that the russian
+government sponsors apt28. since at least 2007, apt28 has engaged
+in extensive operations in support of russian strategic interests.
+the group, almost certainly compromised of a sophisticated and prolific
+set of developers and operators, has historically collected intelligence on
+defense and geopolitical issues. apt28 espionage activity has primarily
+targeted entities in the u.s., europe, and the countries of the former
+soviet union, including governments and militaries, defense attaches,
+media entities, and dissidents and figures opposed to the current russian
+government. over the past two years, russia appears to have increasingly leveraged
+apt28 to conduct information operations commensurate with broader
+strategic military doctrine. after compromising a victim organization,
+apt28 will steal internal data that is then leaked to further political
+narratives aligned with russian interests. to date these have included
+the conflict in syria, nato-ukraine relations, the european union refugee
+and migrant crisis, the 2016 olympics and paralympics russian athlete
+doping scandal, public accusations regarding russian state-sponsored
+hacking, and the 2016 u.s. presidential election. this report details our observations of apt28 s
+targeting, and our investigation into a related
+breach. we also provide an update on shifts in the
+group s tool development and use, and summarize
+the tactics apt28 employs to compromise its victims. special report / apt28: at the center of the storm apt28 targeting and
+intrusion activity in october 2014, fireeye released apt28: a window into
+russia s cyber espionage operations?, and characterized
+apt28 s activity as aligning with the russian government s
+strategic intelligence requirements. while tracking apt28,
+we noted the group s interest in foreign governments and
+militaries, particularly those of european and eastern
+european nations, as well as regional security organizations,
+such as the north atlantic treaty organization (nato)
+and the organization for security and cooperation
+in europe (osce), among others. table 1 highlights
+some recent examples of this activity. special report / apt28: at the center of the storm the osce confirmed that it had suffered an intrusion,
+which a western intelligence service attributed to apt28.1 germany's christian
+democratic union (cdu) researchers at trend micro observed apt28 establish a fake
+cdu email server and launch phishing emails against cdu
+members in an attempt to obtain their email credentials and access
+their accounts.2,3 apt28 targets russian rockers and dissidents pussy riot via
+spear-phishing emails.4 nato, afghan ministry
+of foreign affairs, pakistani
+military apt28 used two domains (nato- and bbc- ) to host
+an adobe flash zero-day exploit to target nato, the afghan ministry
+of foreign affairs, and the pakistani military. german bundestag
+& political parties germany s federal office for security in information technology (bsi)
+announced that apt28 was likely responsible for the spear phishing
+emails sent to members of several german political parties. the head
+of germany s domestic intelligence agency, bundesamt f r ver-
+fassungsschutz (bfv), also attributed the june 2015 compromise of
+the bundestag s networks to apt28.5,6 kyrgyzstan ministry
+of foreign affairs october 2014 through september 2015 fireeye isight intelligence identified changes made to domain name
+server (dns) records that suggest that apt28 intercepted email traf-
+fic from the kyrgyzstan ministry of foreign affairs after maliciously
+modifying dns records of the ministry s authoritative dns servers. polish government & power
+exchange websites june and september 2014 apt28 employed sedkit in conjunction with strategic web compro-
+mises to deliver sofacy malware on polish government websites,
+and the websites of polish energy company power exchange.7 1. gauquelin, blaise. la russie soup onn e d tre responsable d un piratage informatique contre l osce. le monde. 28 dec. 2016. web. 29 dec. 2016.
+2. trend micro refers to activity corresponding to fireeye s apt28 as pawn storm. 3. hacquebord feike. pawn storm targets german christian democratic union. trend micro. 11 may 2016. web. 29 dec. 2016.
+4. hacquebord feike. pawn storm s domestic spying campaign revealed; ukraine and us top global targets. trendlabs security intelligence blog, trend micro. 18 august 2015. web. 29 dec. 2016.
+5. 6. russia was behind german parliament hack. the bbc. 13 may 2016. web. 29 dec. 2016. 7, kharouni, loucif. et al. operation pawn storm: using decoys to evade detection. trend micro. 22 oct. 2014. web. 3 jan. 2017. neuer hackerangriff auf bundespolitiker / bsi warnt parteien vor cyberangriffen. westdeutscher rundfunk. 20 sept. 2016. web. 29 dec. 2016. special report / apt28: at the center of the storm since 2014, apt28 network activity has likely supported
+information operations designed to influence the domestic
+politics of foreign nations. some of these operations have
+involved the disruption and defacement of websites, false flag
+operations using false hacktivist personas, and the theft of
+data that was later leaked publicly online. table 2 highlights incidents in which victims suffered
+a compromise that fireeye isight intelligence, other
+authorities, or the victims themselves later attributed to the
+group we track as apt28. all of these operations have aimed
+to achieve a similar objective: securing a political outcome
+beneficial to russia. world anti-doping
+agency (wada) september 2016 on september 13, wada confirmed that apt28
+had compromised its networks and accessed
+athlete medical data.8 associate d in for mation ope r ations on september 12, 2016, the fancy bears hack team persona
+claimed to have compromised wada and released athletes medical records as proof of american athletes taking dop-
+ing. 9 u.s. democratic national
+committee (dnc) u.s. democratic
+congressional campaign
+committee (dccc) the dnc announced it had suffered a network
+compromise and that a subsequent investigation
+found evidence of two breaches, attributed to
+apt28 and apt29. fireeye analyzed the mal-
+ware found on dnc networks and determined
+that it was consistent with our previous observa-
+tions of apt28 tools.10,11 in june 2016, shortly after the dnc s announcement, the gu-
+ccifer 2.0 persona claimed responsibility for the dnc breach
+and leaked documents taken from the organization s network.
+guccifer 2.0 continued to leak batches of dnc documents
+through september.12,13 investigators found that john podesta, hillary
+clinton s presidential campaign chairman, was
+one of thousands of individuals targeted in a
+mass phishing scheme using shortened urls
+that security researchers attributed to apt28.14 throughout october and into early november, wikileaks pub-
+lished 34 batches of email correspondence stolen from john
+podesta s personal email account. correspondence of other
+individuals targeted in the same phishing campaign, including
+former secretary of state colin powell and clinton campaign
+staffer william rinehart, were published on the dc leaks website.15 in july, the dccc announced that it was investi-
+gating an ongoing cybersecurity incident that
+the fbi believed was linked to the compromise
+of the dnc. house speaker nancy pelosi
+later confirmed that the dccc had suffered a
+network compromise. investigators indicated
+that the actors may have gained access to dccc
+systems as early as march.16,17,18 in august, the guccifer 2.0 persona contacted reporters cov-
+ering u.s. house of representative races to announce newly
+leaked documents from the dccc pertaining to democratic
+candidates. from august to october, guccifer 2.0 posted sev-
+eral additional installments of what appear to be internal dccc
+documents on his wordpress site.19,20 tv5monde in february, fireeye identified coreshell
+traffic beaconing from tv5monde s network,
+confirming that apt28 had compromised tv-
+5monde s network. in april 2015, alleged pro-isis hacktivist group cybercaliphate
+defaced tv5monde s websites and social media profiles and
+forced the company s 11 broadcast channels offline. fireeye
+identified overlaps between the domain registration details of
+cybercaliphate s website and apt28 infrastructure.21 ukrainian central
+election commission
+(cec) ukrainian officials revealed that the investigation
+into the compromise of the cec s internal net-
+work identified malware traced to apt28.22 during the may 2014 ukrainian presidential election, purported
+pro-russian hacktivists cyberberkut conducted a series of mali-
+cious activities against the cec including a system compromise,
+data destruction, a data leak, a distributed denial-of-service
+(ddos) attack, and an attempted defacement of the cec web-
+site with fake election results.23 8. wada confirms attack by russian cyber espionage group. world anti-doping agency. 13 sept. 2016. web. 29 dec. 2016.
+9. fancy bears ht (fancybears). @anonpress greetings. we hacked #wada. we have proof of american athletes taking doping. . 12 sept. 2016, 4:12 pm. tweet.
+10. crowdstrike refers to activity corresponding to fireeye s apt28 and apt29 as fancy bear and cozy bear, respectively.
+11. nakashima, ellen. cyber researchers confirm russian government hack of democratic national committee. the washington post. 20 june 2016. web. 29 dec. 2016.
+12. rid, thomas. all signs point to russia being behind the dnc hack. motherboard, vice. 25 july 2016. web. 29 dec. 2016.
+13. bennett, cory. guccifer 2.0 drops more dnc docs. politico. 13 sept. 2016. web. 2 jan. 2017. <>
+14. perlroth, nicole. shear, michael d. private security group says russia was behind john podesta s email hack. the new york times. 21 oct. 2016. web. 2 jan. 2017.
+15. franceschi-bicchierai, lorenzo. how hackers broke into john podesta and colin powell s gmail accounts. 20 oct. 2016. web. 2 jan. 2017.
+16. nakashima, ellen. fbi probes suspected breach of another democratic organization by russian hackers. the washington post. 29 july 2016. web. 29 dec. 2016.
+17. pelosi, nancy. dccc cyber breach. 13 august 2016. email. u.s. house of representatives. washington, dc. politico. web. 29 dec. 2016.
+18. lipton, eric. shane, scott. democratic house candidates were also targets of russian hacking. the new york times. 13 dec. 2016. web. 29 dec. 2016.
+19. ibid. from olympic slight to data leak:
+investigating apt28 at the world anti-doping agency as news of the dnc breach spread, apt28 was preparing for another set
+of operations: countering the condemnation that russia was facing after
+doping allegations and a threatened blanket ban of the russian team
+from the upcoming rio games. russia, like many nations, has long viewed
+success in the olympic games as a source of national prestige and soft
+power on the world stage. the doping allegations and prospective ban
+from the games further ostracized russia, and likely provided motivation
+to actively counter the allegations by attempting to discredit anti-doping
+agencies and policies. our investigation of apt28 s compromise of
+wada s network, and our observations of the surrounding events reveal
+how russia sought to counteract a damaging narrative and delegitimize
+the institutions leveling criticism. allegations of russian athletes widespread doping
+nov (2015) wada declares the
+russian anti-doping
+agency (rusada) non-
+compliant.24 wada-commissioned
+report documents
+evidence of russian
+athletes widespread
+doping.25 russian athletes were
+barred from competing
+in the olympic games.26 apt28 compromises wada
+early aug apt28 sends spear
+phishing emails to
+wada employees.27 apt28 uses a legitimate
+user account belonging
+to a russian athlete to
+log into wada s anti-
+doping administration
+and management
+system (adams)
+database.28 apt28 gains access
+to an international
+olympic committee
+account created
+specifically for the 2016
+olympic games, and
+views and downloads
+athlete data.29 special report / apt28: at the center of the storm false hacktivist personas claim to target wada, leak athlete data the actor
+@anpoland,
+purporting to
+represent anonymous poland, claims to have
+defaced the
+wada website.30 on august 11
+@anpoland threatens
+to conduct a ddos
+attack against and
+leak data from wada,
+but fails to follow
+through on the
+threats.31,32 wada releases a
+statement confirming
+the breach and
+attributes the
+compromise and
+theft of athlete
+medical data
+to apt28.35 fancy bears hack
+team releases five
+additional batches
+of medical files for
+high-profile athletes
+from multiple nations,
+including the u.s.,
+which had applied
+for and received
+therapeutic use
+exemptions (tues)
+for medications
+otherwise banned
+from competition.36 claiming to support fair play and clean
+sport, fancy bears hack team calls tues licenses for doping. 37 fancy bears hack
+team , a previously
+unknown group
+purporting to
+be affiliated with
+anonymous, claims
+via twitter to have
+compromised wada,
+and directs readers
+to a website hosting
+stolen documents.33 in tweets to
+international
+journalists and
+twitter accounts
+that disseminate
+hacktivist and
+information security
+news, fancy bears hack team claims
+to have proof of
+american athletes
+taking doping. 34 based on this timeline of leak and threatened leak
+activity, as well as strikingly similar characteristics and
+distribution methods shared between @anpoland and fancy bears hack team, the same operators are highly
+likely behind the two personas. wada officials, citing
+evidence provided by law enforcement, stated that the
+threat activity originated in russia, possibly in retaliation for wada s exposure of russia s expansive, state-run
+doping.38 the statement prompted denials from the
+russian government, with russian sports minister
+vitaly mutko asking, how can you prove that the
+hackers are russian? you blame russia for everything,
+it is very in fashion now. 39 20. gallagher, sean. guccifer 2.0 posts dccc docs, says they re from clinton foundation. ars technica. 4 oct. 2016. web. 3 jan. 2017.
+21. russian hackers suspected in french tv cyberattack. deutsche welle. 6 oct. 2015. web. 29 dec. 2016.
+22. joselow, gabe. election cyberattacks: pro-russia hackers have been accused in past. nbc news. 3 nov. 2016. web. 29 dec. 2016.
+23. clayton, mark. ukraine election narrowly avoided wanton destruction from hackers (+video). the christian science monitor. 17 june 2014. web. 2 jan. 2017.
+24. foundation board media release: wada strengthens anti-doping worldwide. world anti-doping agency. 18 november 2015.
+25. russia state-sponsored doping across majority of olympic sports, claims report. the bbc. 18 july 2016. web. 29 dec. 2016.
+26. macguire, eoghan. almasy, steve. 271 russian athletes cleared for rio games. cnn. 5 august 2016. web. 29 dec. 2016.
+27. cyber security update: wada s incident response. world anti-doping agency. 5 oct. 2016. web. 3 jan. 2017.
+28. wada confirms attack by russian cyber espionage group. world anti-doping agency. 13 sept. 2016.
+29. wada confirms another batch of athlete data leaked by russian cyber hackers fancy bear. world anti-doping agency. 14 sept. 2016. web. 29 dec. 2016. <>
+30. [op pl]. www.tas- . online video clip. youtube. youtube, 9 aug. 2016. web. 3 jan. 2017.
+35. wada confirms attack by russian cyber espionage group. world anti-doping agency.13 sept. 2016.
+36. russian hackers leak simone biles and serena williams files. the bbc. 13 sept. 2016. web. 29 dec. 2016.
+37. rumsby, ben. us superstars serena and venus williams and simone biles given drugs exemption, russian hackers reveal. the telegraph. 14 sept. 2016. web. 29 dec. 2016.
+38. luhn, alec. fancy bears origins unclear but russia seizes chance to put boot into wada. 15 sept. 2016. web. 29 dec. 2016.
+39. gibson, owen. russian sports minister vitaly mutko denies link to wada hackers. the guardian. 14 sept. 2016. web. 29 dec. 2016. special report / apt28: at the center of the storm conclusion since releasing our 2014 report, we continue to assess that
+apt28 is sponsored by the russian government. we further
+assess that apt28 is the group responsible for the network
+compromises of wada and the dnc and other entities
+related to the 2016 u.s. presidential election cycle. these
+breaches involved the theft of internal data - mostly emails that was later strategically leaked through multiple forums
+and propagated in a calculated manner almost certainly
+intended to advance particular russian government aims. in
+a report released on january 7 2017, the u.s. directorate of
+national intelligence described this activity as an influence
+campaign. this influence campaign - a combination of network
+compromises and subsequent data leaks - aligns closely
+with the russian military s publicly stated intentions and
+capabilities. influence operations, also frequently called information operations, have a long history of inclusion
+in russian strategic doctrine, and have been intentionally
+developed, deployed, and modernized with the advent of
+the internet. the recent activity in the u.s. is but one of
+many instances of russian government influence operations
+conducted in support of strategic political objectives, and it
+will not be the last. as the 2017 elections in europe approach
+- most notably in germany, france, and the netherlands - we
+are already seeing the makings of similarly concerted efforts. special report / apt28: at the center of the storm appendix:
+apt28 s tools, tactics, and operational changes in our 2014 report, we identified apt28 as a suspected russian
+government-sponsored espionage actor. we came to this conclusion
+in part based on forensic details left in the malware that apt28 had
+employed since at least 2007. we have provided an updated version of
+those conclusions, a layout of the tactics that they generally employ,
+as well as observations of apparent tactical shifts. for full details,
+please reference our 2014 report, apt28: a window into russia s cyber
+espionage operations? apt28 employs a suite of malware with features indicative of the group s
+plans for continued operations, as well as the group s access to resources
+and skilled developers. key characteristics of apt28 s toolset include: a flexible, modular framework that has allowed apt28 to consistently evolve its toolset since at least 2007. use of a formal coding environment in which to develop tools, allowing the group to create and deploy custom
+modules within its backdoors. incorporation of counter-analysis capabilities including runtime checks to identify an analysis environment, obfuscated
+strings unpacked at runtime, and the inclusion of unused
+machine instructions to slow analysis. code compiled during the normal working day in the moscow
+time zone and within a russian language build environment. over 97% 88% of of apt28 s malware samples were compiled during
+the working week samples compiled between 8am and 6pm
+in the timezone that includes major russian
+cities such as moscow and st. petersburg in addition, apt28 s developers
+consistently built
+malware in russian language settings until 2013 special report / apt28: at the center of the storm 9 apt28 s malware suite tool role ak a chopstick backdoor xagent, webhp, splm, (.v2 fysbis) eviltoss backdoor sedreco, azzy, xagent, advstoreshell, netui gamefish backdoor sednit, seduploader, jhuhugit, sofacy sourface downloader older version of coreshell, sofacy oldbait credential
+harvester sasfis coreshell downloader newer version of sourface, sofacy apt28 s operational changes since 2014
+apt28 continues to evolve its toolkit and refine its tactics
+in what is almost certainly an effort to protect its operational
+effectiveness in the face of heightened public exposure and
+scrutiny. in addition to the continued evolution of the group s
+first stage tools, we have also noted apt28: leveraging zero-day vulnerabilities in adobe flash player, using a profiling script to deploy zero-days and other tools more selectively, decreasing the chance that researchers
+and others will gain access to the group s tools. increasing reliance on public code depositories, such as carberp, powershell empire, p.a.s. webshell, metasploit
+modules, and others in a likely effort to accelerate their
+development cycle and provide plausible deniability. obtaining credentials through fabricated google app authorization and oauth access requests that allow
+the group to bypass two-factor authentication and other
+security measures. moving laterally through a network relying only on legitimate tools that already exist within the victims systems, at times forgoing their traditional toolset for the
+duration of the compromise. these changes are not only indicative of apt28 s skills,
+resourcefulness, and desire to maintain operational
+effectiveness, but also highlight the longevity of the
+group s mission and its intent to continue its activities
+for the foreseeable future. special report / apt28: at the center of the storm apt28 tactics
+we have observed apt28 rely on four key tactics when attempting
+to compromise intended targets. these include sending spear-phishing
+emails that either deliver exploit documents that deploy malware onto
+a user s systems, or contain a malicious url designed to harvest the
+recipients email credentials and provide access to the their accounts.
+apt28 has also compromised and placed malware on legitimate websites
+intending to infect site visitors, and has gained access to organizations by
+compromising their web-facing servers infection with malware via spear phish webmail access via spear-phish craft exploit document
+with enticing lure content. register a domain spoofing that of a legitimate
+organization (e.g., register a domain spoofing a webmail service or an organization s webmail portal send exploit document to victim. send link mirroring structure
+of legitimate organization s site that is designed to
+expire once users clickit. victim opens document, and malware is installed by
+exploiting a vulnerability apt28 is in your network. send email to targets instructing them to reset their passwords. send email to victims
+warning of security risk
+and asking them to enable security service. recipient visits fake login page person is asked to authorize and enters credentials. application to view mail and gives access. apt28 uses stolen credentials to access
+mailbox and read email. apt28 leverages oauth privileges given to malicious application to read email. special report / apt28: at the center of the storm 11 tactic tactic infection with malware via strategic web compromise (swc) access through internet-facing servers compromise a legitimate site and set up malicious iframe. network reconnaissance to find vulnerable software. users of the site are redirected using malicious iframe and profiled exploitation of previously known vulnerabilities present on unpatched systems. (e.g, this technique was used to compromise and infect visitors to numerous polish government websites in 2014). leverage initial compromise to access other systems and move deeper into the victim network. exploit is served to users matching the target profile and malware is installed on their system. apt28 is in your network. apt28 is in your network. special report / apt28: at the center of the storm to download this or other
+fireeye isight intelligence reports,

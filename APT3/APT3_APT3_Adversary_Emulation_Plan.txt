@@ -1,0 +1,881 @@
+
+apt3 adversary emulation plan
+authors: christopher a. korban
+douglas p. miller
+adam pennington
+cody b. thomas
+september 2017
+mt r 1 7 04 4 6
+mit re t e c hn ic a l r e p ort
+dept. no.: j83l
+project no.: 0717mm09-aa
+the views, opinions and/or findings
+contained in this report are those of the
+mitre corporation and should not be
+construed as an official government position,
+policy, or decision, unless designated by
+other documentation. abstract
+to advance the practice of security testing through adversary emulation, we present this
+emulation plan to be used by a team looking to emulate the apt3 threat group. it includes their
+commonly known behavior through the tactics, techniques, and procedures that have been
+documented in publicly available reporting. to ground the plan in a common taxonomy, it is
+based on the mitre att&ck model. the scope covers the adversary lifecycle, from initial
+network compromise through exfiltration. it discusses tools, methods, style, tradecraft, and endgoals. to fill intel gaps, best-estimates based on experience in threat intelligence and adversary
+emulation are provided.iv
+acknowledgments
+we would like to acknowledge the people that contributed to the content, review, and format of
+this document. this includes: frank duff, katie nickels, and blake strom.
+table of contents overview
+in an effort to advance the practice of security testing through adversary emulation and
+adversarial engineering, we present this emulation plan to be used by an adversary emulation
+team looking to emulate the threat group commonly known as apt3. the plan includes the
+group s commonly known behavior through the tactics, techniques, and procedures (ttps) that
+have been documented in publicly available threat reporting. to ground the plan in a common
+taxonomy, it is based on the mitre att&ck model1. the scope of this emulation plan covers
+the adversary lifecycle, beginning with initial network compromise and ending with exfiltration.
+it discusses tools, methods, style, tradecraft, and end state objectives. historically, information
+about attackers on-target actions and goals have been difficult to obtain and apt3 reporting is
+no exception; however, the document bases instructions off publicly accessible sources whenever
+possible, focusing on sources that could be cross-referenced to some degree. to fill the intel
+gaps, the authors relied on their experience in threat intelligence and adversary emulation for
+best-estimates.
+threat reporting sources vary widely, and correlation of activity to a threat group is not
+straightforward, and as such the authors have worked to ensure reputable sources are referenced.
+while many threat intelligence sources work to provide information that is as accurate as
+possible to the community, there is still an inherent risk that third-party threat reporting may
+provide inaccurate information.
+note: within this document, italicized text represents notes. these notes represent comments that
+are not supported by evidence but represent the author s opinion. for example, they discuss
+concessions that have been made to make the emulation instructions practical or to indicate
+where inconsistent or nonexistent reporting has required gaps to be filled in with best-guess
+estimates of adversary behavior.
+references are indicated in-line with bracketed numbers [#] and listed at the end of this
+document.
+apt3 overview
+att&ck group id: group/g0022
+aliases: apt3, gothic panda, pirpi, ups team, buckeye, threat group-0110, tg-0110
+operations: clandestine wolf, clandestine fox [1], operation double tap [2]
+target industries: aerospace and defense, construction and engineering, high tech,
+telecommunications, transportation [1]
+1 https://attack.mitre.org2-2
+adversary objectives: reporting indicates apt3 actors are interested in exfiltration of
+documents [3]. they have been known to target printers and file shares [3]. they also target
+intellectual property, often industrial in nature. [4].
+background: apt3 is a china-based threat group. apt3 has traditionally targeted a myriad of
+us and international targets; however, reporting dated september 2016 indicates the group
+shifted focus around march 2016 to target hong kong organizations [3].
+apt3 s process can be broken up into three main phases as shown below:
+1. initial setup of command and control (c2), defense evasion techniques, and getting initial
+compromise
+2. discovery, privilege escalation, lateral movement, persistence, and execution
+3. collection, data staging, and exfiltration
+figure 1 apt3's three phases of action
+these phases are broken up into more detail in the following sections. the next section is about
+the tools that apt3 uses for their operations, how to emulate them, and what att&ck tactics
+and techniques they correspond to. command-line examples, as well as descriptions of what the
+tools do, are included in the accompanying apt3 adversary emulation field manual for
+reference.
+2.1 apt3 tools
+apt3 uses a combination of custom and openly available tools. because custom adversary tools
+can have hidden functionality, be difficult to tailor to new environments, or utilize server-side
+controllers which may be unavailable, recommendations are made for replacements that can
+accurately perform similar activity. adversary emulators and defenders should be aware that2-3
+replacement tools will typically leave different footprints than adversary tools, specifically
+different file hashes, command line arguments, antivirus detection, api calls, and network
+signatures. there are lots of ways to accomplish the same objectives with built-in windows
+tools, but the focus for apt3 tends to be on more simplistic tools rather than more advanced
+windows utilities like wmic, winrm, and powershell. the following table describes how to
+emulate the tools as well as detailing which att&ck tactics are represented by them.
+table 1 apt3 tool usage
+name software
+type
+availability emulation notes att&ck tactic
+pirpi, shotput, ookiecutter
+rat custom standard windows
+binary based postcompromise toolkits
+such as metasploit
+(free) [5] or cobalt
+strike (paid) [6]
+defense evasion,
+credential
+access,
+discovery,
+plugx [7] [8] rat custom, but seen
+across multiple
+groups
+osinfo [3] information
+discovery
+custom several windows
+commands can be
+used to gather
+similar information
+(net use,
+systeminfo, set),
+also powershell
+scripts [9]
+discovery
+customized
+pwdump [3]
+windows
+password
+dumper
+unmodified
+version openly
+available
+standard version of
+pwdump or
+mimikatz
+credential access
+customized
+mimikatz
+windows
+password
+dumper
+unmodified
+version openly
+available
+standard version of
+mimikatz [10]
+credential access
+keylogger [3] keylogger custom numerous publicly
+available
+keyloggers
+collection,
+credential access
+remotecmd [3] remote
+execution
+custom operates similarly
+to psexec [11]
+execution,
+lateral movement2-4
+dsquery information
+discovery
+openly available,
+default on
+windows server
+a copy of dsquery
+can be brought onto
+a system if it
+doesn t have it by
+default.
+discovery
+chromepass [3] browser
+password
+dumper
+openly available chromepass [12] is
+a publicly available
+program from
+nirsoft
+credential
+access,
+collection
+lazagne [3] application
+password
+dumper
+openly available lazagne [13]
+source code is
+freely available on
+github
+credential access
+scanbox [3] exploitkit/
+host
+profiler, and
+javascript
+keylogger
+custom used just before
+initial exploit,
+effectively out of
+scope since pre -
+initial network
+compromise.
+n/a (case could
+be made for collection for
+keylogger part
+however)
+2.2 apt3 tool functionality
+apt3 s custom tools provide a breadth of functionality. this section aims to break down these
+custom tools from the table above a bit further into their specific functions and show how they
+relate to att&ck, windows utilities, and toolkits that are open source and commercially
+available.
+2.2.1 pirpi functions
+table 2 pirpi functions and emulation
+pirpi function windows
+built-in
+cobalt
+strike/beacon
+metasploit/meterpreter att&ck
+technique
+list processes tasklist ps, shell
+qprocess *
+ps t1057 - process
+discovery
+download file ftp download
+[filename]
+download [filename] t1041 -
+exfiltration over
+command and
+control channel2-5
+execute file /c shell
+[filename]
+shell /c [filename]
+execute f [filename] [ i] [-h]
+t1059 -
+command-line
+interface
+load/execute
+dll (from
+disk) ],
+entry
+shell rundll32 ],
+entry
+post/windows/manage/
+reflective_dll_inject
+t1085 - rundll32
+load/execute
+dll (from
+memory)
+post/windows/manage/
+reflective_dll_inject
+list servers in
+domain
+net group domain
+computers /domain
+shell net group domain
+computers /domain
+post/windows/gather/
+enum_ad_computers
+t1018 - remote
+system
+discovery
+list tcp
+connections
+netstat -ano shell netstat -
+ano
+post/windows/gather/
+tcpnetstat
+t1049 - system
+network
+connections
+discovery
+list connected
+users
+net session shell net
+session
+post/windows/gather/
+enum_logged_on_users
+t1049 - system
+network
+connections
+discovery
+list domain
+controllers
+net group domain
+controllers /domain,
+nltest /dclist
+shell net group domain
+controllers /domain,
+shell nltest
+/dclist,
+net dclist
+t1049 - remote
+system
+discovery
+list
+directories
+dir, tree shell dir ls t1083 - file and
+directory
+discovery
+terminate
+process
+taskkill shell taskkill
+/pid [pid]
+kill [pid]
+delete file del [filename] shell del
+[filename]
+execute f del
+[filename] t1107 - file
+deletion2-6
+sleep sleep [time in
+seconds]
+get network
+adapter info
+ipconfig /all,
+netsh config
+shell ipconfig
+/all
+execute f ipconfig /all t1016 - system
+network
+configuration
+discovery
+upload file ftp upload
+[filename]
+upload [filename]
+[destination]
+t1105 - remote
+file copy
+2.2.2 plugx functions
+table 3 plugx functions and emulation
+note: the plugx table differs from the other tables in that each row refers to a module, not
+function, of plugx. modules within plugx leverage other plugx modules to perform functions,
+for example, the disk module allows other modules to use any of the functions it provides on the
+disk, such as execute, create new files, copy, delete, etc..
+plugx
+modules [8]
+windows
+built-in
+cobalt
+strike/beacon
+metasploit/
+meterpreter
+att&ck
+technique
+disk .\[file], type
+[file], del, copy
+shell
+[file/type/del/c
+opy], upload
+execute -f shell
+[file/type/del/copy] ,
+upload
+t1059 command-line
+interface,
+t1083 file
+and directory
+discovery
+process tasklist,
+taskkill
+ps, shell
+taskkill /pid
+[pid]
+ps, kill [pid] t1057 process
+discovery
+service sc
+[query/start/sto
+p/
+config/create/
+delete]
+shell sc
+[query/start/sto
+p/
+config/create/
+delete]
+execute f sc
+[query/start/stop/config/c
+reate/delete] t1050 new
+service, t1031 modify
+existing
+service, t1035 service
+execution2-7
+regedit regedit shell regedit reg t102 query
+registry, t1112 modify
+registry
+netstat netstat shell netstat post/windows/gather/tcpn
+etstat
+t1049 system
+network
+connections
+discovery
+nethood net view
+[/domain]
+shell net view
+[/domain]
+execute -f net
+view [/domain] t1018 remote system
+discovery
+option shutdown
+[/l,/r,/t]
+shell shutdown
+[/l,/r/t]
+execute -f shutdown [/l,/r,/t] n/a
+portmap details still
+n/a.
+details still
+n/a.
+details still n/a. details still
+n/a.
+screen printscreen
+key if gui
+available
+screenshot pid
+[x64]
+migrate pid | use espia |
+screengrab
+t1113 screen
+capture
+shell /c
+[command]
+shell
+[command]
+shell or execute -f -c -i t1059 command-line
+interface
+telnet pkgmgr
+/iu: telnetserv
+er *
+shell pkgmgr
+/iu: telnetserv
+er run metsvc t1050 new
+service, t1108
+redundant
+access
+sql osql** shell osql auxiliary/admin/mssql/m
+ssql_sql
+n/a
+keylog n/a keylogger [pid]
+[x86|x64]
+keyscan_start,
+keyscan_dump
+t1056 input
+capture
+*note: pkgmgr has been archived and may not be on newer windows systems.
+**note: osql is usually found on windows server systems and will be replaced with sqlcmd
+instead.2-8
+2.2.3 osinfo functions
+table 4 osinfo functionality and emulation
+osinfo
+function
+windows
+built-in
+cobalt
+strike/beacon
+metasploit/meterpreter att&ck
+technique
+domain ipconfig,
+whoami,
+net config
+workstation
+shell ipconfig ipconfig t1016 - system
+network
+configuration
+discovery
+osinfo systeminfo,
+ver, set
+systemprofiler sysinfo, get_env.rb, run
+winenum
+t1082 - system
+information
+discovery
+tsinfo reg query shell reg
+query
+reg (built into meterpreter,
+not windows reg)
+t1012 - query
+registry
+netuseinfo net use shell net use enum_shares.rb t1049 - system
+network
+connections
+discovery
+shareinfo net share,
+net view
+shell net share enum_shares.rb,
+auxiliary/scanner/smb/
+smb_enumshares
+t1135 - network
+share discovery
+connect test ping shell ping netenum.rb t1018 - remote
+system
+discovery
+local group
+user info
+net user,
+net
+localgroup
+net
+localgroup,
+shell net user
+post/windows/gather/
+enum_domain_tokens,
+auxiliary/scanner/smb/
+smb_enumusers
+t1087 - account
+discovery,
+t1069 -
+permission
+groups
+discovery
+global group
+user info
+net user,
+net group
+net group,
+shell net user
+domain_list_gen.rb,
+post/windows/gather
+enum_domain_group_users,
+auxiliary/scanner/smb/
+smb_enumusers
+t1087 - account
+discovery,
+t1069 -
+permission
+groups
+discovery2-9
+group
+administrators
+net
+localgroup,
+net group
+net
+localgroup, net
+group
+domain_list_gen.rb,
+post/windows/gather
+enum_domain_group_users,
+auxiliary/scanner/smb/
+smb_enumusers
+t1087 - account
+discovery,
+t1069 -
+permission
+groups
+discovery
+group power
+users
+net
+localgroup,
+net group
+net
+localgroup, net
+group
+domain_list_gen.rb,
+post/windows/gather
+enum_domain_group_users,
+auxiliary/scanner/smb/
+smb_enumusers
+t1087 - account
+discovery,
+t1069 -
+permission
+groups
+discovery
+group
+domain
+admins
+net
+localgroup,
+net group
+net
+localgroup, net
+group
+domain_list_gen.rb,
+post/windows/gather
+enum_domain_group_users,
+auxiliary/scanner/smb/
+smb_enumusers
+t1087 - account
+discovery,
+t1069 -
+permission
+groups
+discovery
+2.2.4 pwdump functions
+table 5 pwdump functions and emulation
+pwdump
+function
+cobalt strike/beacon metasploit/meterp
+reter
+att&ck technique
+dump creds
+from sam
+mimikatz !lsadump:sam run hashdump,
+hashdump
+t1003 - credential
+dumping
+inject into
+lsass
+logonpasswords,
+hashdump, mimikatz
+mimikatz s wdigest t1003 -credential
+dumping
+2.2.5 mimikatz functions
+table 6 mimikatz functions and emulation
+mimikatz
+function
+cobalt strike/beacon metasploit/meterpreter att&ck technique
+dump creds
+from sam
+mimikatz !lsadump:sam run hashdump,
+hashdump
+t1003 - credential
+dumping
+inject into
+lsass
+logonpasswords,
+hashdump, mimikatz
+mimikatz s wdigest t1003 -credential
+dumping2-10
+2.2.6 remotecmd functions
+table 7 remotecmd functions and emulation
+remotecmd
+function
+windows built-in other tools att&ck technique
+smb copy net use, copy, xcopy, psexec t1105 - remote file copy
+remote service sc psexec t1021 - remote services
+remote schtasks schtasks, at t1053 - scheduled task
+2.2.7 dsquery functions
+table 8 dsquery function and emulation
+dsquery
+function
+cobalt
+strike/beacon
+metasploit/meterpreter att&ck technique
+account and
+permission
+groups
+discovery
+shell dsquery* shell / dsquery t1087 account
+discovery, t1069 permission groups
+discovery
+* note : dsquery is found on windows server systems and may not be on all machines by
+default.
+2.2.8 lazagne functions
+table 9 lazagne functions and emulation
+lazagne function cobalt
+strike/beacon
+metasploit/meterpreter att&ck
+technique
+gather credentials
+from browsers, im
+software,
+databases, memory,
+and other software
+post/windows/gather/credentials/
+credential_collector,
+post/multi/gather/firefox_creds
+t1081 - credentials
+in files, t1003 credential
+dumping3-11
+2.2.9 scanbox functions
+table 10 scanbox functions and emulation
+scanbox function function notes emulation notes
+exploitkit-style recon
+and profiling
+software, browser plugins, flash,
+sharepoint, adobe pdf reader,
+chrome security plugins, java,
+internal ip address
+n/a since this is used before
+initial compromise.
+keylogger written in javascript, only logs
+what s typed while on the page
+that loads the keylogger js.
+n/a since this is used before
+initial compromise.
+emulation phases
+apt3 disseminates spam-like phishing campaigns with various payload delivery methods [1].
+once on a machine, the actors collect information about the victim such as connected users [14]
+and analyze it for its value, trying to determine where they landed and what access they have.
+admin access is an obvious main target due to the increased access it will likely provide. the
+actors then drop multiple backdoors, usually 2-4 on the initial system and 5+ versions within the
+first few hops, with independent c2 profiles for redundancy [redundant access t1108]. next
+they then dump as many credentials as possible, and quickly continue spreading throughout the
+network. they specifically go after file servers and print servers [1] [3]. once they re moved to
+all the machines they think have value, they collect all the documents they want, package them
+up and password protect them, and exfiltrate them out of the organization [15]. in some cases,
+however, they ve been known to persist within a network for very lengthy periods without ever
+exfiltrating data.
+the sections below show how apt3 acts through their entire lifecycle. phase 1 documents what
+happens during initial compromise, phase 2 highlights techniques used during network
+propagation, and phase 3 documents one way they have been known to perform exfiltration.
+3.1 phase 1 initial compromise
+the goal of the initial compromise phase is to achieve successful code execution and control of
+a system within the target environment.
+apt3 primarily conducts initial compromise using spear phishing, delivering implants through
+both malicious attachments and malicious links. they have used new 0-days on multiple
+browsers [15]. they have targeted existing 0-days in internet explorer [2], windows [2], and
+flash [14]. they have also been known to compromise weakly secured legitimate websites to
+which users are directed through spear phishing emails [16].3-12
+3.1.1 implant command and control
+apt3 implants issue command and control (c2) traffic as http get requests that beacon at set
+intervals [14]. the http cookie field contains information for the c2 server, which responds
+with a webpage that contains the command encoded within a specific html tag [15]. apt3
+implants have also been known to use custom binary protocols [2]. pirpi.2014 and pirpi.2015
+both contain several kinds of sleep and anti-sandbox strategies that cause the rat to pause
+between executions [15]. some of the pirpi instances have been known to also use ssl for their
+communications and even include public/private keys within the binaries [17]. this level of c2
+customization can be achieved with cobalt strike s malleable c2 profiles, as seen in the
+accompanying malleable c2 profile modeled on [14].
+3.1.2 defense evasion
+many of apt3 s open source tools are customized or modified to prevent detection.
+additionally, apt3 s malware uses a series of anti-disassembly techniques [3], including
+requiring certain command line parameters to run [17]. these are defense evasion techniques that
+apt3 sets up before getting initial access to the target environment.
+it is recommended to use anti-antivirus (av) capabilities to prevent av detection of commonly
+available tools. if sandboxing is a problem, possibly encrypt tools to bypass sandboxing. an
+example of this would be veil-evasion [18] or artifact kit [19]. attack techniques: t1027 obfuscated files or information, t1045 software packing, t1066 indicator removal from
+tools.
+3.1.3 initial access
+for initial compromise, both web server drive-by and malicious attachments are within apt3 s
+tradecraft. the social engineering toolkit (free) [20] and cobalt strike (paid) [6] have features
+that support these methods. case 1 spear phishing with browser exploit [2]
+in late november 2014 an apt3 campaign used a spear phishing email (see appendix a)
+containing a link to a malicious site. the site contained javascript that triggered cve-2014-6332
+(an internet explorer exploit [21]) which launched a vbscript and powershell based payload.
+the powershell script in turn downloaded and ran a stager which dropped two files, and . attempts to trigger cve-2014-4113 (a windows kernel exploit [22])
+and run with the resultant elevated privileges. runs two commands: /c whoami
+schtasks /create /tn "mysc" /tr c:\users\public\ /sc onlogon /ru "system"
+the first command is used to check that the process is running as system. the second
+establishes persistence via schtasks.3-13
+in addition, the implant connected to a command and control server over port 1913 using the
+socks5 protocol. this dropper supports writing to or executing files at the following locations: in addition, the software supports exfiltrating the file written at the following location [t1074 data staged]: in october 2014, a downloader like was observed to download pirpi. spear phishing with malicious rar attachment [3]
+in attacks dating late 2015 to early 2016 apt3 has been known to use a zip archive containing a
+windows shortcut file with an internet explorer logo. clicking on this link led to a download of
+apt3 s pirpi rat. spear phishing with malicious rar attachment [7]
+in attacks reported in june 2014, apt3 actors sent a rar archive as an email attachment. it
+contained a resume and program purported to be written by the job candidate. the program, , contained a legitimate version of ttcalc but also dropped pirpi to:
+%userprofile%/application and a bat file that was saved at [t1064 scripting]:
+%userprofile%/start the bat file contained the following script:
+@echo off /c start "c:\documents and settings\admin\application " updvamt
+the bat file will be triggered when the user logged in and would have caused pirpi to start with
+rundll32 [t1085 rundll32]. spear phishing with malicious rar attachment [7]
+reported in june 2014, apt3 actors sent an encrypted self-extracting rar attachment. the
+rar contained a trojanized setup program which attempts to drop and run another self-extracting rar which drops a dll version of the plugx rat at:
+%allusersprofile%\chrome_frame_helper3-14
+the rat is loaded via dll side-loading with a valid version of chrome [t1073 dll sideloading]. flash exploit with malware concealed within gif [14]
+reported in 2015, two different apt3 campaigns targeted flash exploits, cve-2014-1776 and
+cve-2015-3113. in both cases the flash exploit loaded the payload (the pirpi rat) from
+specially crafted gif images. victim profiling [16]
+reported in july 2015, apt3 used spear phising to direct targets to a compromised site. this site
+had scanbox installed which was used to profile the victims and in some cases, deliver exploits
+to selected victims.
+3.2 phase 2 - network propagation
+the goal of the network propagation phase is to identify and move to desired systems within the
+target environment with the intention of discovering credentials and documents for exfiltration.
+publicly reported direct observation of apt3 s network propagation techniques is almost nonexistent. one report that discusses general characteristics of apt3 is [23], but it is uncertain
+what data sources were used to compile the listed ttps. aside from that report we draw
+conclusions of how apt3 operates based on the capabilities of pirpi and other tools that they
+are reported to use. there are some persistence techniques that they have used during initial
+compromise that can be applied to network propagation. despite this, there are significant
+gaps in the public knowledge of apt3 s tradecraft. where necessary we fill in details with best
+guesses or recommendations.
+the process within this phase can be described with the below diagram. each step within this
+phase is broken out by att&ck tactic and the corresponding apt3 specific techniques
+documented in reports. a command-line reference for emulating the specific att&ck
+techniques with built-in windows utilities, cobalt strike, and metasploit can be found in the
+accompanying apt3 adversary emulation field manual .3-15
+3.2.1 host operations discovery
+apt3 can perform discovery with its osinfo tool and by running built-in windows utilities on
+the command-line using . based on the commands available in apt3 s toolset, there is a
+lot of time spent enumerating domain groups with elevated permissions like domain admins , enterprise admins , and power users [t1069 - permission groups discovery]. there s also
+figure 2 apt3 phase 2 flow chart3-16
+a heavy emphasis on enumerating users in these special groups with the net user command
+[t1087 account discovery].
+when doing discovery, certain actions are very closely intertwined
+(as shown grouped together in the above diagram). querying the
+domain for the domain admins group [t1069 permission
+groups discovery] returns the users that are members of that
+group, which then involves looking up those users to see if they re
+part of any other interesting groups [t1087 account discovery].
+this process can repeat for a while as all interesting users and
+groups are enumerated. similarly, querying systems for their
+configuration [t1016 system network configuration discovery]
+and their current network connections [t1049 system network
+connections discovery] are heavily integrated. local privilege escalation
+credential dumping and persistence may require local privilege escalation if the attacker does
+not have control of a high integrity process; however, the
+only reporting available on local privilege escalation
+methods used by apt3 is cve-2014-4113 [2]. it is
+possible that their strong reliance on credential access
+(detailed later) allows them to use credentials with
+increasing levels of access in place of other local
+privilege escalation mechanisms. their perceived focus
+during this phase, however, is on finding credentials that
+allow direct admin permissions. in this case, control falls
+through to credential access or persistence.
+during an engagement, adversary emulators may find it
+necessary to perform local privilege escalation due to
+time constraints. most common frameworks (including metasploit and cobalt strike) contain
+some methods for privilege escalation. also, uacbypass [24] and powerup [9] are common and
+freely available tools that may be used to perform privilege escalation.
+figure 3 apt3 discovery
+att&ck techniques
+figure 4 apt3 privilege escalation
+att&ck techniques3-17 persistence
+apt3 has used multiple methods for persistence: creating a
+service [23] (t1050 - new service), creating a scheduled task
+[2] (t1053 - scheduled task), and also by placing scripts in the
+startup folder [7] [t1060 - registry run keys/start folder].
+apt3 has replaced the sticky keys binary
+( ) with [t1015 -
+accessibility features] and enabled remote desktop protocol
+(rdp) if it is not already enabled [t1076 remote desktop
+protocol]. this specific persistence technique has an added
+benefit of allowing an operator to open a command prompt
+when connected over rdp without having to provide valid
+credentials [23].
+apt3 has been known to create or enable accounts, for
+example support_388945a0 , and add them to the local admin
+group [23] [t1136 create account]. presumably this is done
+for easier future access.
+recommendation: on new hosts, establish persistence by creating a
+service or schtasks. on systems where rdp capabilities are desired,
+it might also be useful to enable sticky keys and rdp. credential access
+apt3 uses many forms of credential access. they used
+customized versions of pwdump, and later a custom
+compiled version of mimikatz, to search for cached
+windows credentials [t1003 - credential dumping] as well
+as chromepass and lazagne [(t1081 - credentials in
+files], to search though browser and other credential
+caches. their pwdump tool injects itself into and
+is executed by running the gethash export of the [3] mimikatz is used to dump plaintext
+credentials by injecting into . [t1003 - credential
+dumping].
+they also install a keylogger, which can be used to
+discover credentials and remote systems [t1056 - input
+capture]. this keylogger installs itself as a service and
+records keystrokes in encrypted files such as
+thumbcache_96.dbx [t1027 obfuscated files or
+information] [3].
+figure 5 apt3
+persistence att&ck
+techniques
+figure 6 apt3 credential access
+att&ck techniques3-18
+3.2.2 lateral movement
+though publicly reported information on how apt3
+enumerates machines aside from related commands in
+apt3 s tools, they ve been known to use net view and
+dsquery to do so. this may be due to a lack of available
+information on how apt3 operates during an operation
+since most reports tend to be focused on forensic
+information. pirpi has commands that list servers in the
+domain, list tcp connections and retrieve connected users
+(t1049 - network connections discovery), and list domain
+controllers (t1018 - remote system discovery). some of
+this information may be used to identify target hosts for
+lateral movement. in addition to built-in windows utilities,
+there are some open source tools which collect similar
+information. apt3 will quickly spread to other machines as
+fast as possible, often checking for easy password reuse by
+trying to mount shares from other machines via net use [t1078 valid accounts] [t1077 - windows admin
+shares] [t1110 brute force].
+apt3 prioritizes file and printer servers.
+remote copy and execution
+apt3 uses a custom tool called remotecmd that can run
+commands on a remote system. it s not clear what
+protocol(s) are being used, but remotecmd supports file
+operations (upload, download, delete and rename) service
+operations (creation, deletion, start and stop) and scheduled
+tasks (at,schtasks). presumably these are done over smb (files), remote service (services) and
+remote schtasks (at).
+figure 7 apt3 lateral movement
+and execution att&ck techniques 3-19
+3.3 phase 3 - exfiltration
+it s likely that apt3 will compromise a
+network to a certain degree of satisfaction
+before starting to exfil, due to stealth
+concerns. depending on the defensive setup,
+exfiltration could be much noisier and
+noticeable than attempting to hide in the
+noise with lay-of-the-land tools.
+the only source we were able to find for
+apt3 exfiltration methods is from 2012. for
+exfiltration, they will identify office
+documents on the computer [23] [t1005 -
+data from local system]. they then drop the
+command-line chinese language version of
+winrar and use it to compress and encrypt the discovered documents [t1002 - data
+compressed]. this archive will then be stored in the recycle bin [23], usually on a machine
+designated as a staging server, which they move the exfiltration through [t1074 - data staged].
+data is exfiltrated over port 443 which is typically https traffic, however they have used ssl
+encryption [17] and normal http [23] [t1043 - commonly used port] .
+figure 8 apt3 exfiltration att&ck techniques 

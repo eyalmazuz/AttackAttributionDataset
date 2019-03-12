@@ -1,0 +1,52 @@
+systems affected
+microsoft windows operating systems overview
+this alert has been updated to reflect the u.s. government's public attribution of the "wannacry" ransomware variant to the north korean government. additional information on the attribution may be found in a press briefing from the white house. for more information related to wannacry activity, go to - . according to numerous open-source reports, a widespread ransomware campaign is affecting various organizations with reports of tens of thousands of infections in overcountries, including the united states, united kingdom, spain, russia, taiwan, france, and japan. the software can run in as many asdifferent languages. the latest version of this ransomware variant, known as wannacry, wcry, or wanna decryptor, was discovered the morning of may 12, 2017, by an independent security researcher and has spread rapidly over several hours, with initial reports beginning around 4:00 am edt, may 12, 2017. open-source reporting indicates a requested ransom of .1781 bitcoins, roughly $300 u.s. this alert is the result of efforts between the department of homeland security (dhs) national cybersecurity and communications integration center (nccic) and the federal bureau of investigation (fbi) to highlight known cyber threats. dhs and the fbi continue to pursue related information of threats to federal, state, and local government systems and as such, further releases of technical information may be forthcoming. description
+initial reports indicate the hacker or hacking group behind the wannacry campaign is gaining access to enterprise servers through the exploitation of a critical windows smb vulnerability. microsoft released a security update for the ms17-010 vulnerability on march 14, 2017. additionally, microsoft released patches for windows xp, windows 8, and windows serveroperating systems on may 13, 2017. according to open sources, one possible infection vector may be through phishing. technical details
+indicators of compromise (ioc)
+see ta17- and ta17- for iocs developed immediately after wannacry ransomware appeared. these links contain identical content in two different formats. see ta17- for iocs developed after further analysis of the wannacry malware. analysis
+three files were submitted to us-cert for analysis. all files are confirmed as components of a ransomware campaign identified as "wannacry", a.k.a "wannacrypt" or ".wncry". the first file is a dropper, which contains and runs the ransomware, propagating via the ms17-010/eternalblue smbv1.0 exploit. the remaining two files are ransomware components containing encrypted plug-ins responsible for encrypting the victim users files. for a list of iocs found during analysis, see the stix file. displayed below are yara signatures that can be used to detect the ransomware: dropper
+this artifact is a malicious pe32 executable that has been identified as a wannacry ransomware dropper. upon execution, the dropper attempts to connect to the following hard-coded uri: displayed below is a sample request observed: if a connection is established, the dropper will terminate execution. if the connection fails, the dropper will infect the system with ransomware.
+when executed, the malware is designed to run as a service with the parameters -m security . during runtime, the malware determines the
+number of arguments passed during execution. if the arguments passed are less than two, the dropper proceeds to install itself as the
+following service: once the malware starts as a service named mssecsvc2.0, the dropper attempts to create and scan a list of ip ranges on the local network
+and attempts to connect using udp ports 137,and tcp ports 139, 445. if a connection to portis successful, it creates an additional
+thread to propagate by exploiting the smbv1 vulnerability documented by microsoft security bulliten ms17-010. the malware then extracts &
+installs a pe32 binary from it's resource section named "r". this binary has been identified as the ransomware component of wannacrypt.
+the dropper installs this binary into " ." the dropper executes with the following command: note:
+=====
+when this sample was initially discovered, the domain "iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea[.]com" was not registered, allowing the
+malware to run and propagate freely. however within a few days, researchers learned that by registering the domain and allowing the
+malware to connect, it's ability to spread was greatly reduced. at this time, all traffic to " " is
+re-directed to a monitored, non-malicious server, causing the malware to terminate if it is allowed to connect. for this reason, we recommend
+that administrators and network security personnel not block traffic to this domain. impact
+ransomware not only targets home users; businesses can also become infected with ransomware, leading to negative consequences, including temporary or permanent loss of sensitive or proprietary information,
+disruption to regular operations,
+financial losses incurred to restore systems and files, and
+potential harm to an organization s reputation.
+paying the ransom does not guarantee the encrypted files will be released; it only guarantees that the malicious actors receive the victim s money, and in some cases, their banking information. in addition, decrypting files does not mean the malware infection itself has been removed. solution
+recommended steps for prevention apply the microsoft patch for the ms17-010 smb vulnerability dated march 14, 2017.
+enable strong spam filters to prevent phishing emails from reaching the end users and authenticate in-bound email using technologies like sender policy framework (spf), domain message authentication reporting and conformance (dmarc), and domainkeys identified mail (dkim) to prevent email spoofing.
+scan all incoming and outgoing emails to detect threats and filter executable files from reaching the end users.
+ensure anti-virus and anti-malware solutions are set to automatically conduct regular scans.
+manage the use of privileged accounts. implement the principle of least privilege. no users should be assigned administrative access unless absolutely needed. those with a need for administrator accounts should only use them when necessary.
+configure access controls including file, directory, and network share permissions with least privilege in mind. if a user only needs to read specific files, they should not have write access to those files, directories, or shares.
+disable macro scripts from microsoft office files transmitted via email. consider using office viewer software to open microsoft office files transmitted via email instead of full office suite applications.
+develop, institute, and practice employee education programs for identifying scams, malicious links, and attempted social engineering.
+run regular penetration tests against the network, no less than once a year. ideally, run these as often as possible and practical.
+test your backups to ensure they work correctly upon use.
+recommendations for network protection apply the patch (ms17-010). if the patch cannot be applied, consider: disabling smbv1 and
+blocking all versions of smb at the network boundary by blocking tcp portwith related protocols on udp ports 137-138 and tcp port 139, for all boundary devices.
+note: disabling or blocking smb may create problems by obstructing access to shared files, data, or devices. the benefits of mitigation should be weighed against potential disruptions to users. review us-cert s alert on the increasing threat to network infrastructure devices and recommended mitigations and consider implementing the following best practices: segregate networks and functions.
+limit unnecessary lateral communications.
+harden network devices.
+secure access to infrastructure devices.
+perform out-of-band network management.
+validate integrity of hardware and software.
+recommended steps for remediation contact law enforcement. we strongly encourage you to contact a local fbi field office upon discovery to report an intrusion and request assistance. maintain and provide relevant logs.
+implement your security incident response and business continuity plan. ideally, organizations should ensure they have appropriate backups so their response is simply to restore the data from a known clean backup.
+defending against ransomware generally precautionary measures to mitigate ransomware threats include: ensure anti-virus software is up-to-date.
+implement a data back-up and recovery plan to maintain copies of sensitive or proprietary data in a separate and secure location. backup copies of sensitive data should not be readily accessible from local networks.
+scrutinize links contained in emails, and do not open attachments included in unsolicited emails.
+only download software especially free software from sites you know and trust.
+enable automated patches for your operating system and web browser.
+report notice dhs and fbi encourages recipients who identify the use of tool(s) or techniques discussed in this document to report information to dhs or law enforcement immediately. we encourage you to contact dhs s national cybersecurity and communications integration center (nccic) (ncciccustomerservice@ or 888-282-0870), or the fbi through a local field office or the fbi s cyber division (cywatch@ or 855-292-3937) to report an intrusion and to request incident response resources or technical assistance.

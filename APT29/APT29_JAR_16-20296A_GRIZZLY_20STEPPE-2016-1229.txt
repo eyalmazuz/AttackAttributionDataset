@@ -1,0 +1,311 @@
+summary
+this joint analysis report (jar) is the result of analytic efforts between the department of
+homeland security (dhs) and the federal bureau of investigation (fbi). this document
+provides technical details regarding the tools and infrastructure used by the russian civilian and
+military intelligence services (ris) to compromise and exploit networks and endpoints
+associated with the u.s. election, as well as a range of u.s. government, political, and private
+sector entities. the u.s. government is referring to this malicious cyber activity by ris as
+grizzly steppe.
+previous jars have not attributed malicious cyber activity to specific countries or threat actors.
+however, public attribution of these activities to ris is supported by technical indicators from
+the u.s. intelligence community, dhs, fbi, the private sector, and other entities. this
+determination expands upon the joint statement released october 7, 2016, from the department
+of homeland security and the director of national intelligence on election security.
+this activity by ris is part of an ongoing campaign of cyber-enabled operations directed at the
+u.s. government and its citizens. these cyber operations have included spearphishing campaigns
+targeting government organizations, critical infrastructure entities, think tanks, universities,
+political organizations, and corporations leading to the theft of information. in foreign countries,
+ris actors conducted damaging and/or disruptive cyber-attacks, including attacks on critical
+infrastructure networks. in some cases, ris actors masqueraded as third parties, hiding behind
+false online personas designed to cause the victim to misattribute the source of the attack. this
+jar provides technical indicators related to many of these operations, recommended mitigations,
+suggested actions to take in response to the indicators provided, and information on how to
+report such incidents to the u.s. government.description
+the u.s. government confirms that two different ris actors participated in the intrusion into a
+u.s. political party. the first actor group, known as advanced persistent threat (apt) 29,
+entered into the party s systems in summer 2015, while the second, known as apt28, entered in
+spring 2016. both groups have historically targeted government organizations, think tanks, universities, and
+corporations around the world. apt29 has been observed crafting targeted spearphishing
+campaigns leveraging web links to a malicious dropper; once executed, the code delivers remote
+access tools (rats) and evades detection using a range of techniques. apt28 is known for
+leveraging domains that closely mimic those of targeted organizations and tricking potential
+victims into entering legitimate credentials. apt28 actors relied heavily on shortened urls in
+their spearphishing email campaigns. once apt28 and apt29 have access to victims, both
+groups exfiltrate and analyze information to gain intelligence value. these groups use this
+information to craft highly targeted spearphishing campaigns. these actors set up operational
+infrastructure to obfuscate their source infrastructure, host domains and malware for targeting
+organizations, establish command and control nodes, and harvest credentials and other valuable
+information from their targets.
+in summer 2015, an apt29 spearphishing campaign directed emails containing a malicious link
+to over 1,000 recipients, including multiple u.s. government victims. apt29 used legitimatedomains, to include domains associated with u.s. organizations and educational institutions, to
+host malware and send spearphishing emails. in the course of that campaign, apt29 successfully
+compromised a u.s. political party. at least one targeted individual activated links to malware
+hosted on operational infrastructure of opened attachments containing malware. apt29
+delivered malware to the political party s systems, established persistence, escalated privileges,
+enumerated active directory accounts, and exfiltrated email from several accounts through
+encrypted connections back through operational infrastructure.
+in spring 2016, apt28 compromised the same political party, again via targeted spearphishing.
+this time, the spearphishing email tricked recipients into changing their passwords through a
+fake webmail domain hosted on apt28 operational infrastructure. using the harvested
+credentials, apt28 was able to gain access and steal content, likely leading to the exfiltration of
+information from multiple senior party members. the u.s. government assesses that information
+was leaked to the press and publicly disclosed. figure 2: apt28's use of spearphishing and stolen credentials actors likely associated with ris are continuing to engage in spearphishing campaigns,
+including one launched as recently as november 2016, just days after the u.s. election.reported russian military and civilian intelligence services (ris)
+alternate names
+apt28
+apt29
+agent.btz
+blackenergy v3
+blackenergy2 apt
+cakeduke
+carberp
+chopstick
+cloudduke
+coreshell
+cosmicduke
+cozybear
+cozycar
+cozyduke
+crouchingyeti
+dionis
+dragonfly
+energetic bear
+eviltoss
+fancy bear
+geminiduke
+grey cloud
+hammerduke
+hammertoss
+havex
+minidionis
+miniduke
+oldbait
+onionduke
+operation pawn storm
+pinchduke
+powershell backdoor
+quedagh
+sandworm
+seadaddy
+seaduke
+sedkit
+sednit
+skipper
+sofacy
+sourface
+synful knock
+tiny baron
+tsar team (64-bit x-agent implant) (x-tunnel implant)
+waterbug
+x-agenttechnical details actions to take using indicators
+dhs recommends that network administrators review the ip addresses, file hashes, and yara
+signature provided and add the ips to their watchlist to determine whether malicious activity has
+been observed within their organizations. the review of network perimeter netflow or firewall
+logs will assist in determining whether your network has experienced suspicious activity. when reviewing network perimeter logs for the ip addresses, organizations may find numerous
+instances of these ips attempting to connect to their systems. upon reviewing the traffic from
+these ips, some traffic may correspond to malicious activity, and some may correspond to
+legitimate activity. some traffic that may appear legitimate is actually malicious, such as
+vulnerability scanning or browsing of legitimate public facing services (e.g., http, https,
+ftp). connections from these ips may be performing vulnerability scans attempting to identify
+websites that are vulnerable to cross-site scripting (xss) or structured query language (sql)
+injection attacks. if scanning identified vulnerable sites, attempts to exploit the vulnerabilities
+may be experienced.network administrators are encouraged to check their public-facing websites for the malicious
+file hashes. system owners are also advised to run the yara signature on any system that is
+suspected to have been targeted by ris actors.
+threats from iocs
+malicious actors may use a variety of methods to interfere with information systems. some
+methods of attack are listed below. guidance provided is applicable to many other computer
+networks.injection flaws are broad web application attack techniques that attempt to send
+commands to a browser, database, or other system, allowing a regular user to control
+behavior. the most common example is sql injection, which subverts the relationship
+between a webpage and its supporting database, typically to obtain information contained
+inside the database. another form is command injection, where an untrusted user is able
+to send commands to operating systems supporting a web application or database. see the
+united states computer emergency readiness team (us-cert) publication on sql
+injection for more information.
+cross-site scripting (xss) vulnerabilities allow threat actors to insert and execute
+unauthorized code in web applications. successful xss attacks on websites can provide
+the attacker unauthorized access. for prevention and mitigation strategies against xss,
+see us-cert s alert on compromised web servers and web shells.
+server vulnerabilities may be exploited to allow unauthorized access to sensitive
+information. an attack against a poorly configured server may allow an adversary access
+to critical information including any websites or databases hosted on the server. see uscert s tip on website security for additional information. recommended mitigations
+commit to cybersecurity best practices
+a commitment to good cybersecurity and best practices is critical to protecting networks and
+systems. here are some questions you may want to ask your organization to help prevent and
+mitigate against attacks.
+1. backups: do we backup all critical information? are the backups stored offline? have
+we tested our ability to revert to backups during an incident?
+2. risk analysis: have we conducted a cybersecurity risk analysis of the organization?
+3. staff training: have we trained staff on cybersecurity best practices?
+4. vulnerability scanning & patching: have we implemented regular scans of our
+network and systems and appropriate patching of known system vulnerabilities?
+5. application whitelisting: do we allow only approved programs to run on our networks?
+6. incident response: do we have an incident response plan and have we practiced it?7. business continuity: are we able to sustain business operations without access to
+certain systems? for how long? have we tested this?
+8. penetration testing: have we attempted to hack into our own systems to test the
+security of our systems and our ability to defend against attacks?
+top seven mitigation strategies
+dhs encourages network administrators to implement the recommendations below, which can
+prevent as many as 85 percent of targeted cyber-attacks. these strategies are common sense to
+many, but dhs continues to see intrusions because organizations fail to use these basic
+measures.
+1. patch applications and operating systems vulnerable applications and operating
+systems are the targets of most attacks. ensuring these are patched with the latest updates
+greatly reduces the number of exploitable entry points available to an attacker. use best
+practices when updating software and patches by only downloading updates from
+authenticated vendor sites.
+2. application whitelisting whitelisting is one of the best security strategies because it
+allows only specified programs to run while blocking all others, including malicious
+software.
+3. restrict administrative privileges threat actors are increasingly focused on gaining
+control of legitimate credentials, especially those associated with highly privileged
+accounts. reduce privileges to only those needed for a user s duties. separate
+administrators into privilege tiers with limited access to other tiers.
+4. network segmentation and segregation into security zones segment networks into
+logical enclaves and restrict host-to-host communications paths. this helps protect
+sensitive information and critical services and limits damage from network perimeter
+breaches.
+5. input validation input validation is a method of sanitizing untrusted user input
+provided by users of a web application, and may prevent many types of web application
+security flaws, such as sqli, xss, and command injection.
+6. file reputation tune anti-virus file reputation systems to the most aggressive setting
+possible; some products can limit execution to only the highest reputation files, stopping
+a wide range of untrustworthy code from gaining control.
+7. understanding firewalls when anyone or anything can access your network at any
+time, your network is more susceptible to being attacked. firewalls can be configured to
+block data from certain locations (ip whitelisting) or applications while allowing relevant
+and necessary data through.responding to unauthorized access to networks
+implement your security incident response and business continuity plan. it may take time
+for your organization s it professionals to isolate and remove threats to your systems and restore
+normal operations. meanwhile, you should take steps to maintain your organization s essential
+functions according to your business continuity plan. organizations should maintain and
+regularly test backup plans, disaster recovery plans, and business continuity procedures.
+contact dhs or law enforcement immediately. we encourage you to contact dhs nccic
+(ncciccustomerservice@ or 888-282-0870), the fbi through a local field office or
+the fbi s cyber division (cywatch@ or 855-292-3937) to report an intrusion and to
+request incident response resources or technical assistance. detailed mitigation strategies
+protect against sql injection and other attacks on web services
+routinely evaluate known and published vulnerabilities, perform software updates and
+technology refreshes periodically, and audit external-facing systems for known web application
+vulnerabilities. take steps to harden both web applications and the servers hosting them to
+reduce the risk of network intrusion via this vector. 1
+1 use and configure available firewalls to block attacks.
+take steps to further secure windows systems such as installing and configuring
+microsoft s enhanced mitigation experience toolkit (emet) and microsoft applocker.
+monitor and remove any unauthorized code present in any www directories.
+disable, discontinue, or disallow the use of internet control message protocol (icmp)
+and simple network management protocol (snmp) and response to these protocols as
+much as possible.
+remove non-required http verbs from web servers as typical web servers and
+applications only require get, post, and head.
+where possible, minimize server fingerprinting by configuring web servers to avoid
+responding with banners identifying the server software and version number.
+secure both the operating system and the application.
+update and patch production servers regularly.
+disable potentially harmful sql-stored procedure calls.
+sanitize and validate input to ensure that it is properly typed and does not contain
+escaped code.
+consider using type-safe stored procedures and prepared statements.
+perform regular audits of transaction logs for suspicious activity.
+perform penetration testing against web services.
+ensure error messages are generic and do not expose too much information. http:// . web site last accessed april 11, 2016.phishing and spearphishing implement a sender policy framework (spf) record for your organization s domain
+name system (dns) zone file to minimize risks relating to the receipt of spoofed
+messages. educate users to be suspicious of unsolicited phone calls, social media interactions, or
+email messages from individuals asking about employees or other internal information. if
+an unknown individual claims to be from a legitimate organization, try to verify his or her
+identity directly with the company. do not provide personal information or information about your organization, including its
+structure or networks, unless you are certain of a person s authority to have the
+information. do not reveal personal or financial information in social media or email, and do not
+respond to solicitations for this information. this includes following links sent in email. pay attention to the url of a website. malicious websites may look identical to a
+legitimate site, but the url often includes a variation in spelling or a different domain
+than the valid website (e.g., .com vs. .net). if you are unsure whether an email request is legitimate, try to verify it by contacting the
+company directly. do not use contact information provided on a website connected to the
+request; instead, check previous statements for contact information. information about
+known phishing attacks is also available online from groups such as the anti-phishing
+working group (http:// ). take advantage of anti-phishing features offered by your email client and web browser. patch all systems for critical vulnerabilities, prioritizing timely patching of software that
+processes internet data, such as web browsers, browser plugins, and document readers. permissions, privileges, and access controls reduce privileges to only those needed for a user s duties. restrict users ability (permissions) to install and run unwanted software applications,
+and apply the principle of least privilege to all systems and services. restricting these
+privileges may prevent malware from running or limit its capability to spread through the
+network. carefully consider the risks before granting administrative rights to users on their own
+machines. scrub and verify all administrator accounts regularly. configure group policy to restrict all users to only one login session, where possible. enforce secure network authentication where possible. instruct administrators to use non-privileged accounts for standard functions such as web
+browsing or checking web mail.segment networks into logical enclaves and restrict host-to-host communication paths.
+containment provided by enclaving also makes incident cleanup significantly less costly.
+configure firewalls to disallow rdp traffic coming from outside of the network
+boundary, except for in specific configurations such as when tunneled through a
+secondary vpn with lower privileges.
+audit existing firewall rules and close all ports that are not explicitly needed for business.
+specifically, carefully consider which ports should be connecting outbound versus
+inbound.
+enforce a strict lockout policy for network users and closely monitor logs for failed login
+activity. this can be indicative of failed intrusion activity.
+if remote access between zones is an unavoidable business need, log and monitor these
+connections closely.
+in environments with a high risk of interception or intrusion, organizations should
+consider supplementing password authentication with other forms of authentication such
+as challenge/response or multifactor authentication using biometric or physical tokens. credentials enforce a tiered administrative model with dedicated administrator workstations and
+separate administrative accounts that are used exclusively for each tier to prevent tools,
+such as mimikatz, for credential theft from harvesting domain-level credentials. implement multi-factor authentication (e.g., smart cards) or at minimum ensure users
+choose complex passwords that change regularly. be aware that some services (e.g., ftp, telnet, and .rlogin) transmit user credentials in
+clear text. minimize the use of these services where possible or consider more secure
+alternatives. properly secure password files by making hashed passwords more difficult to acquire.
+password hashes can be cracked within seconds using freely available tools. consider
+restricting access to sensitive password hashes by using a shadow password file or
+equivalent on unix systems. replace or modify services so that all user credentials are passed through an encrypted
+channel. avoid password policies that reduce the overall strength of credentials. policies to avoid
+include lack of password expiration date, lack of lockout policy, low or disabled
+password complexity requirements, and password history set to zero. ensure that users are not re-using passwords between zones by setting policies and
+conducting regular audits. use unique passwords for local accounts for each device.logging practices ensure event logging (applications, events, login activities, security attributes, etc.) is
+turned on or monitored for identification of security issues. configure network logs to provide enough information to assist in quickly developing an
+accurate determination of a security incident. upgrade powershell to new versions with enhanced logging features and monitor the
+logs to detect usage of powershell commands, which are often malware-related. secure logs, potentially in a centralized location, and protect them from modification. prepare an incident response plan that can be rapidly implemented in case of a cyber
+intrusion. how to enhance your organization s cybersecurity posture
+dhs offers a variety of resources for organizations to help recognize and address their
+cybersecurity risks. resources include discussion points, steps to start evaluating a cybersecurity
+program, and a list of hands-on resources available to organizations. for a list of services, visit - . other resources include:the cyber security advisors (csa) program bolsters cybersecurity preparedness, risk
+mitigation, and incident response capabilities of critical infrastructure entities and more
+closely aligns them with the federal government. csas are dhs personnel assigned to
+districts throughout the country and territories, with at least one advisor in each of the 10
+csa regions, which mirror the federal emergency management agency regions. for
+more information, email cyberadvisor@ .
+cyber resilience review (crr) is a no-cost, voluntary assessment to evaluate and
+enhance cybersecurity within critical infrastructure sectors, as well as state, local, tribal,
+and territorial governments. the goal of the crr is to develop an understanding and
+measurement of key cybersecurity capabilities to provide meaningful indicators of an
+entity s operational resilience and ability to manage cyber risk to critical services during
+normal operations and times of operational stress and crisis. visit to learn more about the cert resilience
+management model.
+enhanced cybersecurity services (ecs) helps critical infrastructure owners and
+operators protect their systems by sharing sensitive and classified cyber threat
+information with commercial service providers (csps) and operational implementers
+(ois). csps then use the cyber threat information to protect ci customers. ois use the
+threat information to protect internal networks. for more information, email
+ecs_program@ .
+the cybersecurity information sharing and collaboration program (ciscp) is a
+voluntary information-sharing and collaboration program between and among critical
+infrastructure partners and the federal government. for more information, email
+ciscp@us- .
+the automated indicator sharing (ais) initiative is a dhs effort to create a system
+where as soon as a company or federal agency observes an attempted compromise, the
+indicator will be shared in real time with all of our partners, protecting them from that
+particular threat. that means adversaries can only use an attack once, which increases
+their costs and ultimately reduces the prevalence of cyber-attacks. while ais will not
+eliminate sophisticated cyber threats, it will allow companies and federal agencies to
+concentrate more on them by clearing away less sophisticated attacks.
+ais participants connect to a dhs-managed system in the nccic that allows
+bidirectional sharing of cyber threat indicators. a server housed at each participant s
+location allows each to exchange indicators with the nccic. participants will not only
+receive dhs-developed indicators, but can share indicators they have observed in their
+own network defense efforts, which dhs will then share with all ais participants. for
+more information, visit .
+the cybersecurity framework (framework), developed by the national institute of
+standards and technology (nist) in collaboration with the public and private sectors, is
+a tool that can improve the cybersecurity readiness of entities. the framework enables
+entities, regardless of size, degree of cyber risk, or cyber sophistication, to apply
+principles and best practices of risk management to improve the security and resiliency of
+critical infrastructure. the framework provides standards, guidelines, and practices that
+are working effectively today. it consists of three parts the framework core, the
+framework profile, and framework implementation tiers and emphasizes five
+functions: identify, protect, detect, respond, and recover. use of the framework is
+strictly voluntary. for more information, visit or
+email cyberframework@ .

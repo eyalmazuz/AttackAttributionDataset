@@ -1,0 +1,414 @@
+fireeye threat intelligence hammertoss: stealthy tactics define
+a russian cyber threat group july 2015 security
+reimagined contents
+hammertoss	.txtapt29	.txtintroducing hammertoss
+five stages of hammertoss 6.txtstage 1: the communication process begins with twitter
+figure 1: hammertoss calls out to a twitter handle difficulty identifying accounts, discerning legitimate and malicious traffic,
+and predicting the payload	.txtapt29: an adaptive and disciplined threat group	.txt10 he russian cyber threat groups that we
+monitor frequently design innovative
+ways to cover their tracks. in early 2015,
+we came across stealthy malware which we
+call hammertoss from an advanced
+persistent threat group that we suspect the
+russian government sponsors. we designate
+this group apt29.
+using a variety of techniques from creating an
+algorithm that generates daily twitter handles
+to embedding pictures with commands the
+developers behind hammertoss have devised
+a particularly effective tool. apt29 tries to
+undermine the detection of the malware by
+adding layers of obfuscation and mimicking the behavior of legitimate users. hammertoss
+uses twitter, github, and cloud storage services
+to relay commands and extract data from
+compromised networks. using a variety of techniques from
+creating algorithms that generate daily
+twitter handles to embedding pictures
+with commands the developers
+behind hammertoss have devised
+a particularly effective special report hammertoss works by: 2. visiting different
+twitter handles daily
+and automatically. 1. retrieving
+commands via
+legitimate web
+services, such
+as twitter and
+github, or using
+compromised
+web servers for
+command-andcontrol (cnc). 3. using timed starts communicating after
+a specific date or only
+during the victim s
+workweek. 5. extracting
+information from
+a compromised
+network and
+uploading files
+to cloud storage
+services. 4. obtaining commands via
+images containing hidden and
+encrypted data. while none of these tactics are new, the combination of these
+techniques piqued our special report apt29
+apt29 has been operating in its current form
+since at least late 2014. we suspect the russian
+government sponsors the group because of
+the organizations it targets and the data it
+steals. additionally, apt29 appeared to cease
+operations on russian holidays, and their work
+hours seem to align with the utc +3 time
+zone, which contains cities such as moscow
+and st. petersburg.
+while other apt groups try to cover their
+tracks to thwart investigators, very few groups
+show the same discipline and consistency. similarly, few groups display the ability to adapt
+to network defenders attempts to mitigate its
+activity or remove it from victim networks. for
+example, apt29 almost always uses anti-forensic
+techniques, and they monitor victim remediation
+efforts to subvert them. likewise, the group
+appears to almost solely uses compromised
+servers for cnc to enhance the security of its
+operations and maintains a rapid development
+cycle for its malware by quickly modifying tools to
+undermine detection. these aspects make apt29
+one of the most capable apt groups that we special report introducing hammertoss w variant uses different methods to acquire
+cnc instructions, either by directly
+accessing a hard-coded website or
+accessing twitter as an intermediary. e first identified
+hammertoss in early
+2015. apt29 likely used
+hammertoss as a backup for their two
+primary backdoors to execute commands
+and maintain access if the group s principal
+tools were discovered. we have identified
+two hammertoss variants that give
+apt29 alternative ways to communicate
+with the malware. the developer appears
+to name these variants uploader and
+tdiscoverer.1 both variants are written
+in the c# programming language. each 1. the hammertoss
+backdoor generates and looks
+for a different twitter handle
+each day. it uses an algorithm
+to generate the daily handle,
+such as 234bob234 , before
+attempting to visit the
+corresponding twitter page. uploader is preconfigured to use a
+hard-coded server for its cnc. it goes
+to a specific url to obtain an image
+with a specific file size. tdiscoverer uses an additional layer of
+obfuscation by first going to twitter to
+obtain a cnc url, before visiting the
+url to acquire its target image. we will focus on tdiscoverer in this report. five stages of hammertoss
+we have broken down the malware
+communication process into five stages
+to explain how the tool operates,
+receives instructions, and extracts
+information from victim networks. the
+stages include information on what
+apt29 does outside of the compromised
+network to communicate with
+hammertoss and a brief assessment
+of the tool s ability to mask its activity..txt1 if the threat group has not
+registered that day s handle,
+hammertoss will wait until
+the next day and look for a
+different handle. 2. hammertoss visits the
+associated twitter account
+and looks for a tweet with
+a url and a hashtag that
+indicates the location and
+minimum size of an image file..txt4.txt5. hammertoss processes
+the decrypted commands, which
+may instruct the malware to
+conduct reconnaissance, execute
+commands via powershell, or
+upload data to a cloud storage
+service..txt4. the image looks normal,
+but actually contains hidden
+and encrypted data using
+steganography. hammertoss decrypts the
+hidden data to obtain commands. 3. hammertoss visits
+the url and obtains an
+image. note: the images are
+stock photography and
+were not used by the
+group. the tdiscoverer variants were originally named , and the uploader variants had a debug path containing . .txt special report stage 1: the communication process begins with twitter
+1. hammertoss contains
+an algorithm that generates
+twitter handles telling the
+malware to visit a specific
+twitter handle on a specific
+day..txta twitter handle is a user
+id associated with twitter s
+website. for instance,
+fireeye s twitter handle,
+@fireeye, has a url: /
+fireeye. the hammertoss
+algorithm uses a basename,
+like bob, and appends and
+prepends three crc32
+values based on the current
+date. an example, may be
+1abbob52b, which would
+have the url: hxxps://www. tweets tweet & replies bobby @1abbob52b july 29
+follow #101docto.txt3a. apt29 s operator registers
+the handle.
+2. hammertoss visits
+the twitter url related
+to its daily twitter handle.
+for instance, on july 29,
+it may look for a handle
+1abbob52b (hxxps://twitter.
+com/1abbob52b). apt29 s operator chooses
+to register a particular day s
+twitter handle using the
+same algorithm ahead of the
+anticipated communication. hammertoss goes to the
+twitter page and looks for a
+tweet that provides instructions
+on the next phase of the process. 3b. apt29 s operator does not
+register the handle. figure 1: hammertoss calls out to a twitter handle h ammertoss first looks for
+instructions on twitter. the malware contains an
+algorithm that generates a daily twitter
+handle, which is an account user id.
+to create the handles, the algorithm
+employs a basename, such as bob, and
+appends and prepends three crc32
+values based on the date. for example, 1abbob52b would have the url:
+hxxps://twitter.com/1abbob52b. each
+hammertoss sample will create a
+different twitter handle each day. apt29 knows the algorithm used to
+generate the handles and chooses
+to register a twitter handle and post
+obfuscated instructions to the handle s
+url before the malware attempts to
+query it. if a particular day s handle is
+not registered and the url for that
+day is not found, hammertoss will
+wait until the next day to attempt to
+communicate with another handle. hammertoss waits until the
+next day to begin the process
+again. apt29 typically configures
+hammertoss to communicate
+within certain restrictions, such as
+only checking the twitter handle on
+weekdays or after a specified start date.
+this allows the malware to blend in to normal traffic during the victim s work
+week or to remain dormant for a period
+of time before special report stage 2: tweeting a url, minimum file size of an image,
+and part of an encryption key if apt29 s operator has registered that
+particular day s handle, he will tweet a url
+and hashtag. tweets.txtbobby
+@1abbob52b url: in the case above,
+the tweet instructs
+hammertoss to download
+the content hosted at the
+specified url, including any
+images on the page. in the
+example we will discuss later,
+the tweet included a url on
+github. tweets tweet & replies
+bobby @1abbob52b july 29
+follow #101docto hashtag: the tweet also
+contains a hashtag with
+information to allow
+hammertoss to extract
+encrypted instructions from
+an image file. the hashtag
+indicates that the hidden
+data is offset 101 bytes
+into the image file and the
+characters to be used for
+decryption are docto. figure 2: learning the url, image size, and encryption key i f apt29 has registered that day s twitter handle,
+they will tweet a url and a hashtag. the url
+directs hammertoss to a webpage containing
+an image or images. the hashtag provides a number
+representing a location within the image file and
+characters for appending to an encryption key
+to decrypt instructions within the image. in the
+mockup of a hammertoss tweet in figure 2,
+the hashtag was #101docto, indicating that the
+encrypted data begins at an offset of 101 bytes into
+the image file, and the characters docto should be
+added to the encryption key to decrypt the data.
+using twitter as an intermediary to deliver the
+second-stage cnc to hammertoss allows
+apt29 to dynamically direct the special report in figure 3 is a sample of the hammertoss tdiscoverer variant and a corresponding
+snapshot of a twitter account page from one of its generated handles. at the time of
+publication, a publicly available hammertoss sample had only five generic detections
+in virustotal. the twitter account was active and contained a link to a website.
+among unregistered
+twitter accounts h ammertoss uses an
+algorithm to generate
+hundreds of twitter
+handles annually for potential
+cnc. many of these are
+unregistered, as apt29 chooses
+to register a particular day s
+handle as needed and ahead of
+an anticipated hammertoss
+beacon. this small number of
+registered accounts allows
+the group to maintain a small
+footprint.
+other tools use twitter to relay
+instructions, including:2 miniduke, a windows-based
+backdoor that is a suspected
+russian tool the sninfs botnet flashback, a mac-based
+backdoor miniduke behaves similarly
+to hammertoss by not only
+using twitter for cnc, but also
+by downloading image files
+containing encrypted, appended
+content. stage 3: visiting github to download an image apt29 s operator registers a github
+page and uploads an image. hammertoss uses the internetexplorer.
+application com object to visit the url and
+obtain the image. figure 4: the url specified in the tweet (in this case, a github page)
+contains an image with appended and encrypted data h ammertoss then uses the internetexplorer.
+application com object to visit the url specified in
+a tweet. we have observed urls lead to specific github
+accounts or compromised websites.
+we will use github for the next part in our example. once
+hammertoss obtains the github url from its daily twitter
+account, it visits the url and downloads the contents of the
+page, including any image special report stage 4: apt29 employs basic steganography
+1. hammertoss
+downloads the image
+from the specified url,
+retrieves the image
+from internet explorer s
+browser cache, and
+begins the process of
+decryption. 2. though the image
+looks normal, it
+contains appended and
+encrypted 2 h ammertoss downloads the
+contents of the website to
+internet explorer s browser cache
+and searches the cache for any images
+at least as large as the offset specified in
+the tweet from stage 2.
+while the image appears normal,
+it actually contains steganographic
+data. steganography is the practice of
+concealing a message, image, or file
+within another message, image, or file. in
+this case, the image contains appended
+and encrypted data that hammertoss
+will decrypt and execute. the data may
+include commands or login credentials to
+upload a victim s data to a cloud storage
+service. hammertoss locates the
+encrypted data at the offset specified in
+the tweet in stage 2. it decrypts the data
+using a key comprised of hard-coded
+data from the malware binary appended 3. hammertoss decrypts the image using a hard-coded key
+appended with the characters obtained from the tweet in stage 2. end of file marker figure 5: encrypted data appended beyond
+the ff d9 jpeg end of file marker apt29 adding
+steganography
+as another layer
+of obfuscation we have observed only a few
+apt groups using steganography.
+hammertoss uses
+steganography by appending
+data to an image file after the
+image s end of file marker. this
+technique would be readily
+detectable if someone was
+checking for it. however, the appended data is encrypted, so
+even if detected, the investigator
+would be unable to decrypt the
+data without key material from
+two sources: the malware binary
+and the current tweet.
+indicative of apt29 s discipline,
+the group ensures that if
+network defenders discover the images, the defenders still
+require the malware sample,
+corresponding twitter handle,
+and tweet with the additional
+key material to decrypt the tool s
+instructions. all of the samples
+we have observed have used
+different encryption keys to
+decrypt the appended special report stage 5: executing commands and uploading victim data apt29 s operator creates the cloud storage account and can
+obtain the victim s data from the cloud storage service..txt1. hammertoss may issue
+other follow on commands:
+powershell -executionpolicy
+bypass -windowstyle hidden encodedcommand... he encrypted data in the image may include
+instructions to execute commands via
+powershell, execute a direct command or
+file, or save an executable to disk and execute it.
+in several cases, the commands directed
+hammertoss to upload information from
+victim networks to accounts on cloud storage
+services using login credentials received in.txt2. hammertoss is capable of uploading victim
+data to a cloud storage service. stage 4. in our github example, the decrypted
+data instructed the backdoor to obtain a list of
+running tasks reconnaissance on the victim
+network and upload it to a specific account on a
+cloud storage service using the login credentials.
+apt29 can then easily obtain the extracted
+information from the cloud storage service at
+their special report conclusion difficulty identifying accounts, discerning legitimate
+and malicious traffic, and locating the payload h ammertoss undermines network
+defenders ability to identify twitter
+accounts used for cnc, discern malicious
+network traffic from legitimate activity, and
+locate the malicious payloads downloaded by
+the malware. identifying daily potential twitter accounts
+requires network defenders to have access to
+the associated hammertoss binary and to
+reverse engineer it to identify the basename
+and the algorithm used to create the potential
+accounts. monitoring malicious tweets from
+these accounts is difficult as each sample is
+capable of generating hundreds of potential
+twitter accounts annually, and apt29 may
+only register a small number of those accounts
+for cnc. employing legitimate web services that are
+widely allowed in organizations networks some of which use secure sockets layer
+connections that ensure the communications
+are encrypted makes it harder for network
+defenders to discern between malicious and
+legitimate traffic. using steganography and varying the image size
+makes the target payload the image containing
+the appended, encoded commands less
+predictable. even if the network defenders are
+able to predict or identify the target payloads,
+they need the associated hammertoss
+sample and relevant tweet containing the
+related encryption key information to decrypt
+the contents. apt29: an adaptive and disciplined
+threat group
+hammertoss illustrates apt29 s ability to adapt
+quickly during operations to avoid detection and
+removal. for example, if an organization blocks
+access to github, apt29 could easily redirect
+hammertoss to download an image with
+encrypted instructions from another website.
+similarly, if an organization starts monitoring
+twitter activity on their network, apt29 could
+easily switch to using the uploader variant of
+hammertoss, which does not use twitter and
+communicates directly to a specified url. if an
+organization identifies the handle generation
+algorithm and attempts to research old twitter
+accounts, tweets, or secondary urls, apt29
+could easily delete previously used accounts or the
+locations where images were stored.
+while each technique in hammertoss is not
+new, apt29 has combined them into a single piece
+of malware. individually, each technique offers
+some degree of obfuscation for the threat group s
+activity. in combination, these techniques make it
+particularly hard to identify hammertoss or spot
+malicious network traffic; determine the nature
+and purpose of the binary; discern the malware s
+cnc method and predict its cnc accounts; capture
+and decode second-stage cnc information; and
+pinpoint and decrypt the image files containing
+malware commands. this makes hammertoss
+a powerful backdoor at the disposal of one of the
+most capable threat groups we have observed..

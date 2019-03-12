@@ -1,0 +1,418 @@
+
+executive summary
+south korea was hit by a major cyberattack on march 20, 2013, at 2:00 pm local time. this cyberattack caused a
+signifcant amount of damage to the affected organizations by wiping the hard drives of tens of thousands of computers.
+mcafee labs research provides further insight into the likely source of these attacks. though not defnitive, our analysis
+provides a much clearer picture. the research also indicates that there may have been two distinct groups, attacking
+different targets.
+our analysis of this attack known frst as dark seoul and now as operation troy has revealed that in addition to the
+data losses of the mbr wiping, the incident was more than cybervandalism. the attacks on south korean targets were
+actually the conclusion of a covert espionage campaign.
+attack timeline
+our analysis suggests the following order of these attacks. later in this report we mention other elements that color our
+view of this event, but consistent throughout is our belief that the attackers had access to the environments prior to
+launching the wiping component.
+march 20 attack against banks and news agencies in south korea:
+1. the remote-access trojan was compiled january 26, 2013.
+2. the component to wipe the master boot record (mbr) of numerous systems was compiled january 31.
+3. an initial victim within the organization was spear-phished with the remote-access trojan. this likely occurred before
+march 20, and possibly weeks prior to the attack.
+4. the dropper was compiled march 20, hours before the attack occurred.
+5. the dropper was distributed to systems across the victim organizations, and within minutes of execution the mbrs
+were wiped. this occurred around 2:00 pm seoul time on march 20.
+state sponsorship or cyberterrorism?
+who conducted these attacks is still unclear, but our research gives some further insight into the likely source. the clues
+left behind confrm that the two groups claiming responsibility were a fabrication to throw investigators off the trail and to
+mask the true source.
+the adversaries
+the two groups that appear to have been involved in the attacks have had no prior connection until now. newromanic cyber army team. the samples connected to this group are more convincing. the majority of the wipers
+(found in the wild and retrieved from infected systems through other sources) contain the strings principes and hastati, which also appear in a message left on one of the targeted websites in the form of a web pop-up. the wiper
+component also overwrote the mbr with one of these strings. the following data points support this fact: the strings principes 1 and hastati 2 were found within the code of some of the wiper components. the same
+strings were also found in the web pop-up message that was left on the nocut news korea website. the strings are
+ancient roman terms that make reference to military units, hence a cyberarmy. the pop-up even states some of the
+specifc units that were part of hastati which were involved in this attack. the remote-access trojan that was found had a build path which included the reference make troy, a subdirectory
+of the folder work. troy 3 refers to an ancient roman region, again connecting the roman references to this group,
+which consistently uses this theme. the whois hacking team. on march 20, the website of the network provider lg +u was defaced by this group. was
+it a coincidence that a second group was involved? all of the evidence indicates that they had a strong involvement,
+but there is no solid link to the group because it did not claim involvement in the attacks. however, we do have
+the circumstantial link of a wiper component that in practice operated differently from the wipers employed by the
+newromanic cyber army yet also appears to be essentially the same wiper. the whois hacking team mbr wiper
+component includes the same graphics (in a resource fle in the binary) that appeared on the defaced lg +u website,
+although the malware did not behave the same way. within the main executable fle, however, we discovered a small
+portion of the code that matched the structure of that of the newromanic cyber army wipers we found, so the whois
+team likely dropped the same wiper.
+state sponsored or not, these attacks were crippling nonetheless. the overall tactics were not that sophisticated in
+comparison to what we have seen before. the trend seems to be moving toward using the following techniques
+against targets: stealing and holding data hostage and announcing the theft. public news media have reported only that tens of
+thousands of computers had their mbrs wiped by the malware. but there is more to this story: the main group behind
+the attack claims that a vast amount of personal information has been stolen. this type of tactic is consistent with
+anonymous operations and others that fall within the hacktivist category, in which they announce and leak portions of
+confdential information. wiping the mbr to render systems unusable, creating an instant slowdown to operations within the target
+the analysis
+what were the motives behind these attacks and why did the attackers chose certain targets? the attacks managed to
+create a signifcant disruption of atm networks while denying access to funds. this wasn t the frst time that this type of
+attack in which destructive malware wiped the systems belonging to a fnancial institution has occurred in south korea.
+in 2011 the same fnancial institution was hit with destructive malware that caused a denial of service.
+the attackers left a calling card a day after the attacks in the form of a web pop-up message claiming that the newromanic
+cyber army team was responsible and had leaked private information from several banks and media companies.
+they also referenced destroying the data on a large number of machines (the mbr wiping) and left a message in the web
+pop-up identifying the group behind the attacks. the page title in internet explorer was hey, everybody in korea???? hi, dear friends, we are very happy to inform you the following news. we, newromanic cyber army team, verifed our
+#opfuckkorea2003. we have now a great deal of personal information in our hands. those includes; 2.49m of _
+member table data, cms_info more than 50m from . much information from
+bank. we destroyed more than 0.18m of pcs. many auth hope you are lucky. 11th, 12th, 13th, 21st, 23rd and
+27th hastati detachment. part of principes elements. p.s for more information, please visit login
+with joseph.r.ulatoski@ ::lqaz@wsx3edc$rfv. please also visit . the malware
+a few types of malware were involved in these attacks. each variant had a particular use. some public reports mentioned
+only the use of the wiper component; however, there were actually three components, all with a different purpose, that
+assisted the attackers in the campaign.
+component purpose file size compile date
+dropper trojan installs the mbr wiper 418kb march 20, 2013
+mbr wiper wipes the mbr of the disk 24kb january 31, 2013
+remote-access trojan provides backdoor access to attackers 46kb january 26, 2013
+table 1: elements of the attack on south korean targets.
+there were two subsequent aspects to this attack: the destruction of pcs using the mbr wiper component. occurred march 20. remote access to the targets environments for a period prior to the attack. the duration of this access is unknown.
+the dropper trojan
+the dropper trojan was primarily used to download the executable that destroyed the systems mbrs. we suspect that the
+dropper trojan was distributed at the time of the attacks via a compromised patch-management server that pretended to
+run a legitimate update.
+the dropper trojan was compiled march 20, the day of the attack and several hours prior to the destruction of the
+systems. we suspect that the attackers had access to the target environment prior to march 20. it is unlikely that a large
+volume of users (some 30,000+) were spear-phished on march 20 alone.
+it s likely a much earlier compromise led to the attacks being staged internally. thus, there was an initial victim whose
+infected system allowed the attackers to gain access to other systems that let them distribute the malware broadly.
+the initial infection certainly could have come from a spear-phishing attack. the backdoor component was compiled in
+late january. the attackers could have been inside the networks since february. this timeline is plausible given that the
+attackers claim to have stolen a vast amount of information from these networks prior to wiping the mbrs.
+our further analysis led us to discover additional components that support our conclusion: a remote-access trojan was discovered to have compromised some of the target environments, specifcally an internal
+server used to distribute updates to thousands of pcs. this trojan variant was compiled january 26, and was detected by
+the security industry on march 25. mcafee detects this threat as rdn/generic pws.y!io. this trojan was built with the
+microsoft visual c++ version 2.9 compiler with a fle size of 47kb.
+mbr wiper
+we have seen several wiper samples to date; all were compiled january 31. the wiper itself is relatively small (24kb) and is
+introduced into the environment via a dropper trojan that is 418kb and was compiled the day of the attacks.
+upon executing the malware, the main dropper ( ) creates the fle ,
+the mbr wiper component. this fle is placed in the infected user s application data folder, executes, and immediately
+starts the countdown to wipe the system and render it unbootable. this fle was compiled approximately two months prior
+to the attack s taking place.
+the main dropper component was compiled the day of the attack, march 20, at 4:07 am seoul time. the dropper installed
+the wiper, which destroyed the mbrs at around 2:00 pm seoul time. once the dropper executed, the system were wiped
+within minutes. thus, these components likely weren t distributed until the time when the attackers wished to destroy
+these machines.
+the remote-access trojan
+it s not widely known that the attackers used a remote-access trojan to compromise an internal server. the attackers used
+this internal server to distribute the wiper component to the thousands of pcs. the remote-access trojan had a fle size of
+46kb and was compiled on january 26, fve days before the mbr wiper was compiled.
+as we concluded earlier, we have determined that the attackers had access to the environment prior to wiping the
+systems. the remote-access trojan was likely delivered to an internal pc via a spear-phishing campaign. from this system
+the attackers accessed other internal resources. the trojan was designed to operate within internet explorer; it launched a
+hidden instance of internet explorer and injected itself into the running process.
+figure 1. the process monitor shows the remote-access trojan spawning an instance of internet explorer.
+the trojan immediately modifed the properties in the registry to allow for remote connections to the system.
+linking to the attackers
+linking malware to its developers isn t always an easy task. most attackers are careful enough to ensure they can t be
+traced. this is especially important in cases such as cyberespionage, in which the intent is to remain invisible.
+in our analysis we observed a number of unique attributes in the components involved in these attacks; these markers
+allowed us to link specifc samples to a specifc group.
+two groups have taken credit for these attacks, but we can tell that the variants which wiped the systems link to the
+newromanic cyber army team.
+although the whois hacking team is more public due to its defacement of the network provider lg +u s website, we can
+link this group to only one sample of a wiper, which operates differently than the others. the whois wiper is much larger,
+with a fle size of 236kb and was compiled march 19, whereas the other wiper components are a mere 24kb. the larger
+size suggests the whois wiper contains more functions. thus, we can defnitively link newromanic to the samples used
+to wipe the mbrs of systems within the south korean fnancial institution networks. newromanic will remain the prime
+suspect involved in the attacks.
+confrming the link between newromanic and known wiper samples, we found a number of wiper samples contained
+either the string hastati or principes in the calling cards left by the attacker.
+sample md5 compilation date detection name
+table 2: wiper samples connected to the newromanic cyber army team.
+not only did most of the wiper samples link to newromanic, but the remote-access trojan can also be linked to the group.
+the trojan contained a build path that mentions troy in the directory path, again consistent with the ancient roman
+references used by this group.
+figure 2. the remote-access trojan names troy. this reference links the attack to the newromanic cyber army team.
+code analysis
+it is highly unusual that two groups claim responsibility for these attacks. no further information has been revealed as
+to who they are or what their motivations are; this is another reason to suspect that these two groups are the same and
+are actually fabricated. the supporting evidence comes in the form of code analysis determining the degree of similarity
+between the samples.
+the whois hacking team sample was compiled march 19 at 1:57 pm local time and the newromanic dropper was
+compiled march 20 at 4:07 am local time. the attacks on south korean banks and media and the defacement of lg +u
+occurred approximately 2:00 pm local time on march 20.
+mcafee labs investigated the differences between the two samples at a code level to determine if there were any
+similarities. in spite of the fact that the wiper component originating from newromanic cyber army team was 24kb in
+size and the component from whois was 236kb, we did fnd similarities within the code. the whois sample is a dropper
+for a component that closely resembles the one used by the newromanic cyber army. we found a signifcant number
+of matching subroutines and a large number of code segments with only minor differences. these similarities lead us to
+conclude that the payload code is based upon the same initial code and was embedded into different droppers.
+whois sample newromanic sample # of different functions
+_alloca_probe _alloca_probe exact match
+revealing operation troy persistent espionage campaign in south korea: 2009 2013
+public reports covering what is known as the dark seoul incident, which occurred on march 20, 2013, addressed only the
+mbr wiper components. many of the details of this incident have been examined, and most analysts conclude this was an
+isolated, though clearly coordinated, attack. however, mcafee labs has found that there was more to the incident than
+what was widely reported. our analysis has revealed a covert espionage campaign.
+typically this sort of advanced persistent threat (apt) campaign has targeted a number of sectors in various countries, but
+operation troy, as these attacks are now called, targets solely south korea.
+from our analysis of unique attributes within the malware samples we have determined that the initial code behind the troy family of trojans was created in 2010, as was another component that was dropped by the trojan http troy. the
+malware used in these attacks were compiled to specifcally target south korea and used korean-language resources in
+the binaries. the malware connected to legitimate korean domains that were running a bulletin board and sent a specifc
+command to a php page to establish an irc channel and receive commands.
+figure 3. the targeted attack dark seoul reached its culmination in march 2013, but its roots go back at least to 2009, when the trojan s
+source code was frst compiled. subsequent variations of the malware have also been involved in these threats.
+mcafee labs has determined that domestic espionage activities occurred before the march 20 attacks, most likely to gain
+intelligence regarding the targets to carry out further attacks (such as the march 20 incident) or to beneft the attackers in
+some other ways. this spying operation had remained hidden and only now has been discovered through diligent research
+and collaboration. we also suspect the attackers had knowledge of the security software running within the environment
+before they wiped the systems, given that some of the variants used in the attack were made to look as if they were
+antimalware update fles from before march 20.
+the attackers who conducted the operation remained hidden for a number of years prior to the march 20 incident by
+using a variety of custom tools. our investigation into dark seoul has found a long-term domestic spying operation
+underway since at least 2009. the operation, all based on the same code, has attempted to infltrate specifc south
+korean targets. we call this operation troy, based on the frequent use of the word troy in the compile path strings in
+the malware. the prime suspect group in these attacks is the new romanic cyber army team, which makes frequent
+use of roman and classical terms in their code. while analyzing malware components from before the march 20 incident
+we found both similar and identical attributes of the fles involved that enable us to link them to the 3rat remote
+administration tool client used on march 20 as well as to samples dating to 2010. furthermore, we determined that
+through prior access to the victims networks, the attackers were able to upload the mbr wiper component and distribute
+it. it is also possible that the campaign known as 10 days of rain is a byproduct of operation troy; some of our analysis
+suggests that the malware concealment troy was present in these attacks.
+tools and tactics
+nstar: 2010 2011
+nstar appears to be the frst production version of the troy family. this trojan is based upon malware created for a
+military espionage campaign that frst emerged in 2009. nstar is the frst to use components in the same way that later
+variants of the troy family do. it included a shared dll ( ) that was found in the 2010 and 2011 variants. later variants
+use a modifed version, , which employs nearly the same fle-mapping function as used by .
+most of these variants are compiled from the work directory; that s fairly consistent throughout all versions. the dll was
+compiled using microsoft visual c++ version 6. those iterations were found in 2010-2011.
+the call graph generated for nstar s is identical with that of http troy. they were compiled at least a year apart
+from each other.
+the dll was compiled march 3, 2011, and includes an ocx component that was compiled in late 2010. the ocx used a
+very different compile path, but , the backdoor, is essentially the same as those seen in later versions.
+the work directory, with path shown below, is also used with troy variants concealment troy and 3rat client, which were
+both compiled in 2013.
+we also found a fle-mapping function in this variant similar to those in most of the newer versions. the unique string
+beginning with is identical and occurs throughout the later variants.
+figure 6. nstar s fle-mapping function.
+the malware establishes an irc channel to receive real-time commands in the same manner as the military
+espionage malware.
+figure 7. nstar communicates with its control server via http as its primary channel.
+chang and eaglexp: 2010
+another variant from 2010, eaglexp, is closely related to nstar and http troy based on reused components. eaglexp
+used this compile path:
+again we see the work directory involved as in the other post-2010 malware used in this campaign. a variant compiled
+may 27, 2010, also contained a very similar compile path. we were able to obtain some traffc from the control server.
+the may 27 variant, called chang, operated in the same manner as other troy variants and used the same . a korean
+manufacturing website hosted both the control server and an irc server.
+figure 8. outbound traffc from an infected system.
+figure 9. the malware establishes a channel with the control server via irc.
+both the chang and eaglexp variants are based on the same code that created nstar and later troy variants. these
+similarities confrm the attackers have operated for more than three years against south korean targets.
+inside the irc botnet
+concealment
+figure 10. the malware family and its control servers.
+during our investigation we dug into the attackers controlling botnet, which was used until 2013. the infrastructure
+relied upon on a network of hacked south korean websites hosting irc servers. the infected clients in turn communicated
+with the irc servers using rsa encryption and used functions imported from the microsoft cryptography api library.
+figure 11. some functions imported from the microsoft cryptography api.
+the attackers hardcoded the control domains in and distributed it in the fnal compiled trojan code. each variant
+of each generation of trojans contained different hardcoded strings pertaining to the control servers. this shows that
+the attackers frst compromised the future irc server sites and then compiled the component and distributed it to
+infected targets.
+figure 12. hardcoded addresses in .
+the nickname for the bot can be determined by the outbound traffc and information written to the windows registry. one
+variant operating in june 2010 used the nickname bs^000c2918ab11 with the password wodehaopeng. the malware
+joined the irc channel #god and sent several private messages to what was likely the control server to receive instructions.
+variant bot irc nickname
+table 4: irc bot nicknames used by variants.
+in 2011 the attackers created the trojan http troy, named from its compile path string; this was the frst of the troy family
+of trojans. to date we have found only one sample of http troy. upon execution the malware launches a crippled gui
+that allows the victim to install a screen saver displaying politically sensitive images. we don t know why the developers
+took the risk of making the trojan visible. the screensaver component (chonanship.scr) is not malicious and was compiled
+on december 12, 2010. it contained images related to the sinking of the south korean navy ship cheonan.4 http troy
+was compiled on march 20, 2011, and contained the compile path z:\source\1\httptroy\bsdll- . as we
+can see, http troy uses the same dll as the nstar, chang, and eaglexp variants did in 2010. this path was contained in
+a dropped dll component that was used to establish a hidden irc channel to the attackers control server. the primary
+dropper fle for this remote-access trojan was disguised as ahnlab s smart update utility setup program. the original
+flename was .
+after executing, the remote-access trojan makes a connection to , the irc control server.
+we found a second-generation trojan based on http troy that included the compile path z:\1mission\team_project\
+[2012.6~]\http troy\httpdr0pper\win32\release. this trojan, http dr0pper, was compiled in 2012 from the http troy
+directory, indicating it is an advancement of the original http troy.
+all of the variants from this point reuse a specifc dll, which in some instances is named and uses
+the microsoft cryptography api to secure communications. we can track the reuse of this dll based on the consistent
+fle-mapping function that appears throughout the variants.
+figure 14. the malware http dr0pper using the same fle-mapping function and dll as other versions.
+we can determine that another variant, tong (based on the directory in which it was compiled), also reuses this dll and
+contains the same function.
+figure 15. the malware tong using the same fle-mapping function and dll as other versions.
+furthermore, variants such as concealment troy that were compiled in 2013 contain the same function once decoded.
+still, some of the base code is reused in the supporting dll for concealment troy.
+figure 16. the malware concealment troy using the same function (encoded function shown).
+after execution the trojan makes a connection to the control server using specifc parameters that include the irc
+nickname. this communication pattern is consistent with other variants that reference troy.
+figure 17. communicating with the control server.
+the tong variant contains the compile path e:\tong\work\op\1mission\team_project\[2012.6~]\http trojan 2.0\httpdr0pper\
+win32\release. it also communicated using the same methods. this trojan was compiled on august 28, 2012.
+figure 18. tong communicating with its control server.
+compile date compile path
+tdrop is the third generation of http troy. tdrop uses one of two dll fles, and , and injects
+one, depending on operating system, into . previous versions used , which contained the code for
+communicating with the irc botnet. tdrop has some further functionality not present in http troy that extends this
+trojan s ability to operate on 64-bit machines and to evade automated analysis systems and emulation technologies.
+the evasion routines check for the presence of debuggers and tracers that attach to the parent process. this effectively
+causes the parent process to immediately terminate when under analysis by emulation or sandboxing systems that attempt
+to hook and monitor api calls coming from that process.
+figure 19. the antidebugging feature in .
+furthermore, tdrop uses a dll to run under nonprivileged accounts on windows 7. this variant was compiled on january
+15, 2013, and contained the compile path d:\work\op\mission\teamproject\[2012.11~12]\tdrop\dropper32\release\ . the main executable, which extracts the other components, was compiled from the path z:\work\v3zip\ and . this is likely a compression tool to extract the fles to the desktop.
+just as http dr0pper, tdrop uses the disguised dropper component . the unique code is nearly identical
+to that used in http dr0pper with the exception of the last two characters.
+figure 20. tdrop reusing code from http dr0pper.
+when the main trojan fle executes, it launches , which itself doesn t appear to be malicious. then launches based on the specifed flename in the associated fle. these fles are created
+in the directory 114719_507_ahnlabupdatekit, which sits in a temp directory created on the desktop. it is obvious that
+the attackers were aware of the security product that the target environment used and attempted to make the malware
+appear as legitimate as possible. ahnlabupdate drops and runs an additional executable, which is the rat payload that
+establishes a connection with the control server.
+figure 21. tdrop disguises its presence by appearing to be a security product.
+concealment troy: 2013
+another third-generation troy family trojan is concealment troy. this version was compiled from the same directory as the
+3rat client found in the victims environments on march 20. some components from concealment troy suggest that the
+source code was originally written in 2010 and was later compiled for use in this campaign. the 64-bit component to install
+the backdoor on the victims systems contains an interesting compile path and was frst created on november 28, 2012. the 32-bit version was compiled january 23, 2013, and contained this compile path:
+concealment troy does not employ real-time irc control as earlier versions did. (concealment troy is a typical
+http botnet.)
+figure 22. concealment troy abandons the use of irc for real-time control and uses http as its primary channel.
+military espionage malware: 2009 2013
+mcafee labs has uncovered a sophisticated military spying network targeting south korea that has been in operation
+since 2009. our analysis shows this network is connected to the dark seoul incident. furthermore, we have also
+determined that a single group has been behind a series of threats targeting south korea since october 2009. in this
+case the adversary had designed a sophisticated encrypted network designed to gather intelligence on military networks.
+we have confrmed cases of trojans operating through these networks in 2009, 2010, 2011, and 2013. this network
+was designed to camou age all communications between the infected systems and the control servers via the microsoft
+cryptography api using rsa 128-bit encryption. everything extracted from these military networks would be transmitted
+over this encrypted network once the malware identifed interesting information. what makes this case particularly
+interesting is the use of automated reconnaissance tools to identify what specifc military information internal systems
+contained before the attackers tried to grab any of the fles.
+military attacks figure 23. encrypted data exfltration network.
+the attacks would have occurred in four general stages: initial compromise via a watering-hole attack, which would lead to the exploitation of the internal systems (in the
+2009 case). (the attacker placed a zero-day exploit on a military social networking site.) later cases were likely spear
+phishing to more quickly get to the right targets. malware automatically performs recon on target systems looking for documents of interest. malware can also scrape out
+passwords and registry information along with directory listing of interesting fles. the attacker can request directory contents from infected systems based on the number of interesting fles found. can
+selectively grab specifc fles as needed. stolen fles are transmitted via http-encrypted channel to the attacker s server.
+the encrypted network
+the attacker s encrypted network uses microsoft s cryptography api library version 1.0 to encrypt communication
+channels to the control servers over both http and irc. the encryption uses a 128-bit rsa key, shown as imported and
+used by the following code.
+figure 24. function to call the cryptography api library.
+figure 25. rsa encryption key used to camou age communications.
+this network operates over both http and uses irc as secondary channel for real-time operations. the irc network is based
+on the open-source library libircclient5 and everything sent over this irc channel is encrypted via the cryptography api.
+figure 26. establishing an irc channel session.
+the following commands are supported by irc to control infected systems in real time. this functionality enables the
+attacker to send and receive fles on demand and execute remote commands. the messages sent between client and
+servers are base64 encoded and then encrypted using the cryptography api; thus a message must be decoded and
+decrypted to be visible. this highly sophisticated method provides for great exibility over a secure encrypted channel
+that is not ssl. get bot version and uptime get directory fle listing, all drives or from specifc path stop activities for a given period download fle send local fle to the server execute shell command connect to irc server change nick (irc) join channel (irc) irc disconnect remove bot from system
+figure 27. functions for irc commands.
+the http portion is designed to get confguration data used in the irc botnet and to send stolen documents back to the
+the encrypted network operates by scanning infected systems and categorizing those systems that contain interesting
+documents. the malware does not extract every document that is found as a match through drive scanning; rather it
+assigns a unique signature to the infected system according to what it contains. less interesting systems are less likely to
+have documents extracted from them. the directory contents are uploaded to the attacker s server, which lets the attacker
+grab documents at will and keeps the amount of network traffc low.
+data exfltration
+the theft of classifed information is the primary purpose of this network and would occur through drive scanning.
+drive scanning locates classifed information on target systems and gives the attacker an overall idea of what these military
+networks have. the malware searches the root disk, counts the number of interesting fles, and determines the level of
+that system s importance to the attacker. the search criteria are primarily specifc fle extensions and keywords in document
+titles. the keywords are all military specifc. some refer to specifc military units and programs that operate in south korea.
+this function would determine only the number of interesting fles that are contained on any given system; another
+function would extract the list of fles that match these search criteria.
+figure 31. the drive scan function.
+in addition to searching for english keywords, the function searches for korean ascii characters that represent a subset of
+military terms. most keywords specifc to military operations in south korea are in english. there is also a set of abbreviations.
+figure 32. google translation of ascii characters.
+the fles to be sent to the attacker s server are zipped using the open-source zip utils.6 the component uses the password
+we have consistently found this password in the malware dating back to 2009. it is used primarily
+to archive items to be stolen from infected systems.
+figure 33. the function to zip stolen documents.
+the dll relationship
+in all of these threats we have seen the consistent use of , a stripped down version of , which we have found
+in the military espionage cases. we can connect not only similar functions within from 2011 to date with those of
+the military cases in 2009 and 2010, but also the shared encryption key for zipping classifed information to be sent to the
+control server.
+this is the same as another fle, ~ ; both operate in the same manner. appears to be used primarily
+for irc botnet communications.
+the component has been seen in a number of troy-era malware samples: chang, eaglexp, nstar, mail attack,
+http troy, tong, http dr0pper, etc. the fle , which contains much of the logic described in these attacks, shares
+a number of common functions with , including the zip encryption password. in addition, the irc and encryption
+functions are the same in both fles, indicating they were built by the same individual or group. the two functions are likely
+the same source code in different versions. the primary difference between them is s lack of searching for specifc
+extensions and terms that and ~ contain. this suggests requires a second module and we have
+seen that with the mail attack variant, compiled in february 2011, which contained both and , with the
+latter containing the military-specifc search and extraction functions.
+figure 34. the function to scan all drives based on a specifed extension.
+the following function found in lists the contents of specifed directories and zips those contents into an archive fle
+with a password. this function doesn t have any criteria and is likely disabled in some cases, such as with http troy, which
+downloads a payload module to search for data.
+figure 35. a function to list and send directory contents.
+figure 36. a function to send directory contents to remote server. appears to combine both drive searching and directory listing into a single function. a separate action puts the
+directory contents into a separate fle and prepares it to be sent to the remote server.
+figure 37. a drive-search function.
+figure 38. a function to zip contents.
+relationships to http dr0pper
+we have determined that some variants of http dr0pper will execute , which is essentially the same dll
+that is found in tdrop. this component contains military keywords. one variant of http dr0pper made use of payload32.
+dll, which was compiled on august 23, 2012. the tdrop version was compiled january 13, 2013. this consistency
+confrms further that the operations against south korea are primarily focused on military intelligence gathering and have
+attempted to break in since 2009.
+destroying the target
+the espionage malware has the capability to destroy systems in the same way that the march 20, 2013, attacks disabled
+thousands of systems in south korea. this capability could be devastating if military networks were to suddenly be wiped
+after an adversary had gathered intelligence. this was clearly the case with the march 20 dark seoul incident, in which we
+confrmed that the 3rat trojan gained access prior to the mbr-wiping event. there was at least one limitation, however:
+we found the malware of february 2011 could wipe its targets only if it detected that it was being debugged or analyzed
+by a security product.
+figure 39. the malware s function to wipe the mbr.
+the campaigns
+through our research we have discovered a number of distinct subcampaigns as part of the overall operation troy, which
+has targeted military forces in south korea to extract classifed information. these operations were designed to occur in
+2009 through 2013. recently we uncovered evidence to suggest that they continued just prior to dark seoul. we can link
+the actor(s) responsible for dark seoul to these particular espionage campaigns through various technical means. the troy-era malware is based on the same source code to create these specialized versions (components shared over
+the years). the zip encryption password is found in almost all instances, with the exception of concealment troy. consistent terms in the malware compile paths (for example, troy, work, etc.). the same irc botnet channel and encryption method are used throughout the variants. military keywords are consistently found through the components spanning 2009 2013, confrming the intent of
+this adversary. use of the same string-obfuscation techniques in the 2009 2010 campaigns and the 2012 2013 campaigns.
+figure 40. shared encryption password.
+conclusion
+mcafee labs can connect the dark seoul and other government attacks to a secret, long-term campaign that reveals the
+true intention of the dark seoul adversaries: attempting to spy on and disrupt south korea s military and government
+activities. the troy-era malware is based on the same source code used to create these specialized variants and shares
+many commonalities, such as and , which are found consistently throughout the families. the attackers
+have attempted since 2009 to install the capability to destroy their targets using an mbr wiper component, as seen in the
+dark seoul incident. from our analysis we have established that operation troy had a focus from the beginning to gather
+intelligence on south korean military targets. we have also linked other high-profle public campaigns conducted over the
+years against south korea to operation troy, suggesting that a single group is responsible.2821 mission college boulevard
+mcafee, the mcafee logo, and global threat intelligence are registered trademarks or trademarks of mcafee, inc. or its subsidiaries in the
+united states and other countries. other marks and brands may be claimed as the property of others. the product plans, specifcations and
+descriptions herein are provided for information only and subject to change without notice, and are provided without warranty of any kind,
+express or implied. copyright 2013 mcafee, inc.
+about the authors
+ryan sherstobitoff is a threats researcher with mcafee labs. formerly, he was chief security strategist at panda security,
+where he managed the us strategic response for new and emerging threats. sherstobitoff is widely recognized as a
+security and cloud computing expert.
+itai liba is a senior security researcher with mcafee labs. he is a member of the botnet research team. itai has worked in
+mobile vulnerability research as well as large-scale reverse-engineering projects and display driver development. he has
+more than 10 years of experience in reverse engineering.
+james walter is the director of global threat intelligence operations and manages the mcafee threat intelligence service
+(mtis) for the offce of the cto. he focuses on new threats research as well as the cataloging and maintenance of
+vulnerabilities and associated countermeasures. walter has been with mcafee for more than 14 years and leads a global
+team of threats analysts who create security advisories, countermeasure/detector feeds, global threat intelligence apps,
+and more. he is a frequent speaker at industry events and conferences, and cohosts audioparasitics the offcial podcast
+of mcafee labs. about mcafee labs
+mcafee labs is the global research team of mcafee. with the only research organization devoted to all threat vectors malware, web, email, network, and vulnerabilities mcafee labs gathers intelligence from its millions of sensors and
+its cloud-based service mcafee global threat intelligence. the mcafee labs team of 500 multidisciplinary researchers
+in 30 countries follows the complete range of threats in real time, identifying application vulnerabilities, analyzing and
+correlating risks, and enabling instant remediation to protect enterprises and the public. http:// about mcafee
+mcafee, a wholly owned subsidiary of intel corporation (nasdaq: intc), empowers businesses, the public sector, and
+home users to safely experience the benefts of the internet. the company delivers proactive and proven security solutions
+and services for systems, networks, and mobile devices around the world. with its visionary security connected strategy,
+innovative approach to hardware-enhanced security, and unique global threat intelligence network, mcafee is relentlessly
+focused on keeping its customers safe. http:// .

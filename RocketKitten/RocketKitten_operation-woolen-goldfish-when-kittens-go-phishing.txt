@@ -1,0 +1,299 @@
+operation woolen-goldfish
+when kittens go phishing
+cedric pernet and kenney lutrend micro legal disclaimer
+the information provided herein is for general
+information and educational purposes only. it is not
+intended and should not be construed to constitute
+legal advice. the information contained herein may
+not be applicable to all situations and may not re ect
+the most current situation. nothing contained herein
+should be relied on or acted upon without the beneft
+of legal advice based on the particular facts and
+circumstances presented and nothing herein should
+be construed otherwise. trend micro reserves the
+right to modify the contents of this document at any
+time without prior notice.
+translations of any material into other languages
+are intended solely as a convenience. translation
+accuracy is not guaranteed nor implied. if any
+questions arise related to the accuracy of a
+translation, please refer to the original language
+offcial version of the document. any discrepancies
+or differences created in the translation are not
+binding and have no legal effect for compliance or
+enforcement purposes.
+although trend micro uses reasonable efforts to
+include accurate and up-to-date information herein,
+trend micro makes no warranties or representations
+of any kind as to its accuracy, currency, or
+completeness. you agree that access to and use
+of and reliance on this document and the content
+thereof is at your own risk. trend micro disclaims all
+warranties of any kind, express or implied. neither
+trend micro nor any party involved in creating,
+producing, or delivering this document shall be liable
+for any consequence, loss, or damage, including
+direct, indirect, special, consequential, loss of
+business profts, or special damages, whatsoever
+arising out of access to, use of, or inability to use,
+or in connection with the use of this document, or
+any errors or omissions in the content thereof. use
+of this information constitutes acceptance for use in
+an as is condition. introduction
+state-sponsored cyberwarfare is no different than physical battles or terrorist attacks in terms of scope and damage.
+arguably, cyber attacks are much worse because the identity of attackers are easily concealed, slowing down any
+process that could bring perpetrators to justice. attackers are also not restricted by time and location. interestingly,
+middle eastern countries and some members of the european union (eu) have recently fgured in targeted attacks,
+either as an aggressor or a victim, for seemingly political reasons.
+at the recently concluded 31st chaos communication congress of the chaos computer club (31c3), cybersecurity
+researchers discussed the ways and means by which threat actors can use widely available software to cover their
+tracks and carry out their campaigns. [1] the focus of this particular lecture was the ghole malware used in targeted
+attack campaigns. ghole is believed to have been active since 2011 based on the compilation date of its oldest samples.
+targeted attacks are well-planned cyberthreat activities aimed at specifc organizations. in this paper, we delve
+into the malicious activities of a cyberthreat group, known in the cybersecurity industry as rocket kitten, which has
+been hitting different public and private israeli and european organizations. rocket kitten has so far launched two
+campaigns ghole malware attacks and one we have dubbed operation woolen-goldfish. we named it as
+such because woolen is attributed to the malware developer and one of the threat actors behind this campaign; goldfish serves as an attribute to the location of origin with which the campaign was seemingly launched from.
+the rocket kitten group used spear-phishing emails in order to penetrate their target systems. based on the malware
+samples we have obtained from fles with macro malware specifc to the ghole malware campaign, we found that
+they were mostly interested in the defense industry, the it sector, government entities, and academic organizations.
+certain details from the malware samples show that operation woolen-goldfish was most likely to be a statesponsored campaign.operation woolen-goldfish research paper
+victims and targets
+the content of the fles we have collected from this group of attackers is quite straightforward. they contain
+information that is very customized in relation to the target entity. some fles are written in german, while
+others contain information specifc to just one vertical. all of these have been used for spear-phishing emails
+against various targets.
+seeing the content of these fles, we suspect they have all been used for spear phishing against the following: civilian organizations in israel academic organizations in israel german-speaking government organizations european organizations european private company
+attack overviewoperation woolen-goldfish research paper
+rocket kitten s new campaign matures
+the ghole campaign
+in february 2015, the trend micro smart protection network received an alert from europe that triggered
+several targeted attack indicators related to a specifc malware family, prompting our threat defense experts
+to investigate further. the alert showed an infected microsoft excel fle that soon proved to have been
+launched by rocket kitten. when a user opens the excel fle attachment in the spear-phishing attempt, a .dll
+fle is dropped onto the system and is executed using a macro embedded in the fle. macros are small scripts
+within fles that are usually used to automate common repetitive tasks. however, these can also be used for
+malicious intent, such as infecting machines of unsuspecting users with malware, just like in this situation.
+trend micro detects the malware as troj_ghole.a. it is common for rocket kitten to use ghole in their
+targeted attack campaigns. the dropped .dll fle (sha1 hash: ; ) is scanned on virustotal, but there were no results, raising further interest to analyze the
+binary. [2 3]
+the .dll fle contained an export function named, function, instead of the usual, gholee, found in previous
+samples from this malware family. we suspect that the attacker did this on purpose so the malware can bypass
+detection and stay within the targeted system that would eventually give it more freedom to move laterally.
+export function, function
+use of the push mnemonic to
+pass values in the code
+ip address
+export function: function
+the top-right boxed code in the screenshot, displayed to the right, shows
+an unusual code that uses push to pass values like those shown in the
+screenshots below it. when passed to winapi, it will look like a string on
+stack.
+the frst block contains the address of the command-and-control (c&c)
+server of the malware, which is located at ip address, . this
+value is specifed in the code, as shown in the third screenshot.
+the second boxed code in function, zkxdu80x, is the client version. the
+third is an encryption key with a length of 256 bytes (2,048 bits) used for
+network communications, and starts with the pattern,
+get /index.php?c=xxxxxxxx&r=xxxxx&u=1&t=.
+in all samples we have analyzed, the c argument is 8 bytes long and
+differs across variants. this can be used as a unique identifer for each
+of the infected machines. the r argument has a variable length, 5 7
+bytes; the u argument is always 1 byte long.
+other communication patterns can be found in the binary and can be
+used as indicators of compromise: index.php?c=%s&r=%lx index.php?c=%s&r=%lx&u=1&t=%s index.php?c=%s&r=%xoperation woolen-goldfish research paper
+related samples
+we found several microsoft offce fles containing variants of the ghole malware family that were used to
+infect machines. as the excel spreadsheet used in this campaign is disguised to look relevant and important,
+users were prompted to open it and execute the embedded macro. the use of macros to infect computers is
+deemed amateur. this shows that there is a gap between the maturity of the malware, which is good enough
+for its purpose, and the way it is delivered, which raises questions about the attackers professional capacity.
+we decided to look at the spear-phishing attempts from a wider perspective and analyzed more samples from
+this malware family. based on available evidence, only the rocket kitten group is known to have used ghole
+in the attacks related to operation woolen-goldfish. it is interesting to note that the ghole malware is in fact
+a modifed core impact product. core impact is a sophisticated penetration-testing tool from core, a
+legitimate company. [4]
+sample content from malicious microsoft offce fles;
+the attacker needs the user to enable the macro to
+infect the computer
+sample content from a malicious offce fle after
+running the macro; the content is common and
+publicly available on the internetoperation woolen-goldfish research paper
+after studying the sample infected and dropped fles, we established a timeline using the dates when the
+executable fles were compiled. this timeline should be reliable unless the attackers played with the time
+stamps, which would be surprising in this campaign since all binary compilation dates ft quite well with the
+spear-phishing attacks.
+as is often the case with malware families specifcally used in targeted attacks, there are actually very few
+different samples in the wild, compared with traditional cybercrime malware.
+the microsoft offce fles used by the attackers to infltrate their targets networks are also very interesting
+because they contain metadata. metadata can be defned as the information about the information, which
+in this case is the information pertaining to the fle itself. some of details of the available metadata were
+useful, particularly, the creation date, modifcation date, author, and last modifcation author. we will tackle the
+metadata later on in this paper.
+use of malware scanner
+during the course of this investigation, we found out that some samples of the ghole malware have been
+submitted to an online-malware-scanning site, , to estimate the detection rate of their malware.
+[5] three samples appeared to have been scanned using this service before they appeared elsewhere. one
+sample was submitted 26 days before it was scanned in other online malware analysis service sites. this
+led us to believe that the malware controllers submitted the original samples to the system
+themselves. we would like to point out that the online service is free and available to everyone
+on the internet. we contacted a representative of the company, who in turn told us that they do not condone
+cybercrime or in any way affliated to any entity that could have been part of this campaign. number of malware samples compiledoperation woolen-goldfish research paper
+ghole malware communication and control
+the communications established by this malware family from an infected workstation
+to the c&c server are done by directly communicating with the ip addresses hardcoded in the binaries, as seen in the export function display. there were no domain
+names involved in this campaign. we were able to obtain a list of c&c servers, which
+are mostly hosted in germany, via a satellite communication service provider known
+the last ip address, , was associated with one malware sample. it belongs
+to iabg with only the following information available:
+the other ip addresses were used by different malware samples. these ip addresses
+also belonged to iabg and could all be connected to the same customer. in fact, all of
+the ip ranges on which these c&c servers are identifed belonged to one customer,
+who rents the following ip ranges from iabg:
+netname: de-iabg-teleport-mahdavi_8
+email: mahdavi@ registration for the domain used here expired in 2010. it was registered using this information:
+registrant:
+mehdi mahdavi mehdi_mahdavi@ +1.5149092726
+joinebiz
+2021 atwater street, #1414
+montreal,qc,ca h3h-2p2
+the frst historical information about this domain, in 2003, has the following details:
+registrant:
+mehdi mahdavi technical@ 514-989-8066
+joinebiz
+2021 atwater street, #1414
+montreal, qc, canada h3h-2p2
+screenshot from in 2001 was an e-business solution provider that ceased to operate in 2006. incidentally, it held offce in
+isfahan, iran, which is the country mr. mehdi mahdavi used as reference for renting the ip ranges used by the
+ghole malware.
+these details can loosely be tied to the entities presented above but caution is strongly advised because the
+names are quite common. we have yet to determine if these names belong to one person, if the same person
+is the one who rents ip ranges from iabg, if his servers were compromised and used as proxy servers, or if he
+provides part of his infrastructure to the operation woolen-goldfish targeted attack group.operation woolen-goldfish research paper
+operation woolen-goldfish: rocket
+kitten s new campaign
+point of entry
+sending out spear-phishing emails is a common
+technique used as a point of entry in the initial stage
+of compromise. it is, in fact, still widely used in
+attempts to gain privileges in targeted companies systems. several social engineering tricks can be
+used to make a user click a link or open a fle.
+one of the spear-phishing emails sent out by the
+rocket kitten group looked like a simple offce
+correspondence.
+the attachment was a microsoft offce fle. user
+participation is needed to execute the macros in the
+fle. if the user does not run the macros, the computer
+will not be infected by the ghole malware. by the
+end of 2014, however, we saw signifcant changes
+in the attack behavior of the rocket kitten group in
+terms of spear-phishing campaigns and malware
+infection scheme. the second spear-phishing email
+sample has been sent to one target in israel.
+this email sample was sent sometime in february
+2015. this also used the identity of a recognized
+israeli engineer. we anonymized the email address,
+as well as the onedrive link. we also removed the
+signature used in it.
+a known fgure in the israeli defense feld was used
+in a similar tactic with the same email content. the
+decoy fle used an adobe .pdf fle instead of a
+microsoft powerpoint presentation. the .pdf fle
+was a web article from the washington post. the fle
+showed pc12 as the author and the last modifer.
+system s record
+sample spear-phishing email used by the group
+in 2014
+sample spear-phishing email sent to a targeted
+organization in israeloperation woolen-goldfish research paper
+initial compromise
+the attackers used a onedrive link in their campaign. onedrive is a free online cloud
+storage system from microsoft that comes with several gigabytes of data storage
+capacity.
+the onedrive link leads to an archive fle containing a fle named, iran s missiles . this fle, which has been taken of ine, used the powerpoint
+icon but was really an executable fle. the attackers probably decided to store their
+malicious binaries online rather than sent them as an attachment to bypass email
+detection.
+once executed, the fle drops a nonmalicious powerpoint fle used as a decoy
+fle, while silently infecting the system with a variant of the cwoolger keylogger.
+we decided not to show the content of this fle given the sensitivity of the persona
+impersonated in this social engineering lure.
+we tried to look for this decoy fle on the internet but it was nowhere to be found,
+which was quite surprising. we compared the metadata on this fle with the other
+fles authored by the spoofed engineer and it showed the same exact fle properties,
+particularly the way the author feld was written. the fle also shows a last modifed
+by: feld containing the information pc12.
+rocket kitten has signed pc12 at the last modifed section of some of the fles used
+in their spear-phishing activities. we do not know if this string refers to one rocket
+kitten member or to a third party, who could have edited the fles. the latter is very
+unlikely though, since it has been used both in campaigns and fles aimed at different
+targets. we believe pc12 is, indeed, an indicator of rocket kitten activities.
+we have a strong suspicion, based on the powerpoint fle, that the spoofed
+engineer s computer was compromised by the rocket kitten group because he
+presents an interesting profle and is well-known in his feld. therefore, the fle sent to
+other israeli targets could have been stolen directly from this person s computer.
+possible attribution
+wool3n.h4t
+cybercriminals quite often forget about metadata, which is generated by the software
+they use to produce or modify the fles. those who are more meticulous alter this
+information to lead investigators to false tracks.
+malware binary
+shows the
+powerpoint icon to
+trick the useroperation woolen-goldfish research paper
+sha1 hash creation
+date
+modifcation
+date author
+last
+modifed
+by
+microsoft offce fles and some of their metadata leaked by the attackersoperation woolen-goldfish research paper
+as seen above, different authors worked on these fles. wool3n.h4t seemed to be the main author who
+collaborated with aikido1 and hoffman. no particular information could be found on aikido1 and yusi, the
+supposed partners of wool3n.h4t. there were also times when wool3n.h4t used u.s. and u.k. country codes
+as last modifcation information. the most recent modifcation in the two powerpoint fles told us that w00l3n.h4t
+slowly changed his infecting methods around october 2014.
+there was not much information on wool3n.h4t, which is not a common nickname, on the internet. however,
+we found that this nickname owned an inactive blog hosted by a free service in iran and was registered in
+several underground hacking forums. the blog only contained two posts signed by masoud_pk, which could be
+part of the real identity of wool3nh4t. masoud is the one of the top 50 commonly used frst names in iran.
+part of wool3n.h4t s blog showing masoud_pk wool3n.h4t s recent activities: cwoolger keylogger
+one malware sample surfaced as we tried to look for more information on wool3n.h4t. [7] we took interest in this
+because the binary contained the following debug string: c:\users\wool3n.h4t\documents\visual studio 2010\projects\c- debug strings are strings that are sometimes left behind in binaries, revealing information about the developer
+behind the code. this debug string shows us that the binary was compiled by a user account named wool3n.h4t, and that the project behind this code was dubbed cwoolger. this malware is a keylogger, although from a technical point of view, it is not as advanced as its
+contemporaries. the malware also embedded some file transfer protocol (ftp) credentials of the attackers in
+clear text in the binary.
+consistent with the other malware used by the threat actors involved in operation woolen-goldfish, the c&c
+reference is hard-coded as an ip address in the binary. a domain name was not used. moreover, it lands on the
+system with a name, which is very similar to some ghole malware variants, { }.exe.
+the malware starts by creating a mutex called woolger and creates a copy of itself, %temp% ,
+in the temp folder before executing it. it creates a vbscript in the same folder named wsc.vbs. operation woolen-goldfish research paper
+startup folder entry, showing the notepad icon but leading
+to the malware
+the wsc.vbs script in charge of installing the persistence
+mechanism of the malware
+the script installs the persistence mechanism of the malware, a link named, windefender, in the startup
+folder, which uses the notepad icon.
+it then enables keylogging by calling the setwindowshookexw application programming interface (api) and
+calls settimer api to prepare a timer job for uploading the log fles.
+once the machine is infected, the keylogger records all keystrokes in %temp% using the following
+the upload function of this malware ran at specifc intervals based on a previous random value. if the log fle is
+larger than 3,000 bytes, an uploadtocnc function will be called to transfer the log fle via ftp.
+the c&c server reached in our sample is , which belongs to singlehop (as32475). the
+credentials used to connect with the ftp server are hard-coded in clear text in the binary. when the fle is sent
+to the server, it is renamed using the following format:
+log_(username)_[tm_year]_[tm_mon]_[tm_mday]_[tm_hour]_[tm_min]_[tm_sec]
+member type meaning range
+tm_sec int seconds after the minute 0 61*
+tm_min int minutes after the hour 0 59
+tm_hour int hours since midnight 0 23
+tm_mday int day of the month 1 31
+tm_mon int months since january 0 11
+tm_year int years since 1990
+tm_wday int days since sunday 0 6
+tm_yday int days since january 1 0 365
+tm_isdst int daylight saving time ag
+we have been able to detect other samples of this family acting in a similar way and referenced in the appendix. one of the
+most recent samples was compiled on 7 february 2015.
+upload function 
